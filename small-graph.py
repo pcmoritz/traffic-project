@@ -1,3 +1,15 @@
+import networkx as nx
+import matplotlib.pyplot
+
+import itertools
+
+import os, sys
+lib_path = os.path.abspath('traffic-project/YenKSP')
+sys.path.append(lib_path)
+
+import graph
+import algorithms
+
 # we have 50 nodes, of which a 5*5 grid is for Caltec and a 5*5 grid
 # is for the streets (for now) --> imagine it as a 5 rows, 10 columns
 # grid, indexed like a matrix
@@ -20,11 +32,31 @@ for k in range(0, 4):
     G.add_edge(k * 10 + 9, (k+1) * 10 + 9, weight=1)
 
 for j in range(0, 9):
-    G.edge[j][j+1]['weight'] = 3
-    G.edge[2*10 + j][2*10 + j+1]['weight'] = 3
-    G.edge[4*10 + j][4*10 + j+1]['weight'] = 3
+    G.edge[j][j+1]['weight'] = 6
+    G.edge[2*10 + j][2*10 + j+1]['weight'] = 6
+    G.edge[4*10 + j][4*10 + j+1]['weight'] = 6
 
-print(nx.shortest_path(G,source=19,target=0))
+for j in range(0, 9):
+    for k in range(0, 4):
+        if j % 2 == 0:
+            G.edge[k*10 + j][(k+1)*10 + j]['weight'] = 3
+
+H = graph.DiGraph()
+
+for (u, v) in G.edges():
+    H.add_edge(u, v, cost = G.edge[u][v]['weight'])
+
+# finding shortest paths
+
+routes = []
+
+for pair in itertools.product(range(0, 50), repeat=2):
+    u = pair[0]
+    v = pair[1]
+    # dijkstra would be routes.append(nx.shortest_path(G,source=v,target=w))
+    routes.extend(map(lambda x: x['path'], algorithms.ksp_yen(H, 1, 19, max_k = 5)))
+
+# drawing:
 
 pos = nx.get_node_attributes(G,'pos')
 
