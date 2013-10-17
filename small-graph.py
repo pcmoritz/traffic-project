@@ -4,7 +4,7 @@ import matplotlib.pyplot
 import itertools
 
 import os, sys
-lib_path = os.path.abspath('traffic-project/YenKSP')
+lib_path = os.path.abspath('YenKSP')
 sys.path.append(lib_path)
 
 import graph
@@ -54,7 +54,7 @@ for pair in itertools.product(range(0, 50), repeat=2):
     u = pair[0]
     v = pair[1]
     # dijkstra would be routes.append(nx.shortest_path(G,source=v,target=w))
-    routes.extend(map(lambda x: x['path'], algorithms.ksp_yen(H, 1, 19, max_k = 5)))
+    routes.extend(map(lambda x: x['path'], algorithms.ksp_yen(H, u, v, max_k = 5)))
 
 # drawing:
 
