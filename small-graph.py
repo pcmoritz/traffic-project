@@ -54,7 +54,10 @@ for pair in itertools.product(range(0, 50), repeat=2):
     u = pair[0]
     v = pair[1]
     # dijkstra would be routes.append(nx.shortest_path(G,source=v,target=w))
-    routes.extend(map(lambda x: x['path'], algorithms.ksp_yen(H, u, v, max_k = 5)))
+    k_shortest = algorithms.ksp_yen(H, u, v, max_k = 5)
+    paths = map(lambda x: x['path'], k_shortest)
+    if len(paths) > 0 and not(len(paths[0]) == 0):
+        routes.extend(paths)
 
 # drawing:
 
