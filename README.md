@@ -7,3 +7,4 @@ SETUP
 -----
     $ sudo easy_install pip
     $ sudo pip install networkx
+    $ sudo pip install matplotlib
