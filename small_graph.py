@@ -11,17 +11,17 @@ import graph
 import algorithms
 
 def generate_small_graph():
-  # we have 50 nodes, of which a 5*5 grid is for Caltec and a 5*5 grid
+  # we have n*m nodes, (((of which a 5*5 grid is for Caltec and a 5*5 grid
   # is for the streets (for now) --> imagine it as a 5 rows, 10 columns
-  # grid, indexed like a matrix
+  # grid, indexed like a matrix)))
   
   sensors = []
 
   # Generate directed road network
   G = nx.DiGraph()
-  n = 5
-  m = 3
-  r = 2
+  n = 5 # no of cols
+  m = 3 # no of rows
+  r = 2 # no of shortes routes per node-pair
 
   for j in range(0, n):
       for k in range(0, m):
@@ -34,33 +34,31 @@ def generate_small_graph():
   
  # Manually get the last row
   for j in range(0, n-1):
-      G.add_edge((m-1) * n + j,(m-1) * n + j + 1, weight=6)
- #     G.add_edge(2 * 10 + j, 2 * 10 + j + 1, weight=1)
+      G.add_edge((m-1) * n + j,(m-1) * n + j + 1, weight=6) 
+      # had to do this for this small node case to get at least 2 highways...
 
  # Manually set the last column
   for k in range(0, m-1):
       G.add_edge(k * n + n-1, (k+1) * n + n-1, weight=1)
 
-  # Highways
+  # Set bigger road weights
   for k in range(0, m-1):
     for j in range(0, n-1):
-    # Real Big streets
+    # Highways
       if k % 4 == 0:
         G.edge[k*n + j][k*n + j+1]['weight'] = 6
         sensors.append((k*n + j,k*n + j+1))
-#      G.edge[2*10 + j][2*10 + j+1]['weight'] = 4
 
-    # Half big streets  
+    # Big streets  
       if k % 4 == 2:
         G.edge[k*n + j][k*n + j+1]['weight'] = 3
         if j % 2 == 3: # uhm, modulo 2 = 3?? 
           sensors.append((k*n + j,k*n + j+1))
-#      G.edge[4*10 + j][4*10 + j+1]['weight'] = 6
-#      sensors.append((4*10 + j,4*10 + j+1))  
 
-    # Quarter big streets
+    # Half big streets
       if j % 2 == 0:
         G.edge[k*n + j][(k+1)*n + j]['weight'] = 2
+        
   for (u, v, data) in G.edges(data=True):
       G.add_edge(v, u, weight = data['weight'])
 
