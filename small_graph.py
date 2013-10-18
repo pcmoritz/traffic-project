@@ -35,6 +35,7 @@ def generate_small_graph():
  # Manually get the last row
   for j in range(0, n-1):
       G.add_edge((m-1) * n + j,(m-1) * n + j + 1, weight=6) 
+      sensors.append(((m-1) * n + j, (m-1) * n + j + 1))
       # had to do this for this small node case to get at least 2 highways...
 
  # Manually set the last column
@@ -52,7 +53,7 @@ def generate_small_graph():
     # Big streets  
       if k % 4 == 2:
         G.edge[k*n + j][k*n + j+1]['weight'] = 3
-        if j % 2 == 3: # uhm, modulo 2 = 3?? 
+        if j % 3 == 0:
           sensors.append((k*n + j,k*n + j+1))
 
     # Half big streets
