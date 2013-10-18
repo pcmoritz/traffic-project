@@ -122,7 +122,7 @@ def dijkstra(graph, node_start, node_end=None):
                 Q[u] = cost_vu
                 previous[u] = v
 
-    if node_end:
+    if node_end is not None:
         return {'cost': distances[node_end], 
                 'path': path(previous, node_start, node_end)}
     else:
