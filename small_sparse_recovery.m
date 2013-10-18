@@ -4,19 +4,22 @@ cvx_solver mosek;
 
 %% Read in graph
 % load('small-graph.mat','G')
-n = 15;
-m = 6;
+n = 200;
+m = 10;
 
 Phi = [abs(randn(m,n))];
-for j=1:100
+for j=1:m*n
     Phi(ceil(rand*m),ceil(rand*n)) = 0;
 end
+Phi = sparse(Phi);
 f = [abs(randn(m,1))];
 
 %% Define parameters
 min_a = Inf;
 min_val = Inf;
 lambda = 1;
+
+tic
 
 %% cvx
 i = 1;
@@ -36,3 +39,5 @@ for i=1:n
         min_a = a;
     end
 end
+
+toc
