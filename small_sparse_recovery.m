@@ -11,7 +11,6 @@ Phi = [abs(randn(m,n))];
 for j=1:m*n
     Phi(ceil(rand*m),ceil(rand*n)) = 0;
 end
-Phi = sparse(Phi);
 f = [abs(randn(m,1))];
 
 %% Define parameters
