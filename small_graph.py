@@ -40,8 +40,8 @@ def generate_small_graph():
   H = graph.DiGraph()
   
   for (u, v) in G.edges():
-      H.add_edge(u, v, cost = G.edge[u][v]['weight'])
-      H.add_edge(v, u, cost = G.edge[u][v]['weight'])
+      H.add_edge(u, v, cost = 1./G.edge[u][v]['weight'])
+      H.add_edge(v, u, cost = 1./G.edge[u][v]['weight'])
   
   # finding shortest paths
   
