@@ -12,7 +12,8 @@ n = 10;
 %% cvx
 cvx_begin
     variable a(n)
-    minimize( square_pos(norm(Phi * a - f, 2)) + inv_pos(norm( a, Inf )) )
+    minimize( square_pos(norm(Phi * a - f, 2)) + lambda )
     subject to
-    a >= 0;
+    a >= 0
+    lambda >= 0
 cvx_end
