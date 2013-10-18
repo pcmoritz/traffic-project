@@ -67,6 +67,8 @@ def generate_small_graph():
   for pair in itertools.product(range(0, 50), repeat=2):
       u = pair[0]
       v = pair[1]
+      if u == v:
+        continue
       # dijkstra would be routes.append(nx.shortest_path(G,source=v,target=w))
       k_shortest = algorithms.ksp_yen(H, u, v, max_k = 5)
       paths = map(lambda x: x['path'], k_shortest)
@@ -76,7 +78,7 @@ def generate_small_graph():
   return G, routes, sensors
 
 if __name__ == '__main__':
-  G, routes = generate_small_graph()
+  G, routes, sensors = generate_small_graph()
   # drawing:
 
   pos = nx.get_node_attributes(G,'pos')
