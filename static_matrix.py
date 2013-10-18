@@ -19,6 +19,7 @@ def generate_static_matrix(graph, routes, sensors, flow_portions, flow_from_each
   
   alphas = []
   phis = []
+  num_routes = []
   for node in graph.nodes():
     route_indices_from_node = route_indices_by_origin[node]
     edges_in_route = [set(zip(routes[i], routes[i][1:])) for i in route_indices_from_node]
@@ -30,14 +31,15 @@ def generate_static_matrix(graph, routes, sensors, flow_portions, flow_from_each
       for i in xrange(len(sensors)):
         if sensors[i] in edges_in_route[j]:
           phi[i, j] = flow_from_each_node
-          
+    
+    num_routes.append(len(route_indices_from_node))
     phis.append(phi)
     alphas.append(alpha)
-  return np.hstack(phis), np.concatenate(alphas), f
+  return np.hstack(phis), np.concatenate(alphas), f, np.array(num_routes)
   
 if __name__ == '__main__':
   graph, routes, sensors = small_graph.generate_small_graph()
   flow_portions = flows.annotate_with_flows(graph, routes)
   
-  phi, alpha, f = generate_static_matrix(graph, routes, sensors, flow_portions)
-  scipy.io.savemat('small_graph.mat', {'phi': phi, 'alpha': alpha, 'f': f}, oned_as='column')
+  phi, alpha, f, num_routes = generate_static_matrix(graph, routes, sensors, flow_portions)
+  scipy.io.savemat('small_graph.mat', {'phi': phi, 'alpha': alpha, 'f': f, 'num_routes': num_routes}, oned_as='column')
