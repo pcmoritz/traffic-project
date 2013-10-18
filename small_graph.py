@@ -19,38 +19,48 @@ def generate_small_graph():
 
   # Generate directed road network
   G = nx.DiGraph()
-  
-  for j in range(0, 10):
-      for k in range(0, 5):
-          G.add_node(k * 10 + j, pos = (j, -k))
-      
-  for j in range(0, 9):
-      for k in range(0, 4):
-          G.add_edge(k * 10 + j, k * 10 + j + 1, weight=1)
-          G.add_edge(k * 10 + j, (k+1) * 10 + j, weight=1)
-  
-  for j in range(0, 9):
-      G.add_edge(4 * 10 + j, 4 * 10 + j + 1, weight=1)
-  
-  for k in range(0, 4):
-      G.add_edge(k * 10 + 9, (k+1) * 10 + 9, weight=1)
-  
-  # Highways
-  for j in range(0, 9):
-      G.edge[j][j+1]['weight'] = 6
-      sensors.append((j,j+1))
-      G.edge[2*10 + j][2*10 + j+1]['weight'] = 4
-      if j % 2 == 3:
-          sensors.append((2*10 + j,2*10 + j+1))
-      G.edge[4*10 + j][4*10 + j+1]['weight'] = 6
-      sensors.append((4*10 + j,4*10 + j+1))
-  
-  # Medium roads
-  for j in range(0, 9):
-      for k in range(0, 4):
-          if j % 2 == 0:
-              G.edge[k*10 + j][(k+1)*10 + j]['weight'] = 3
+  n = 5
+  m = 3
+  r = 2
 
+  for j in range(0, n):
+      for k in range(0, m):
+          G.add_node(k * n + j, pos = (j, -k))
+      
+  for j in range(0, n-1):
+      for k in range(0, m-1):
+          G.add_edge(k * n + j, k * n + j + 1, weight=1)
+          G.add_edge(k * n + j, (k+1) * n + j, weight=1)
+  
+ # Manually get the last row
+  for j in range(0, n-1):
+      G.add_edge((m-1) * n + j,(m-1) * n + j + 1, weight=6)
+ #     G.add_edge(2 * 10 + j, 2 * 10 + j + 1, weight=1)
+
+ # Manually set the last column
+  for k in range(0, m-1):
+      G.add_edge(k * n + n-1, (k+1) * n + n-1, weight=1)
+
+  # Highways
+  for k in range(0, m-1):
+    for j in range(0, n-1):
+    # Real Big streets
+      if k % 4 == 0:
+        G.edge[k*n + j][k*n + j+1]['weight'] = 6
+        sensors.append((k*n + j,k*n + j+1))
+#      G.edge[2*10 + j][2*10 + j+1]['weight'] = 4
+
+    # Half big streets  
+      if k % 4 == 2:
+        G.edge[k*n + j][k*n + j+1]['weight'] = 3
+        if j % 2 == 3: # uhm, modulo 2 = 3?? 
+          sensors.append((k*n + j,k*n + j+1))
+#      G.edge[4*10 + j][4*10 + j+1]['weight'] = 6
+#      sensors.append((4*10 + j,4*10 + j+1))  
+
+    # Quarter big streets
+      if j % 2 == 0:
+        G.edge[k*n + j][(k+1)*n + j]['weight'] = 2
   for (u, v, data) in G.edges(data=True):
       G.add_edge(v, u, weight = data['weight'])
 
@@ -67,13 +77,13 @@ def generate_small_graph():
   # Find k shortest routes between all 2 nodes
   routes = []
   
-  for pair in itertools.product(range(0, 50), repeat=2):
+  for pair in itertools.product(range(0, n*m), repeat=2):
       u = pair[0]
       v = pair[1]
       if u == v:
         continue
       # dijkstra would be routes.append(nx.shortest_path(G,source=v,target=w))
-      k_shortest = algorithms.ksp_yen(H, u, v, max_k = 5)
+      k_shortest = algorithms.ksp_yen(H, u, v, max_k = r)
       paths = map(lambda x: x['path'], k_shortest)
       if len(paths) > 0 and not(len(paths[0]) == 0):
           routes.extend(paths)
