@@ -27,23 +27,26 @@ Phi_original = Phi;
 tic
 % nroutes = [1,2,5,3];
 num_routes = int64(num_routes);
-cum_nroutes = int64([1 cumsum(double(num_routes'))]);
+cum_nroutes = [0; cumsum(num_routes)];
 
 %% cvx
 i = 1;
 for i=1:n
-    cvx_begin
+    cvx_begin quiet
         variable a(n)
         variable t
         minimize( square_pos(norm(Phi * a - f, 2)) + t )
         subject to
         a >= 0
         for j=1:length(num_routes)
-            sum(a(cum_nroutes(j):cum_nroutes(j)+num_routes(j))) == 1
+            from = cum_nroutes(j) + 1;
+            to = cum_nroutes(j + 1);
+            sum(a(from:to)) == 1
         end
         t >= 0
         a(i) >= lambda * inv_pos(t)
     cvx_end
+    fprintf('%d/%d\n', i, n)
     if cvx_optval < min_val
         min_val = cvx_optval;
         min_a = a;
