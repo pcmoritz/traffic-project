@@ -1,6 +1,6 @@
 %% cvx code for sparse recovery of on small graphs
 clear all;
-cvx_solver mosek;
+% cvx_solver mosek;
 
 %% Read in graph
 % load('small-graph.mat','G')
@@ -18,6 +18,8 @@ f = [abs(randn(m,1))];
 min_a = Inf;
 min_val = Inf;
 lambda = 1;
+Phi_original = Phi;
+Phi = sparse(Phi_original);
 
 tic
 

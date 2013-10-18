@@ -13,6 +13,9 @@ def generate_small_graph():
   # is for the streets (for now) --> imagine it as a 5 rows, 10 columns
   # grid, indexed like a matrix
   
+  sensors = []
+
+  # Generate directed road network
   G = nx.DiGraph()
   
   for j in range(0, 10):
@@ -30,11 +33,17 @@ def generate_small_graph():
   for k in range(0, 4):
       G.add_edge(k * 10 + 9, (k+1) * 10 + 9, weight=1)
   
+  # Highways
   for j in range(0, 9):
       G.edge[j][j+1]['weight'] = 6
-      G.edge[2*10 + j][2*10 + j+1]['weight'] = 6
+      sensors.append((j,j+1))
+      G.edge[2*10 + j][2*10 + j+1]['weight'] = 4
+      if j % 2 == 3:
+          sensors.append((2*10 + j,2*10 + j+1))
       G.edge[4*10 + j][4*10 + j+1]['weight'] = 6
+      sensors.append((4*10 + j,4*10 + j+1))
   
+  # Medium roads
   for j in range(0, 9):
       for k in range(0, 4):
           if j % 2 == 0:
@@ -42,15 +51,17 @@ def generate_small_graph():
 
   for (u, v, data) in G.edges(data=True):
       G.add_edge(v, u, weight = data['weight'])
-  
+
+  # Invert graph weights
   H = graph.DiGraph()
   
   for (u, v) in G.edges():
       H.add_edge(u, v, cost = 1/G.edge[u][v]['weight'])
       H.add_edge(v, u, cost = 1/G.edge[u][v]['weight'])
+  sensors_opposite = [(v,u) for (u,v) in sensors]
+  sensors.extend(sensors_opposite)
   
-  # finding shortest paths
-  
+  # Find k shortest routes between all 2 nodes
   routes = []
   
   for pair in itertools.product(range(0, 50), repeat=2):
@@ -62,7 +73,7 @@ def generate_small_graph():
       if len(paths) > 0 and not(len(paths[0]) == 0):
           routes.extend(paths)
           
-  return G, routes
+  return G, routes, sensors
 
 if __name__ == '__main__':
   G, routes = generate_small_graph()
