@@ -27,7 +27,15 @@ Phi_original = Phi;
 tic
 % nroutes = [1,2,5,3];
 num_routes = int64(num_routes);
-cum_nroutes = [0; cumsum(num_routes)];
+cum_nroutes = int64([0; cumsum(double(num_routes))]);
+
+%% L1 constraint matrix
+L1 = zeros(length(num_routes),n);
+for j=1:length(num_routes)
+    from = cum_nroutes(j) + 1;
+    to = cum_nroutes(j + 1);
+    L1(j,from:to) = ones(1,to-from+1);
+end
 
 %% cvx
 i = 1;
@@ -38,11 +46,7 @@ for i=1:n
         minimize( square_pos(norm(Phi * a - f, 2)) + t )
         subject to
         a >= 0
-        for j=1:length(num_routes)
-            from = cum_nroutes(j) + 1;
-            to = cum_nroutes(j + 1);
-            sum(a(from:to)) == 1
-        end
+        L1 * a == ones(length(num_routes),1)
         t >= 0
         a(i) >= lambda * inv_pos(t)
     cvx_end
