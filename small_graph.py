@@ -52,15 +52,16 @@ def generate_small_graph():
   for (u, v, data) in G.edges(data=True):
       G.add_edge(v, u, weight = data['weight'])
 
-  # Find k shortest routes between all 2 nodes
+  # Invert graph weights
   H = graph.DiGraph()
   
   for (u, v) in G.edges():
       H.add_edge(u, v, cost = 1/G.edge[u][v]['weight'])
       H.add_edge(v, u, cost = 1/G.edge[u][v]['weight'])
+  sensors_opposite = [(v,u) for (u,v) in sensors]
+  sensors.extend(sensors_opposite)
   
-  # finding shortest paths
-  
+  # Find k shortest routes between all 2 nodes
   routes = []
   
   for pair in itertools.product(range(0, 50), repeat=2):
