@@ -1,3 +1,5 @@
+from __future__ import division
+
 import networkx as nx
 import matplotlib.pyplot
 import itertools
@@ -56,7 +58,7 @@ def generate_small_graph():
   H = graph.DiGraph()
   
   for (u, v) in G.edges():
-      H.add_edge(u, v, cost = 1/G.edge[u][v]['weight'])
+      H.add_edge(u, v, cost = 1./G.edge[u][v]['weight'])
 
   # Add opposite sensors
   sensors_opposite = [(v,u) for (u,v) in sensors]
