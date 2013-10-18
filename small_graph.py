@@ -23,6 +23,7 @@ def generate_small_graph():
   m = 3 # no of rows
   r = 2 # no of shortes routes per node-pair
 
+
   for j in range(0, n):
       for k in range(0, m):
           G.add_node(k * n + j, pos = (j, -k))

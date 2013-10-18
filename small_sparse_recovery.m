@@ -26,7 +26,7 @@ Phi_original = Phi;
 
 tic
 % nroutes = [1,2,5,3];
-num_routes = int64(num_routes);
+num_routes = int64(num_routes); % each entry is associated with one origin
 cum_nroutes = int64([0; cumsum(double(num_routes))]);
 
 %% L1 constraint matrix
