@@ -1,5 +1,6 @@
 %% cvx code for sparse recovery of on small graphs
 clear all;
+cvx_solver mosek;
 
 %% Read in graph
 % load('small-graph.mat','G')

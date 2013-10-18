@@ -2,8 +2,11 @@ import networkx as nx
 import matplotlib.pyplot
 import itertools
 
-from YenKSP import graph
-from YenKSP import algorithms
+import os, sys
+lib_path = os.path.abspath('YenKSP')
+sys.path.append(lib_path)
+import graph
+import algorithms
 
 def generate_small_graph():
   # we have 50 nodes, of which a 5*5 grid is for Caltec and a 5*5 grid
@@ -43,8 +46,8 @@ def generate_small_graph():
   H = graph.DiGraph()
   
   for (u, v) in G.edges():
-      H.add_edge(u, v, cost = 1./G.edge[u][v]['weight'])
-      H.add_edge(v, u, cost = 1./G.edge[u][v]['weight'])
+      H.add_edge(u, v, cost = 1/G.edge[u][v]['weight'])
+      H.add_edge(v, u, cost = 1/G.edge[u][v]['weight'])
   
   # finding shortest paths
   
