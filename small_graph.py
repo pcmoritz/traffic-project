@@ -10,7 +10,7 @@ def generate_small_graph():
   # is for the streets (for now) --> imagine it as a 5 rows, 10 columns
   # grid, indexed like a matrix
   
-  G = nx.Graph()
+  G = nx.DiGraph()
   
   for j in range(0, 10):
       for k in range(0, 5):
@@ -36,6 +36,9 @@ def generate_small_graph():
       for k in range(0, 4):
           if j % 2 == 0:
               G.edge[k*10 + j][(k+1)*10 + j]['weight'] = 3
+
+  for (u, v, data) in G.edges(data=True):
+      G.add_edge(v, u, weight = data['weight'])
   
   H = graph.DiGraph()
   

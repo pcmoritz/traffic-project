@@ -3,10 +3,13 @@ clear all;
 
 %% Read in graph
 % load('small-graph.mat','G')
-n = 150;
-m = 100;
+n = 15;
+m = 6;
 
 Phi = [abs(randn(m,n))];
+for j=1:100
+    Phi(ceil(rand*m),ceil(rand*n)) = 0;
+end
 f = [abs(randn(m,1))];
 
 %% Define parameters
