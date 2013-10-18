@@ -3,17 +3,32 @@ clear all;
 
 %% Read in graph
 % load('small-graph.mat','G')
-Phi = abs(randn(10,10));
-f = abs(randn(10,1));
+n = 150;
+m = 100;
+
+Phi = [abs(randn(m,n))];
+f = [abs(randn(m,1))];
 
 %% Define parameters
-n = 10;
+min_a = Inf;
+min_val = Inf;
+lambda = 1;
 
 %% cvx
-cvx_begin
-    variable a(n)
-    minimize( square_pos(norm(Phi * a - f, 2)) + lambda )
-    subject to
-    a >= 0
-    lambda >= 0
-cvx_end
+i = 1;
+for i=1:n
+    cvx_begin
+        variable a(n)
+        variable t
+        minimize( square_pos(norm(Phi * a - f, 2)) + t )
+        subject to
+        a >= 0
+        a'*ones(n,1) == 1
+        t >= 0
+        a(i) >= lambda * inv_pos(t)
+    cvx_end
+    if cvx_optval < min_val
+        min_val = cvx_optval;
+        min_a = a;
+    end
+end
