@@ -1,6 +1,6 @@
 %% cvx code for sparse recovery of on small graphs
 clear all;
-% cvx_solver mosek;
+cvx_solver mosek;
 
 %% Read in graph
 % load('small_graph.mat')
@@ -15,8 +15,8 @@ clear all;
 
 
 % RANDOM MATRIX
- n = 100;
- m = 8;
+ n = 30;
+ m = 30;
  no_routes = 20; 
  
 % Generate random binary matrix
@@ -36,7 +36,7 @@ f = Phi * real_alpha;
 %% Define parameters
 min_a = Inf;
 min_val = Inf;
-lambda = 1;
+lambda = 0.01;
 Phi_original = Phi;
 % Phi = sparse(Phi_original);
 
