@@ -8,14 +8,6 @@ Phi = phi;
 real_a = alpha;
 m = size(Phi,1);
 n = size(Phi,2);
-% n = 200;
-% m = 10;
-
-% Phi = [abs(randn(m,n))];
-% for j=1:m*n
-%     Phi(ceil(rand*m),ceil(rand*n)) = 0;
-% end
-% f = [abs(randn(m,1))];
 
 %% Define parameters
 min_a = Inf;
@@ -38,23 +30,13 @@ for j=1:length(num_routes)
 end
 
 %% cvx
-i = 1;
-for i=1:n
     cvx_begin quiet
         variable a(n)
-        variable t
-        minimize( square_pos(norm(Phi * a - f, 2)) + t )
+        minimize( square_pos(norm(Phi * a - f, 2)) + 100 * sum(mu' * abs(a)) )
         subject to
         a >= 0
         L1 * a == ones(length(num_routes),1)
-        t >= 0
-        a(i) >= lambda * inv_pos(t)
     cvx_end
     fprintf('%d/%d\n', i, n)
-    if cvx_optval < min_val
-        min_val = cvx_optval;
-        min_a = a;
-    end
-end
 
 toc

@@ -31,7 +31,9 @@ def generate_small_graph():
   for j in range(0, n-1):
       for k in range(0, m-1):
           G.add_edge(k * n + j, k * n + j + 1, weight=1)
+          sensors.append((k * n + j, k * n + j + 1))
           G.add_edge(k * n + j, (k+1) * n + j, weight=1)
+          sensors.append((k * n + j, (k+1) * n + j))
   
  # Manually get the last row
   for j in range(0, n-1):
@@ -42,6 +44,7 @@ def generate_small_graph():
  # Manually set the last column
   for k in range(0, m-1):
       G.add_edge(k * n + n-1, (k+1) * n + n-1, weight=1)
+      sensors.append((k * n + n-1, (k+1) * n + n-1));
 
   # Set bigger road weights
   for k in range(0, m-1):
@@ -54,12 +57,15 @@ def generate_small_graph():
     # Big streets  
       if k % 4 == 2:
         G.edge[k*n + j][k*n + j+1]['weight'] = 3
-        if j % 3 == 0:
-          sensors.append((k*n + j,k*n + j+1))
+        # Philipp: Hungry for sensors
+        # if j % 3 == 0:
+        sensors.append((k*n + j,k*n + j+1))
 
     # Half big streets
       if j % 2 == 0:
         G.edge[k*n + j][(k+1)*n + j]['weight'] = 2
+        # oh my gosh, I want more sensors
+        sensors.append((k*n + j,(k+1)*n + j))
         
   for (u, v, data) in G.edges(data=True):
       G.add_edge(v, u, weight = data['weight'])

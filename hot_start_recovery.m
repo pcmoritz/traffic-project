@@ -8,24 +8,15 @@ Phi = phi;
 real_a = alpha;
 m = size(Phi,1);
 n = size(Phi,2);
-% n = 200;
-% m = 10;
-
-% Phi = [abs(randn(m,n))];
-% for j=1:m*n
-%     Phi(ceil(rand*m),ceil(rand*n)) = 0;
-% end
-% f = [abs(randn(m,1))];
 
 %% Define parameters
-min_a = Inf;
-min_val = Inf;
-lambda = 1;
+max_a = -Inf;
+max_val = -Inf;
+lambda = 2.0;
 Phi_original = Phi;
 % Phi = sparse(Phi_original);
 
 tic
-% nroutes = [1,2,5,3];
 num_routes = int64(num_routes); % each entry is associated with one origin
 cum_nroutes = int64([0; cumsum(double(num_routes))]);
 
@@ -42,18 +33,16 @@ i = 1;
 for i=1:n
     cvx_begin quiet
         variable a(n)
-        variable t
-        minimize( square_pos(norm(Phi * a - f, 2)) + t )
+        maximize(a(i))
         subject to
         a >= 0
         L1 * a == ones(length(num_routes),1)
-        t >= 0
-        a(i) >= lambda * inv_pos(t)
+        Phi * a == f
     cvx_end
     fprintf('%d/%d\n', i, n)
-    if cvx_optval < min_val
-        min_val = cvx_optval;
-        min_a = a;
+    if cvx_optval > max_val
+        max_val = cvx_optval;
+        max_a = a;
     end
 end
 

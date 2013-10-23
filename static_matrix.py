@@ -45,6 +45,7 @@ def generate_static_matrix(graph, routes, sensors, flow_portions, flow_from_each
   
 if __name__ == '__main__':
   graph, routes, sensors = small_graph.generate_small_graph()
+  print sensors
   flow_portions = flows.annotate_with_flows(graph, routes)
   
   phi, alpha, mu, f, num_routes = generate_static_matrix(graph, routes, sensors, flow_portions)

@@ -7,7 +7,7 @@ import numpy.random
 
 import small_graph
 
-def annotate_with_flows(graph, routes, flow_from_each_node=1.0, sparsity=0.01):
+def annotate_with_flows(graph, routes, flow_from_each_node=1.0, sparsity=0.1):
   '''Generate traffic from each origin onto some small fraction of its routes, and compute the amount of flow at each edge.'''
   
   # All route indices are with respect to _routes_.
