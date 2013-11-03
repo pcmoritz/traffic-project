@@ -9,11 +9,15 @@ import scipy.io
 import small_graph
 import flows
 
-def generate_static_matrix(graph, routes, sensors, flow_portions, flow_from_each_node=1.0):
-  # All route indices are with respect to _routes_.
+def get_route_indices_by_origin(routes):
   route_indices_by_origin = collections.defaultdict(list)
   for i, route in enumerate(routes):
     route_indices_by_origin[route[0]].append(i)
+  return route_indices_by_origin
+
+def generate_static_matrix(graph, routes, sensors, flow_portions, flow_from_each_node=1.0):
+  # All route indices are with respect to _routes_.
+  route_indices_by_origin = get_route_indices_by_origin(routes)
     
   f = np.array([(graph[de[0]][de[1]]['flow'] if 'flow' in graph[de[0]][de[1]] else 0) for de in sensors])
   

@@ -36,7 +36,7 @@ f = Phi * real_alpha;
 %% Define parameters
 min_a = Inf;
 min_val = Inf;
-lambda = 0.01;
+lambda = 0.001;
 Phi_original = Phi;
 % Phi = sparse(Phi_original);
 

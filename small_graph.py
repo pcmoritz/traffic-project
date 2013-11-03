@@ -21,7 +21,7 @@ def generate_small_graph():
   G = nx.DiGraph()
   n = 5 # no of cols
   m = 3 # no of rows
-  r = 4 # no of shortes routes per node-pair
+  r = 2 # no of shortes routes per node-pair
 
 
   for j in range(0, n):
@@ -52,20 +52,21 @@ def generate_small_graph():
     # Highways
       if k % 4 == 0:
         G.edge[k*n + j][k*n + j+1]['weight'] = 6
-        sensors.append((k*n + j,k*n + j+1))
+        # sensors.append((k*n + j,k*n + j+1))
 
     # Big streets  
       if k % 4 == 2:
         G.edge[k*n + j][k*n + j+1]['weight'] = 3
         # Philipp: Hungry for sensors
         # if j % 3 == 0:
-        sensors.append((k*n + j,k*n + j+1))
+        # sensors.append((k*n + j,k*n + j+1))
 
     # Half big streets
       if j % 2 == 0:
         G.edge[k*n + j][(k+1)*n + j]['weight'] = 2
         # oh my gosh, I want more sensors
-        sensors.append((k*n + j,(k+1)*n + j))
+        # sensors.append((k*n + j,(k+1)*n + j))
+          
         
   for (u, v, data) in G.edges(data=True):
       G.add_edge(v, u, weight = data['weight'])
@@ -99,6 +100,9 @@ def generate_small_graph():
 if __name__ == '__main__':
   G, routes, sensors = generate_small_graph()
   # drawing:
+
+  print sensors
+  print len(sensors)
 
   pos = nx.get_node_attributes(G,'pos')
 
