@@ -21,7 +21,7 @@ def generate_small_graph():
   G = nx.DiGraph()
   n = 5 # no of cols
   m = 3 # no of rows
-  r = 2 # no of shortes routes per node-pair
+  r = 4 # no of shortes routes per node-pair
 
 
   for j in range(0, n):
@@ -108,5 +108,8 @@ if __name__ == '__main__':
                     for u,v,d in G.edges(data=True)])
 
   nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
+
+  nx.draw_networkx_edges(G, pos, edgelist=sensors, width=3, alpha=0.5,
+                         edge_color='b')
 
   matplotlib.pyplot.show()

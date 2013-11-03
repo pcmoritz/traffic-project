@@ -36,6 +36,15 @@ def annotate_with_flows(graph, routes, flow_from_each_node=1.0, sparsity=0.1):
           
 if __name__ == '__main__':
   graph, routes, sensors = small_graph.generate_small_graph()
+  
+  print "Graph: "
+  print graph
+  print "Routes: "
+  print routes
+  print len(routes)
+  print "Sensors: "
+  print sensors
+  
   annotate_with_flows(graph, routes)
 
   pos = nx.get_node_attributes(graph, 'pos')
@@ -48,6 +57,10 @@ if __name__ == '__main__':
     edge_labels[(u, v)] += d['flow'] if 'flow' in d else 0
 #  edge_labels=dict([((u,v,),d['flow'] if 'flow' in d else 0)
 #                    for u,v,d in graph.edges(data=True)])
+  for u, v, d in graph.edges(data=True):
+    if u > v:
+      u, v = v, u
+    edge_labels[(u, v)] = round(edge_labels[(u, v)], 4)
   nx.draw_networkx_edge_labels(graph, pos, edge_labels=edge_labels)
 
   matplotlib.pyplot.show()
