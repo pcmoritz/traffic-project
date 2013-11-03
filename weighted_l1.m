@@ -3,7 +3,8 @@ clear all;
 cvx_solver mosek;
 
 %% Read in graph
-load('small_graph.mat')
+% load('small_graph.mat')
+load('augmented_graph.mat')
 Phi = phi;
 real_a = alpha;
 m = size(Phi,1);
@@ -12,7 +13,7 @@ n = size(Phi,2);
 %% Define parameters
 min_a = Inf;
 min_val = Inf;
-lambda = 1;
+lambda = 0.01;
 Phi_original = Phi;
 % Phi = sparse(Phi_original);
 
@@ -32,11 +33,10 @@ end
 %% cvx
     cvx_begin quiet
         variable a(n)
-        minimize( square_pos(norm(Phi * a - f, 2)) + 100 * sum(mu' * abs(a)) )
+        minimize( square_pos(norm(Phi * a - f, 2)) + lambda * sum(mu' * abs(a)) )
         subject to
         a >= 0
         L1 * a == ones(length(num_routes),1)
     cvx_end
-    fprintf('%d/%d\n', i, n)
 
 toc

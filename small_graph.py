@@ -19,9 +19,9 @@ def generate_small_graph():
 
   # Generate directed road network
   G = nx.DiGraph()
-  n = 5 # no of cols
-  m = 3 # no of rows
-  r = 2 # no of shortes routes per node-pair
+  n = 6 # no of cols
+  m = 4 # no of rows
+  r = 4 # no of shortes routes per node-pair
 
 
   for j in range(0, n):
