@@ -21,7 +21,7 @@ import static_matrix
 
 # only generate the augmented matrix, the static matrix has to be appended
 def generate_augmented_matrix(graph, routes, sensors, flow_portions, flow_from_each_node=1.0):
-    route_indices_by_origin = static_matrix.get_route_indices_by_origin(routes)
+    route_indices_by_origin = flows.get_route_indices_by_origin(routes)
 
     f = []
     where_did_f_come_from = []
@@ -55,7 +55,7 @@ def generate_augmented_matrix(graph, routes, sensors, flow_portions, flow_from_e
 
 if __name__ == '__main__':
   graph, routes, sensors = small_graph.generate_small_graph()
-  flow_portions = flows.annotate_with_flows(graph, routes)
+  (flow_portions,_,_) = flows.annotate_with_flows(graph, routes)
   
   phi, alpha, mu, f, num_routes = static_matrix.generate_static_matrix(graph, routes, sensors, flow_portions)
 
