@@ -22,7 +22,7 @@ def generate_static_matrix(graph, routes, sensors, flow_portions,
   num_routes = []
   for node in graph.nodes():
     route_indices_from_node = route_indices_by_origin[node]
-    edges_in_route = [set(zip(routes[i], routes[i][1:])) for i in \
+    edges_in_route = [collections.Counter(zip(routes[i], routes[i][1:])) for i in \
             route_indices_from_node]
     
     alpha = np.zeros(shape=len(route_indices_from_node))
@@ -36,7 +36,7 @@ def generate_static_matrix(graph, routes, sensors, flow_portions,
       
       for i in xrange(len(sensors)):
         if sensors[i] in edges_in_route[j]:
-          phi[i, j] = flow_from_each_node
+          phi[i, j] = flow_from_each_node * edges_in_route[j][sensors[i]]
     
     num_routes.append(len(route_indices_from_node))
     phis.append(phi)
@@ -64,7 +64,7 @@ def generate_static_matrix_OD(graph, routes, sensors, flow_portions,
   for origin in graph.nodes():
     for dest in graph.nodes():
       selected_route_indices_by_OD = route_indices_by_OD[origin][dest]
-      edges_in_route = [set(zip(routes[i], routes[i][1:])) for i in \
+      edges_in_route = [collections.Counter(zip(routes[i], routes[i][1:])) for i in \
               selected_route_indices_by_OD]
       
       # initialize
@@ -86,7 +86,7 @@ def generate_static_matrix_OD(graph, routes, sensors, flow_portions,
         
         for i in xrange(len(sensors)):
           if sensors[i] in edges_in_route[j]:
-            phi[i, j] = flow_from_each_node[origin][dest]
+            phi[i, j] = flow_from_each_node[origin][dest] * edges_in_route[j][sensors[i]]
       
       num_routes.append(len(selected_route_indices_by_OD))
       phis.append(phi)
@@ -108,14 +108,9 @@ if __name__ == '__main__':
           sensors, flow_portions)
   scipy.io.savemat('small_graph.mat', {'phi': phi, 'alpha': alpha, 'mu': mu,
           'f': f, 'num_routes': num_routes}, oned_as='column')
-  print phi
-  print np.dot(phi, alpha) - f
-  print np.linalg.norm(np.dot(phi, alpha) - f,2)
 
   # static matrix considering origin-destination flows
   phi, alpha, mu, f, num_routes = generate_static_matrix_OD(graph, routes,
           sensors, flow_portions_OD, flow_from_each_node=flow_OD)
   scipy.io.savemat('small_graph_OD.mat', {'phi': phi, 'alpha': alpha, 'mu': mu,
           'f': f, 'num_routes': num_routes}, oned_as='column')
-  print phi
-
