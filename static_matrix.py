@@ -55,6 +55,4 @@ if __name__ == '__main__':
   phi, alpha, mu, f, num_routes = generate_static_matrix(graph, routes, sensors, flow_portions)
   scipy.io.savemat('small_graph.mat', {'phi': phi, 'alpha': alpha, 'mu': mu, 'f': f, 'num_routes': num_routes}, oned_as='column')
 
-  print phi
-  
   print np.dot(phi, alpha) - f

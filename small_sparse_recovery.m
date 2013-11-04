@@ -3,8 +3,8 @@ clear all;
 cvx_solver mosek;
 
 %% Read in graph
-load('small_graph.mat')
-% load('augmented_graph.mat')
+% load('small_graph.mat')
+load('augmented_graph.mat')
 Phi = sparse(phi);
 real_a = alpha;
 m = size(Phi,1);
