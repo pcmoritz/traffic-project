@@ -4,7 +4,8 @@ clear all;
 cvx_solver mosek;
 
 %% Read in the graph
-load('augmented_graph.mat')
+% load('augmented_graph.mat')
+load('small_graph_OD.mat')
 Phi = sparse(phi);
 real_a = alpha;
 m = size(Phi,1);
@@ -46,7 +47,7 @@ for k = [1:length(blocks)]
     result = solve_block(Phi, a, f, L1, L1rhs, block, 1.0);
     a(block(1):block(2)) = result;
 end
-fprintf('total iterations at %d/%d, error %d', j, total_iterations, ...
+fprintf('total iterations at %d/%d, error %d\n', j, total_iterations, ...
     norm(a - real_a, 1));
 end
 

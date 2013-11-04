@@ -31,7 +31,7 @@ for i=1:block_len
         t >= 0;
         A(i) >= lambda * inv_pos(t);
     cvx_end
-    fprintf('%d/%d\n', i, block_len)
+%     fprintf('%d/%d\n', i, block_len)
     if cvx_optval < min_val
         min_val = cvx_optval;
         min_block = A;
