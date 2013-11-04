@@ -10,7 +10,7 @@ sys.path.append(lib_path)
 import graph
 import algorithms
 
-def generate_small_graph():
+def generate_small_graph(num_cols=5, num_rows=5, num_routes_per_od_pair=2):
   # we have n*m nodes, (((of which a 5*5 grid is for Caltec and a 5*5 grid
   # is for the streets (for now) --> imagine it as a 5 rows, 10 columns
   # grid, indexed like a matrix)))
@@ -19,10 +19,9 @@ def generate_small_graph():
 
   # Generate directed road network
   G = nx.DiGraph()
-  n = 5 # no of cols
-  m = 5 # no of rows
-  r = 2 # no of shortes routes per node-pair
-
+  n = num_cols
+  m = num_rows
+  r = num_routes_per_od_pair
 
   for j in range(0, n):
       for k in range(0, m):
