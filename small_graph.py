@@ -21,7 +21,7 @@ def generate_small_graph():
   G = nx.DiGraph()
   n = 6 # no of cols
   m = 4 # no of rows
-  r = 4 # no of shortes routes per node-pair
+  r = 3 # no of shortes routes per node-pair
 
 
   for j in range(0, n):
