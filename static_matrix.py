@@ -112,9 +112,6 @@ if __name__ == '__main__':
   print np.dot(phi, alpha) - f
   print np.linalg.norm(np.dot(phi, alpha) - f,2)
 
-  from IPython.core.debugger import Tracer
-  Tracer()()
-
   # static matrix considering origin-destination flows
   phi, alpha, mu, f, num_routes = generate_static_matrix_OD(graph, routes,
           sensors, flow_portions_OD, flow_from_each_node=flow_OD)

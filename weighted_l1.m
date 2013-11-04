@@ -4,7 +4,8 @@ cvx_solver mosek;
 
 %% Read in graph
 % load('small_graph.mat')
-load('augmented_graph.mat')
+load('small_graph_OD.mat')
+% load('augmented_graph.mat')
 Phi = phi;
 real_a = alpha;
 m = size(Phi,1);
@@ -13,7 +14,7 @@ n = size(Phi,2);
 %% Define parameters
 min_a = Inf;
 min_val = Inf;
-lambda = 0.01;
+lambda = 0.1;
 Phi_original = Phi;
 % Phi = sparse(Phi_original);
 
