@@ -8,7 +8,8 @@ import numpy.random
 import small_graph
 
 def annotate_with_flows(graph, routes, flow_from_each_node=1.0, sparsity=0.1):
-  '''Generate traffic from each origin onto some small fraction of its routes, and compute the amount of flow at each edge.'''
+  '''Generate traffic from each origin onto some small fraction of its routes, \
+          and compute the amount of flow at each edge.'''
   
   # All route indices are with respect to _routes_.
   route_indices_by_origin = collections.defaultdict(list)
@@ -25,8 +26,10 @@ def annotate_with_flows(graph, routes, flow_from_each_node=1.0, sparsity=0.1):
     route_indices_from_node = route_indices_by_origin[node]
     num_nonzero_routes = max(1, int(sparsity * len(route_indices_from_node)))
     
-    selected_route_indices = random.sample(route_indices_from_node, num_nonzero_routes)
-    selected_route_weights = numpy.random.dirichlet([1] * num_nonzero_routes, 1)[0]
+    selected_route_indices = random.sample(route_indices_from_node, \
+            num_nonzero_routes)
+    selected_route_weights = numpy.random.dirichlet([1] * num_nonzero_routes, \
+            1)[0]
     
     for i, w in zip(selected_route_indices, selected_route_weights):
       flow_portions[i] = w
@@ -40,14 +43,17 @@ def annotate_with_flows(graph, routes, flow_from_each_node=1.0, sparsity=0.1):
       for p, n, s in zip(routes[i], routes[i][1:], routes[i][2:]):
         # add "second order flow"
         node = graph.node[n]
-        current_flow = node['2nd_flow'][(p, s)][0] if '2nd_flow' in graph.node[n] and (p, s) in graph.node[n]['2nd_flow'] else 0
-        current_routes = node['2nd_flow'][(p, s)][1] if '2nd_flow' in graph.node[n] and (p, s) in graph.node[n]['2nd_flow'] else {}
+        current_flow = node['2nd_flow'][(p, s)][0] if '2nd_flow' in \
+                graph.node[n] and (p, s) in graph.node[n]['2nd_flow'] else 0
+        current_routes = node['2nd_flow'][(p, s)][1] if '2nd_flow' in \
+                graph.node[n] and (p, s) in graph.node[n]['2nd_flow'] else {}
         print current_routes
         if not('2nd_flow' in graph.node[n]):
           node['2nd_flow'] = {}
         if not((p, s) in graph.node[n]['2nd_flow']):
           graph.node[n]['2nd_flow'][(p, s)] = 0.0
-        node['2nd_flow'][(p, s)] = (current_flow + flow_from_each_node * w, set(current_routes).union([i]))
+        node['2nd_flow'][(p, s)] = (current_flow + flow_from_each_node * w, \
+                set(current_routes).union([i]))
         
   
   return flow_portions
