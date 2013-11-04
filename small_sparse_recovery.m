@@ -4,7 +4,9 @@ cvx_solver mosek;
 
 %% Read in graph
 % load('small_graph.mat')
-load('augmented_graph.mat')
+% load('augmented_graph.mat')
+load('small_graph_OD.mat')
+
 Phi = sparse(phi);
 real_a = alpha;
 m = size(Phi,1);
@@ -57,5 +59,7 @@ for i=1:n
         min_a = a;
     end
 end
-
 toc
+
+error = norm(real_a - a,1) % 38.6043 on small graph, 29.9805 on small graph OD
+comparison = [real_a a];

@@ -59,25 +59,25 @@ if __name__ == '__main__':
   
   phi, alpha, mu, f, num_routes = static_matrix.generate_static_matrix(graph, routes, sensors, flow_portions)
 
-  print len(routes)
+#  print len(routes)
 
-  print len(f)
+#  print len(f)
 
   phi2, f2 = generate_augmented_matrix(graph, routes, sensors, flow_portions)
   np.savetxt('phi.txt', phi2)
-  print sum(np.transpose(phi2))
-  print len(f2)
-  print phi2.shape
+#  print sum(np.transpose(phi2))
+#  print len(f2)
+#  print phi2.shape
 
-  print phi.shape
+#  print phi.shape
   
   Phi = np.concatenate((phi, phi2), axis=0)
   F = np.hstack((f, f2))
 
-  print "::"
+#  print "::"
   
-  print Phi
-  print F
+#  print Phi
+#  print F
   
   scipy.io.savemat('augmented_graph.mat', {'phi': Phi, 'alpha': alpha, 'mu': mu, 'f': F, 'num_routes': num_routes}, oned_as='column')
 
