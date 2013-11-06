@@ -37,7 +37,10 @@ end
         minimize( square_pos(norm(Phi * a - f, 2)) + lambda * sum(mu' * abs(a)) )
         subject to
         a >= 0
-        L1 * a == ones(length(num_routes),1)
+        % L1 * a == ones(length(num_routes),1)
     cvx_end
 
 toc
+
+error = norm(real_a - a,1)
+comparison = [real_a a];

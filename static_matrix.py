@@ -97,8 +97,13 @@ def generate_static_matrix_OD(graph, routes, sensors, flow_portions,
           np.array(num_routes)
   
 if __name__ == '__main__':
+  num_cols = 5
+  num_rows = 5
+  num_routes_per_od_pair = 2
+
   # G = (V,E,w)
-  graph, routes, sensors = small_graph.generate_small_graph()
+  graph, routes, sensors = small_graph.generate_small_graph(num_cols=num_cols,
+          num_rows=num_rows, num_routes_per_od_pair=num_routes_per_od_pair)
   # (O,D),R,alpha
   (flow_portions,flow_portions_OD,flow_OD) = flows.annotate_with_flows(graph, 
           routes)

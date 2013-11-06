@@ -21,6 +21,7 @@ def generate_trivial_graph():
   return G, routes
 
 if __name__ == '__main__':
+  G,routes = generate_trivial_graph()
   nx.draw(G)
   matplotlib.pyplot.show()
 
