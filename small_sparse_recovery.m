@@ -4,14 +4,14 @@ cvx_solver mosek;
 
 %% Parameters
 % test modes: L_infty_cvx, raw, weighted_L1, unconstrained_L1
-test_mode = 'raw';
+test_mode = 'weighted_L1';
 lambdas = [1e-7 1e-6 1e-5 1e-4 1e-3 1e-2 1e-1 1 10];
 % lambdas = [1e-5];
 
 %% Read in graph
-% load('small_graph.mat')
+load('small_graph.mat')
 % load('augmented_graph.mat')
-load('small_graph_OD.mat')
+% load('small_graph_OD.mat')
 
 Phi = sparse(phi);
 real_a = alpha;
@@ -61,7 +61,7 @@ for j=1:length(lambdas)
         toc
     end
 
-    %% Raw objective
+    %% Raw objective (no regularization)
     if strcmp(test_mode,'raw')
         tic
         cvx_begin quiet
@@ -99,6 +99,15 @@ for j=1:length(lambdas)
         cvx_end
         toc
     end
+    
+    %% Block coordinate descent
+    % Philipp will add
+    
+    %% Random sampling
+    % Richard will add
+    
+    %% Distributed dual, master-slave
+    % Fanny will add
 
     %% Metrics
     error = norm(real_a - a,1);
