@@ -5,7 +5,7 @@ cvx_solver mosek;
 %% Generate matrices
 % Todo (call python)
 
-%% Parameters
+%% Default parameters
 % test modes: cvx_single_block_L_infty, cvx_L2, cvx_raw,
 %               cvx_unconstrained_L1, cvx_weighted_L1
 if ~exist('test_modes','var')
