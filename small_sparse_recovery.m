@@ -1,116 +1,78 @@
 %% cvx code for sparse recovery of on small graphs
-clear all;
+function [errors comparisons] = small_sparse_recovery(test_modes,in,noise,lambda)
 cvx_solver mosek;
 
+%% Generate matrices
+% Todo (call python)
+
 %% Parameters
-% test modes: L_infty_cvx, raw, weighted_L1, unconstrained_L1
-test_mode = 'weighted_L1';
-lambdas = [1e-7 1e-6 1e-5 1e-4 1e-3 1e-2 1e-1 1 10];
-% lambdas = [1e-5];
+% test modes: cvx_single_block_L_infty, cvx_L2, cvx_raw,
+%               cvx_unconstrained_L1, cvx_weighted_L1
+if ~exist('test_modes','var')
+    test_modes = {'cvx_single_block_L_infty'};
+end
+if ~exist('noise','var')
+    noise = false; % false, true
+end
+if ~exist('lambda','var')
+    lambdas = [1e-7 1e-6 1e-5 1e-4 1e-3 1e-2 1e-1 1 10];
+    % lambdas = [1e-5];
+end
+epsilon = 1e-9;
 
 %% Read in graph
-load('small_graph.mat')
-% load('augmented_graph.mat')
-% load('small_graph_OD.mat')
-
+% inputs: small_graph, small_graph_OD, augmented_graph
+if ~exist('in','var')
+    in = 'small_graph';
+end
+load(sprintf('%s.mat',in)); % loads phi, f, real_a, num_routes
 Phi = sparse(phi);
-real_a = alpha;
+num_routes = int64(num_routes); % each entry is associated with one origin
 m = size(Phi,1);
 n = size(Phi,2);
 
-num_routes = int64(num_routes); % each entry is associated with one origin
-cum_nroutes = int64([0; cumsum(double(num_routes))]);
-
 %% L1 constraint matrix
 L1 = zeros(length(num_routes),n);
+cum_nroutes = int64([0; cumsum(double(num_routes))]);
 for j=1:length(num_routes)
     from = cum_nroutes(j) + 1;
     to = cum_nroutes(j + 1);
     L1(j,from:to) = ones(1,to-from+1);
 end
 
-%% Solve
-min_a = Inf;
-min_val = Inf;
-for j=1:length(lambdas)
-    lambda = lambdas(j);
+%% Test parameters object
+p = TestParameters();
+p.Phi = Phi; p.f = f; p.w = w; p.num_routes = num_routes;
+p.n = n; p.L1 = L1; p.noise = noise; p.epsilon = epsilon;
 
-    %% cvx single-block L_infty
-    if strcmp(test_mode,'L_infty_cvx')
-        tic
-        i = 1;
-        fprintf(1,'Progress (of %d):  ', n);
-        for i=1:n
-            cvx_begin quiet
-                variable a(n)
-                variable t
-                minimize( square_pos(norm(Phi * a - f, 2))+ t )
-                subject to
-                a >= 0
-                L1 * a == ones(length(num_routes),1)
-                t >= 0
-                a(i) >= lambda * inv_pos(t)
-            cvx_end
-            fprintf(1,[repmat('\b',1,ceil(log(i)/log(10))) '%d'],i); % Progress
-            if cvx_optval < min_val
-                min_val = cvx_optval;
-                min_a = a;
-            end
+%% Run optimization methods
+i = 1;
+errors = {};
+comparisons = {};
+if noise
+    % Noisy case
+    for j=1:length(lambdas)
+        lambda = lambdas(j);
+        p.lambda = lambda;
+
+        for test = test_modes
+            test_fn = str2func(test{1});
+            tic
+            a = test_fn(p);
+            [error comparison] = get_error(i,test{1},toc,a,real_a,p);
+            errors{i} = error; comparisons{i} = comparison;
+            i = i + 1;
         end
-        fprintf('\n')
-        toc
     end
-
-    %% Raw objective (no regularization)
-    if strcmp(test_mode,'raw')
+else
+    % Noiseless case
+    for test = test_modes
+        test_fn = str2func(test{1});
         tic
-        cvx_begin quiet
-            variable a(n)
-            variable t
-            minimize(square_pos(norm(Phi * a - f, 2)))
-            subject to
-            a >= 0
-            L1 * a == ones(length(num_routes),1)
-        cvx_end
-        toc
+        a = test_fn(p);
+        [error comparison] = get_error(i,test{1},toc,a,real_a,p);
+        errors{i} = error; comparisons{i} = comparison;
+        i = i + 1;
     end
-
-    %% Weighted L_1
-    if strcmp(test_mode,'weighted_L1')
-        tic
-        cvx_begin quiet
-            variable a(n)
-            minimize( square_pos(norm(Phi * a - f, 2)) + lambda * sum(mu' * abs(a)) )
-            subject to
-            a >= 0
-            L1 * a == ones(length(num_routes),1)
-        cvx_end
-        toc
-    end
-
-    %% Unconstrained L_1
-    if strcmp(test_mode,'unconstrained_L1')
-        tic
-        cvx_begin quiet
-            variable a(n)
-            minimize( square_pos(norm(Phi * a - f, 2)) + lambda * sum(abs(a)) )
-            subject to
-            a >= 0
-        cvx_end
-        toc
-    end
-    
-    %% Block coordinate descent
-    % Philipp will add
-    
-    %% Random sampling
-    % Richard will add
-    
-    %% Distributed dual, master-slave
-    % Fanny will add
-
-    %% Metrics
-    error = norm(real_a - a,1);
-    comparison = [real_a a];
-    fprintf('lambda: %g,\t error: %g\n', lambda, error)
+end
 end

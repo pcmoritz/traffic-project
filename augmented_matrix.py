@@ -79,7 +79,7 @@ if __name__ == '__main__':
 #  print Phi
 #  print F
   
-  scipy.io.savemat('augmented_graph.mat', {'phi': Phi, 'alpha': alpha, 'mu': mu, 'f': F, 'num_routes': num_routes}, oned_as='column')
+  scipy.io.savemat('augmented_graph.mat', {'phi': Phi, 'real_a': alpha, 'mu': mu, 'f': F, 'num_routes': num_routes}, oned_as='column')
 
   
     
