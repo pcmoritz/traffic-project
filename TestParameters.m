@@ -9,6 +9,7 @@ classdef TestParameters < handle
       noise
       lambda
       epsilon
+      blocks
    end
    methods
    end
