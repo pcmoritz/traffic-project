@@ -1,5 +1,8 @@
 %% Coordinate block descent for the L_infty regularization
 
+% call with
+% [errors comparisons] = small_sparse_recovery({'cvx_block_descent_L_infty'},'small_graph')
+
 function a = cvx_block_descent_L_infty(p)
     Phi = p.Phi; f = p.f; n = p.n; L1 = p.L1; num_routes = p.num_routes;
     noise = p.noise; epsilon = p.epsilon; lambda = p.lambda;
