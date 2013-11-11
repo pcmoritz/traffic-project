@@ -1,7 +1,7 @@
 %% Hot start recovery for L_infinity with one block
 
 % call with
-% [errors comparisons] = small_sparse_recovery({'hot_start_recovery'},'small_graph')
+% [errors comparisons] = small_sparse_recovery({'cvx_hot_start_lp'},'small_graph')
 
 % execute
 % addpath '~/mosek/7/toolbox/r2009b'
