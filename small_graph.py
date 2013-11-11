@@ -1,7 +1,6 @@
 from __future__ import division
 
 import networkx as nx
-import matplotlib.pyplot
 import itertools
 
 import os, sys
@@ -117,4 +116,5 @@ if __name__ == '__main__':
 
   print routes
 
+  import matplotlib.pyplot
   matplotlib.pyplot.show()

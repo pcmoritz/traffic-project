@@ -1,5 +1,5 @@
 %% cvx code for sparse recovery of on small graphs
-function [errors comparisons] = small_sparse_recovery(test_modes,in,noise,lambda)
+function [errors_L1 errors_L2 comparisons] = small_sparse_recovery(test_modes,in,noise,lambda)
 cvx_solver mosek;
 
 %% Generate matrices
@@ -47,7 +47,8 @@ p.n = n; p.L1 = L1; p.noise = noise; p.epsilon = epsilon;
 
 %% Run optimization methods
 i = 1;
-errors = {};
+errors_L1 = {};
+errors_L2 = {};
 comparisons = {};
 if noise
     % Noisy case
@@ -59,8 +60,9 @@ if noise
             test_fn = str2func(test{1});
             tic
             a = test_fn(p);
-            [error comparison] = get_error(i,test{1},toc,a,real_a,p);
-            errors{i} = error; comparisons{i} = comparison;
+            [error_L1 error_L2 comparison] = get_error(i,test{1},toc,a,real_a,p);
+            errors_L1{i} = error_L1; errors_L2{i} = error_L2;
+            comparisons{i} = comparison;
             i = i + 1;
         end
     end
@@ -70,8 +72,9 @@ else
         test_fn = str2func(test{1});
         tic
         a = test_fn(p);
-        [error comparison] = get_error(i,test{1},toc,a,real_a,p);
-        errors{i} = error; comparisons{i} = comparison;
+        [error_L1 error_L2 comparison] = get_error(i,test{1},toc,a,real_a,p);
+        errors_L1{i} = error_L1; errors_L2{i} = error_L2;
+        comparisons{i} = comparison;
         i = i + 1;
     end
 end

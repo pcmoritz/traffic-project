@@ -118,9 +118,9 @@ def export_matrices(num_rows, num_cols, num_routes_per_od_pair):
   
 if __name__ == '__main__':
   import sys
-  num_rows = 5 if len(sys.argv) <= 1 else float(sys.argv[1])
-  num_cols = 5 if len(sys.argv) <= 2 else float(sys.argv[2])
-  num_routes_per_od_pair = 2 if len(sys.argv) <= 3 else float(sys.argv[3])
+  num_rows = 5 if len(sys.argv) <= 1 else int(sys.argv[1])
+  num_cols = 5 if len(sys.argv) <= 2 else int(sys.argv[2])
+  num_routes_per_od_pair = 2 if len(sys.argv) <= 3 else int(sys.argv[3])
 
   export_matrices(num_rows, num_cols, num_routes_per_od_pair)
 
