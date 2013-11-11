@@ -1,7 +1,7 @@
 %% Hot start recovery for L_infinity with one block
 
 % call with
-% [errors comparisons] = small_sparse_recovery({'hot_start_recovery'},'small_graph')
+% [errors comparisons] = small_sparse_recovery({'cvx_hot_start_lp'},'small_graph')
 
 % execute
 % addpath '~/mosek/7/toolbox/r2009b'
@@ -16,16 +16,16 @@ function result = cvx_hot_start_lp(p)
     
     a = 0;
     
+    [m n] = size(L1);
+    
+    % augment with the right 'sum to one constraint'
+    Phi = [Phi; L1];
+    f = [f; ones(m, 1)];
+    
     [m n] = size(Phi);
     
-    % augment with 'sum to one constraint'
-    Phi = [Phi; ones(1, n)];
-    f = [f; 1];
-    
-    [m n] = size(Phi);
-    
-    %code_eq = repmat('EQ', length(f), 1);
-    %code_bs = repmat('BS', m, 1);
+    code_eq = repmat('EQ', length(f), 1);
+    code_bs = repmat('BS', m, 1);
     
     for i=1:n
         
@@ -33,13 +33,13 @@ function result = cvx_hot_start_lp(p)
         % for variable a in \R^n, maximize a(i),
         % subject to sum(a) = 1, a >= 0, Phi * a == f
         
-        %if length(a) > 1 % one iteration is already done
-        %    % Beware: This only works for the primal!
-        %    bas.skc = code_eq;
-        %    bas.skx = code_bs;
-        %    bas.xc = f;
-        %    bas.xx = a;
-        %end
+        if length(a) > 1 % one iteration is already done
+            % Beware: This only works for the primal!
+            bas.skc = code_eq;
+            bas.skx = code_bs;
+            bas.xc = f;
+            bas.xx = a;
+        end
         
         c = sparse(n, 1);
         c(i) = 1;
@@ -50,8 +50,8 @@ function result = cvx_hot_start_lp(p)
         prob.blx = sparse(n, 1);
         prob.bux = [];
         
-        % param.MSK_IPAR_OPTIMIZER = 'MSK_OPTIMIZER_PRIMAL_SIMPLEX';
-        param.MSK_IPAR_OPTIMIZER = 'MSK_OPTIMIZER_INTPNT';
+        param.MSK_IPAR_OPTIMIZER = 'MSK_OPTIMIZER_PRIMAL_SIMPLEX';
+        % param.MSK_IPAR_OPTIMIZER = 'MSK_OPTIMIZER_INTPNT';
         [r, res] = mosekopt('maximize echo(0)', prob, param);
         sol   = res.sol;
         a = sol.bas.xx;
