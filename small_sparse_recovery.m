@@ -34,16 +34,20 @@ n = size(Phi,2);
 %% L1 constraint matrix
 L1 = zeros(length(num_routes),n);
 cum_nroutes = int64([0; cumsum(double(num_routes))]);
+% array with start and stop indices of the blocks:
+blocks = zeros(length(num_routes), 2);
 for j=1:length(num_routes)
     from = cum_nroutes(j) + 1;
     to = cum_nroutes(j + 1);
     L1(j,from:to) = ones(1,to-from+1);
+    blocks(j, :) = [from, to];
 end
 
 %% Test parameters object
 p = TestParameters();
 p.Phi = Phi; p.f = f; p.w = w; p.num_routes = num_routes;
 p.n = n; p.L1 = L1; p.noise = noise; p.epsilon = epsilon;
+p.blocks = blocks;
 
 %% Run optimization methods
 i = 1;

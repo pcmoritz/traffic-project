@@ -1,5 +1,5 @@
-function [block_a] = solve_block(Phi, a, f, L1, L1rhs, block, lambda)
-%SOLVE_BLOCK Solve one block of the optimization problem, with all the
+function [block_a] = solve_block(Phi, a, f, block, lambda)
+%SOLVE_BLOCK Solve one block of the L_infty problem, with all the
 %other values held fixed, block = [start, end]
 
 %% Define parameters
