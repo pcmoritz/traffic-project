@@ -25,7 +25,7 @@ def get_route_indices_by_OD(routes):
     route_indices_by_OD[route[0]][route[-1]].append(i)
   return route_indices_by_OD
 
-def annotate_with_flows(graph, routes, flow_from_each_node=1.0, sparsity=0.1):
+def annotate_with_flows(graph, routes, flow_from_each_node=1.0, num_nonzero_routes=2):
   '''Generate traffic from each origin onto some small fraction of its routes, \
           and compute the amount of flow at each edge.'''
   
@@ -51,7 +51,7 @@ def annotate_with_flows(graph, routes, flow_from_each_node=1.0, sparsity=0.1):
   for origin in graph.nodes():
     # consider all routes out of origin
     route_indices_from_origin = route_indices_by_origin[origin]
-    num_nonzero_routes = max(1, int(sparsity * len(route_indices_from_origin)))
+#    num_nonzero_routes = max(1, int(sparsity * len(route_indices_from_origin)))
     # select routes with non-zero flow
     selected_route_indices = sorted(random.sample(route_indices_from_origin,
             num_nonzero_routes))
