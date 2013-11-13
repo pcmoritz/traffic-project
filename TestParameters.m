@@ -10,6 +10,12 @@ classdef TestParameters < handle
       lambda
       epsilon
       blocks
+      
+      % 
+      rows
+      cols
+      nroutes
+      sparsity
    end
    methods
    end
