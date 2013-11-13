@@ -96,7 +96,7 @@ def generate_static_matrix_OD(graph, routes, sensors, flow_portions,
   return np.hstack(phis), np.concatenate(alphas), np.concatenate(mus), f, \
           np.array(num_routes)
           
-def export_matrices(num_rows, num_cols, num_routes_per_od_pair):
+def export_matrices(directory, num_rows, num_cols, num_routes_per_od_pair):
   # G = (V,E,w)
   graph, routes, sensors = small_graph.generate_small_graph(num_cols=num_cols,
           num_rows=num_rows, num_routes_per_od_pair=num_routes_per_od_pair)
@@ -107,20 +107,23 @@ def export_matrices(num_rows, num_cols, num_routes_per_od_pair):
   # static matrix considering origin flows
   phi, alpha, mu, f, num_routes = generate_static_matrix(graph, routes,
           sensors, flow_portions)
-  scipy.io.savemat('small_graph.mat', {'phi': phi, 'real_a': alpha, 'w': mu,
-          'f': f, 'num_routes': num_routes}, oned_as='column')
+  scipy.io.savemat(directory + 'small_graph.mat', {'phi': phi, 
+          'real_a': alpha, 'w': mu, 'f': f, 'num_routes': num_routes},
+                   oned_as='column')
 
   # static matrix considering origin-destination flows
   phi, alpha, mu, f, num_routes = generate_static_matrix_OD(graph, routes,
           sensors, flow_portions_OD, flow_from_each_node=flow_OD)
-  scipy.io.savemat('small_graph_OD.mat', {'phi': phi, 'real_a': alpha, 'w': mu,
-          'f': f, 'num_routes': num_routes}, oned_as='column')
+  scipy.io.savemat(directory + 'small_graph_OD.mat', {'phi': phi,
+          'real_a': alpha, 'w': mu, 'f': f, 'num_routes': num_routes},
+                   oned_as='column')
   
 if __name__ == '__main__':
   import sys
-  num_rows = 5 if len(sys.argv) <= 1 else int(sys.argv[1])
-  num_cols = 5 if len(sys.argv) <= 2 else int(sys.argv[2])
-  num_routes_per_od_pair = 2 if len(sys.argv) <= 3 else int(sys.argv[3])
+  directory = str(sys.argv[1])
+  num_rows = 5 if len(sys.argv) <= 2 else int(sys.argv[2])
+  num_cols = 5 if len(sys.argv) <= 3 else int(sys.argv[3])
+  num_routes_per_od_pair = 2 if len(sys.argv) <= 4 else int(sys.argv[4])
 
-  export_matrices(num_rows, num_cols, num_routes_per_od_pair)
+  export_matrices(directory, num_rows, num_cols, num_routes_per_od_pair)
 
