@@ -1,10 +1,12 @@
 classdef TestMetrics < handle
    properties (Access = public)
        test_output % Object
-       errors_L1 % cell
-       errors_L2 % cell
-       errors_support % cell
-       diffs_sparsity % cell
+       
+       error_L1 % float
+       error_L2 % float
+       error_support % float
+       real_sparsity % int
+       test_sparsity % int
    end
    methods
    end

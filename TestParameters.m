@@ -1,3 +1,4 @@
+% Contains parameters for a particular matrix configuration
 classdef TestParameters < handle
    properties (Access = public)
       Phi
@@ -10,8 +11,10 @@ classdef TestParameters < handle
       lambda
       epsilon
       blocks
+      real_a
+
+      model_type % string
       
-      % 
       rows
       cols
       nroutes
