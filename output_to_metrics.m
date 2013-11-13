@@ -1,5 +1,4 @@
 function m = output_to_metrics(o)
-    
     p = o.test_parameters;
     real_a = p.real_a;
     a = o.a;
@@ -21,6 +20,7 @@ function m = output_to_metrics(o)
             time, algorithm, error_L1, error_L2, error_support, test_sparsity, real_sparsity)
     end
     
+    % Store as TestMetrics object
     m = TestMetrics();
     m.test_output = o;
     m.error_L1 = error_L1; m.error_L2 = error_L2; 
