@@ -30,12 +30,7 @@ for test = tests
     run_algorithm_test(o);
     % save this object to disk
     
-    m = TestMetrics();
-    m.test_output = o;
-    [error_L1 error_L2 error_support real_sparsity test_sparsity] = output_to_metrics(o);
-    m.error_L1 = error_L1; m.error_L2 = error_L2; 
-    m.error_support = error_support; m.real_sparsity = real_sparsity;
-    m.test_sparsity = test_sparsity;
+    m = output_to_metrics(o);
 end
 %%
 % Then to view the results test-by-test, select the test number, e.g.

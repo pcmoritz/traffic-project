@@ -1,5 +1,4 @@
-function [error_L1 error_L2 error_support real_sparsity test_sparsity] ...
-        = output_to_metrics(o)
+function m = output_to_metrics(o)
     
     p = o.test_parameters;
     real_a = p.real_a;
@@ -21,4 +20,10 @@ function [error_L1 error_L2 error_support real_sparsity test_sparsity] ...
         fprintf('[%g sec] Alg: %s\nerror(L1): %g,\t error(L2): %g,\t error(support): %g,\t sparsity: %g/%g\n', ...
             time, algorithm, error_L1, error_L2, error_support, test_sparsity, real_sparsity)
     end
+    
+    m = TestMetrics();
+    m.test_output = o;
+    m.error_L1 = error_L1; m.error_L2 = error_L2; 
+    m.error_support = error_support; m.real_sparsity = real_sparsity;
+    m.test_sparsity = test_sparsity;
 end
