@@ -20,8 +20,8 @@ p.model_type = 'small_graph'; % 'small_graph_random', 'small_graph_OD'
 
 [errors_L1 errors_L2 comparisons] = small_sparse_recovery(p,{'cvx_L2'});
 
-tests = {'cvx_L2','cvx_raw','cvx_unconstrained_L1','cvx_weighted_L1', ...
-    'cvx_entropy'};
+tests = {'cvx_L2','cvx_raw','cvx_unconstrained_L1','cvx_weighted_L1'};
+    % 'cvx_entropy'};
     % 'cvx_hot_start_lp',...% 'cvx_block_descent_L_infty', ...
 
 for test = tests
