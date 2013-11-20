@@ -5,11 +5,11 @@ user = getenv('USER');
 if strcmp(user,'cathywu') == 1
     python = '/opt/local/bin/python';
 else
-    python = 'python';
+    python = 'LD_LIBRARY_PATH= python';
 end
 
 rows = 5; cols = 5; k = 2; n = 2;
-command = sprintf(horzcat(['%s static_matrix.py --num_rows %d ', ...
+command = sprintf(horzcat(['%s static_matrix.py --prefix "" --num_rows %d ', ...
       '--num_cols %d --num_routes_per_od %d ', ...
       '--num_nonzero_routes_per_o %d']), python, rows, cols, k, n)
 system(command);
