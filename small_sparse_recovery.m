@@ -1,5 +1,6 @@
 %% cvx code for sparse recovery of on small graphs
-function [errors_L1 errors_L2 comparisons] = small_sparse_recovery(test_modes,in,noise,lambda)
+function [errors_L1 errors_L2 comparisons] = small_sparse_recovery(p,...
+    test_modes,noise,lambda)
 cvx_solver mosek;
 
 %% Generate matrices
@@ -22,10 +23,10 @@ epsilon = 1e-9;
 
 %% Read in graph
 % inputs: small_graph, small_graph_OD, augmented_graph
-if ~exist('in','var')
-    in = 'small_graph';
+if ~exist('p.model_type','var')
+    p.model_type = 'small_graph';
 end
-load(sprintf('%s.mat',in)); % loads phi, f, real_a, num_routes
+load(sprintf('%s.mat',p.model_type)); % loads phi, f, real_a, num_routes
 Phi = sparse(phi);
 num_routes = int64(num_routes); % each entry is associated with one origin
 m = size(Phi,1);
@@ -44,10 +45,9 @@ for j=1:length(num_routes)
 end
 
 %% Test parameters object
-p = TestParameters();
 p.Phi = Phi; p.f = f; p.w = w; p.num_routes = num_routes;
-p.n = n; p.L1 = L1; p.noise = noise; p.epsilon = epsilon;
-p.blocks = blocks;
+p.real_a = real_a; p.n = n; p.L1 = L1; p.noise = noise;
+p.epsilon = epsilon; p.blocks = blocks;
 
 %% Run optimization methods
 i = 1;
