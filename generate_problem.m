@@ -31,11 +31,12 @@ for option = options'
     rows = vec(1);
     cols = vec(2);
     k = vec(3);
+    d = vec(4);
     subdir = char(strcat(num2str(rows), '_', num2str(cols), ...
-        '_', num2str(k), '_', num2str(date), '_', num2str(numsamples)));
+        '_', num2str(k), '_', num2str(d), '_', num2str(date), '_', num2str(numsamples)));
 
-    command = sprintf('%s static_matrix.py --prefix %s%s_ --num_rows %d --num_cols %d --num_routes_per_od %d', python, ...
-        raw_directory, subdir, rows, cols, k);
+    command = sprintf('%s static_matrix.py --prefix %s%s_ --num_rows %d --num_cols %d --num_routes_per_od %d --num_nonzero_routes_per_o %d', python, ...
+        raw_directory, subdir, rows, cols, k, d);
     numsamples = numsamples + 1;
     fprintf('Generating "raw" for %s\n', subdir);
     system(command);
@@ -44,9 +45,10 @@ for option = options'
     for model=models
         filename = sprintf('%s/%s_%s',raw_directory,subdir,model{1});
         p = TestParameters();
-        p.rows = rows; p.cols = cols; p.nroutes = k; p.sparsity = 0.1;
+        p.rows = rows; p.cols = cols; p.nroutes = k;
         p.model_type = model{1};
         model_to_testparameters(p,filename);
+        p.sparsity = sum(abs(p.real_a)>1e-6)/length(p.real_a);
         save(sprintf('%s/%s-%s-%d',param_directory,datestr(now, 30),getenv('USER'), numsamples),'p');
     end
 end

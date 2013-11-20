@@ -39,7 +39,7 @@ choice_sizes = matrix_sizes(choice_sizes_ind,:);
 no_sizes = length(choice_sizes_ind);
 
 % Sparsities I want to plot
-choice_sparsities_ind = [1,3,5];
+choice_sparsities_ind = [1,2,3,4,5];
 choice_sparsities = sparsity_sizes(choice_sparsities_ind);
 [no_sparsities, ~] = size(choice_sparsities);
 
@@ -56,9 +56,6 @@ choice_sparsities = sparsity_sizes(choice_sparsities_ind);
 
 % I have one matrix per algorithm
 % The algos_cell saves all these matrices into one cell :D
-
-% Fix sparsity (for various size), size (for various sparsity), model
-default_sparsity = .1; default_size = [3 3 2];
 
 % Initialize cells to be filled
 algos_cell = cell(no_algos, 1);
@@ -178,7 +175,7 @@ for l = 1:no_errortypes
     
     % You plot the column vectors (error vs. sparsity) and the different plots are for the different
     % algos
-    plotfrommat(size_xaxis, Value_vs_Sparsity_Matrix, choice_algos, 'Tested Algorithms', file_name, ...
+    plotfrommat(size_xaxis(1), Value_vs_Sparsity_Matrix, choice_algos, 'Tested Algorithms', file_name, ...
         title_name, 'Sparsity', ylabel_str, colorsmatrix);
 end
 
