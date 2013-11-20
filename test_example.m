@@ -33,7 +33,7 @@ for test = tests
     o = TestOutput();
     o.test_parameters = p; o.algorithm = test{1}; o.tester = getenv('USER');
     run_algorithm_test(o);
-    % save this object to disk
+    % TODO save this object to disk
     
     m = output_to_metrics(o);
 end
