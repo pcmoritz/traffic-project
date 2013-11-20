@@ -12,12 +12,14 @@ input.FunctionName = 'TEST_EXAMPLE';
 input.addOptional('generate_problems', 0, @isnumeric);
 input.addOptional('generate_output', 0, @isnumeric);
 input.addOptional('generate_metrics', 0, @isnumeric);
+input.addOptional('generate_plots', 0, @isnumeric);
 
 input.parse(varargin{:});
 
 generate_problems_p = input.Results.generate_problems;
 generate_output_p = input.Results.generate_output;
 generate_metrics_p = input.Results.generate_metrics;
+generate_plots_p = input.Results.generate_plots;
 
 parameters;
 
@@ -47,12 +49,18 @@ end
 if(generate_output_p)
     % load the problems from the directory
     files = dir(fullfile(param_directory, '*.mat'));
+    numsamples = 1;
+
     for file = files'
-        numsamples = 1;
         data = load(fullfile(param_directory, file.name));
         output_list = generate_output(data.p, tests);
         % display(output_list);
-        numsamples = save_test_outputs(output_directory, output_list, numsamples);
+        
+        for o = output_list
+            filename = sprintf('TestOutput-%s-%s-%d', user, datestr(now, 30), numsamples);
+            save(strcat(output_directory, filename), 'o');
+            numsamples = numsamples + 1;
+        end
     end
 end
 
@@ -67,6 +75,49 @@ if(generate_metrics_p)
         save(strcat(metrics_directory, filename), 'm');
         numsamples = numsamples + 1;
     end
+end
+
+if(generate_plots_p)
+    metrics = containers.Map
+    files = dir(fullfile(metrics_directory, '*.mat'));
+    for file = files'
+        data = load(fullfile(output_directory, file.name));
+        m = data.m;
+        o = data.m.test_output;
+        p = data.m.test_output.test_parameters;
+        % FIXME
+        key = sprintf('%s::%s::%.3f::%d-%d-%d', p.model_type, o.algorithm, float(p.sparsity), int64(p.rows), int64(p.cols), int64(p.nroutes));
+        
+        if isKey(metrics, key)
+            c = metrics(key);
+            c{length(c) + 1} = data.m;
+            metrics(key) = c;
+        else
+            metrics(key) = {data.m};
+        end
+    end
+    
+    % Average each value in key
+    for key = keys(metrics)
+        metrics_for_key = metrics(key);
+        len = length(metrics_for_key);
+        
+        averaged_m = TestMetrics();
+        averaged_m.test_output = TestOutput();
+        averaged_m.test_output.runtime = 0;
+        averaged_m.error_L1 = 0;
+        averaged_m.error_L2 = 0; 
+        averaged_m.error_support = 0;
+        for m = metrics_for_key
+            averaged_m.test_output.runtime = averaged_m.test_output.runtime + (m.test_output.runtime / len);
+            averaged_m.error_L1 = averaged_m.error_L1 + (m.error_L1 / len);
+            averaged_m.error_L2 = averaged_m.error_L2 + (m.error_L2 / len);
+            averaged_m.error_support = averaged_m.error_support + (m.error_support / len);
+        end
+        metrics(key) = averaged_m;
+    end
+    
+    Plotting(metrics)
 end
 
 %%

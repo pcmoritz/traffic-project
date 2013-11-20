@@ -1,4 +1,5 @@
 % Plotting the errors 
+function Plotting(averaged_metrics)
 
 % Load colors matrix
 load('colorsmatrix.mat');
@@ -77,7 +78,9 @@ for m = 1:no_algos
         size = choice_sizes(p,:);
         
         % Get a test object which is an averaged version
-        averaged_m = average_samples(model, algo, sparsity, size);
+        key = sprintf('%s::%s::%.3f::%d-%d-%d', model, algo, sparsity, size);
+        assert(isKey(averaged_metrics, key), sprintf('%s not found in averaged_metrics', key));
+        averaged_m = averaged_metrics(key);
         results_sizesblock(p,:) = [averaged_m.test_output.runtime, averaged_m.error_L1, ...
             averaged_m.error_L2, averaged_m.error_support];
         
@@ -209,5 +212,6 @@ ylabel_str = 'Runtime (in sec)'; %sprinf('%s of the reconstructed signal', choic
 plotfrommat(size_xaxis, Values_vs_Sparsity_Matrix, choice_algos, 'Tested Algorithms', file_name, ...
     title_name, 'Sparsity', ylabel_str, colorsmatrix);
 
+end
 
 
