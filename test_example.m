@@ -31,7 +31,7 @@ tests = {'cvx_L2','cvx_raw','cvx_unconstrained_L1','cvx_weighted_L1'};
 
 for test = tests
     o = TestOutput();
-    o.test_parameters = p; o.algorithm = test{1};
+    o.test_parameters = p; o.algorithm = test{1}; o.tester = getenv('USER');
     run_algorithm_test(o);
     % save this object to disk
     

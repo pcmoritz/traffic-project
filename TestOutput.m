@@ -12,6 +12,7 @@ classdef TestOutput < handle
 
        runtime % float
        a % alpha vector
+       tester % username of user running test
    end
    methods
    end
