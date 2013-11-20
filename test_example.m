@@ -1,5 +1,5 @@
 %% Sample test
-clear all;
+% clear all;
 
 user = getenv('USER');
 if strcmp(user,'cathywu') == 1
@@ -26,6 +26,9 @@ p.model_type = 'small_graph'; % 'small_graph_random', 'small_graph_OD'
 tests = {'cvx_L2','cvx_raw','cvx_unconstrained_L1','cvx_weighted_L1'};
     % 'cvx_entropy'};
     % 'cvx_hot_start_lp',...% 'cvx_block_descent_L_infty', ...
+    
+output_list = generate_output(p, {'cvx_L2' 'cvx_raw'});
+display(output_list);
 
 % TODO load some p object
 

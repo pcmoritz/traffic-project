@@ -13,7 +13,7 @@ classdef TestOutput < handle
 
        runtime % float
        a % alpha vector
-       tester % username of user running test
+       tester % username of user running test (for renormalization of runtime)
    end
    methods
    end
