@@ -16,9 +16,8 @@
 
 % files written to disk: contains TestOutput
 
-function generate_problem(what_to_generate)
+function generate_problem(options)
 %GENERATE_OUTPUT Convert python data files into "raw" algorithm input
-% This function writes
 
 methods = {'O', 'OD', 'random'};
 
@@ -33,30 +32,27 @@ else
     python = 'LD_LIBRARY_PATH= python';
 end
 
-for algorithm = what_to_generate.keys
-    for option = what_to_generate(char(algorithm))
+for option = options
         vec = option{1};
         rows = vec(1);
         cols = vec(2);
         k = vec(3);
         directory = '~/Dropbox/traffic/data/raw/';
-        algorithm = char(algorithm);
         subdir = char(strcat(num2str(rows), '_', num2str(cols), ...
             '_', num2str(k), '_', num2str(date), '_', num2str(numsamples)));
         
-        command = sprintf('%s static_matrix.py --prefix %s/%s%s_ --num_rows %d --num_cols %d --num_routes_per_od %d', python, ...
-            directory, algorithm, subdir, rows, cols, k);
+        command = sprintf('%s static_matrix.py --prefix %s%s_ --num_rows %d --num_cols %d --num_routes_per_od %d', python, ...
+            directory, subdir, rows, cols, k);
         numsamples = numsamples + 1;
-        fprintf('Generating "raw" for %s %s\n', algorithm, subdir);
+        fprintf('Generating "raw" for %s\n', subdir);
         system(command);
         
         directory = '~/Dropbox/traffic/data/problems/';
-        fprintf('Generating "problem" for %s %s\n', algorithm, subdir);
+        fprintf('Generating "problem" for %s\n', subdir);
         
         for method = methods
             create_dir(char(strcat(directory, method)));
         end
-    end
 end
 
 end
