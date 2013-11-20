@@ -22,6 +22,7 @@ generate_metrics_p = input.Results.generate_metrics;
 generate_plots_p = input.Results.generate_plots;
 
 parameters;
+library_names;
 
 % rows = 5; cols = 5; k = 2; n = 2;
 % command = sprintf(horzcat(['%s static_matrix.py --prefix "" --num_rows %d ', ...
@@ -41,9 +42,7 @@ parameters;
 tests = {'cvx_L2','cvx_raw','cvx_unconstrained_L1','cvx_weighted_L1'};
 
 if(generate_problems_p)
-    
-    options = {[4 3 10], [4 3 5]}; % The problems that will be generated
-    generate_problem(options);
+    generate_problem(matrix_sizes);
 end
 
 if(generate_output_p)
@@ -78,15 +77,15 @@ if(generate_metrics_p)
 end
 
 if(generate_plots_p)
-    metrics = containers.Map
+    metrics = containers.Map();
     files = dir(fullfile(metrics_directory, '*.mat'));
     for file = files'
-        data = load(fullfile(output_directory, file.name));
+        data = load(fullfile(metrics_directory, file.name));
         m = data.m;
         o = data.m.test_output;
         p = data.m.test_output.test_parameters;
         % FIXME
-        key = sprintf('%s::%s::%.3f::%d-%d-%d', p.model_type, o.algorithm, float(p.sparsity), int64(p.rows), int64(p.cols), int64(p.nroutes));
+        key = sprintf('%s::%s::%.3f::%d-%d-%d', p.model_type, o.algorithm, double(p.sparsity), int64(p.rows), int64(p.cols), int64(p.nroutes));
         
         if isKey(metrics, key)
             c = metrics(key);
@@ -99,22 +98,29 @@ if(generate_plots_p)
     
     % Average each value in key
     for key = keys(metrics)
+        key = key{:};
         metrics_for_key = metrics(key);
         len = length(metrics_for_key);
         
         averaged_m = TestMetrics();
         averaged_m.test_output = TestOutput();
+        averaged_m.test_output.test_parameters = TestParameters();
+        averaged_m.test_output.test_parameters.Phi = 0;
         averaged_m.test_output.runtime = 0;
         averaged_m.error_L1 = 0;
         averaged_m.error_L2 = 0; 
         averaged_m.error_support = 0;
+        averaged_m.test_output.test_parameters.Phi = 0;
         for m = metrics_for_key
+            m = m{:};
+            averaged_m.test_output.test_parameters.Phi = m.test_output.test_parameters.Phi; % Not averaged
             averaged_m.test_output.runtime = averaged_m.test_output.runtime + (m.test_output.runtime / len);
             averaged_m.error_L1 = averaged_m.error_L1 + (m.error_L1 / len);
             averaged_m.error_L2 = averaged_m.error_L2 + (m.error_L2 / len);
             averaged_m.error_support = averaged_m.error_support + (m.error_support / len);
         end
         metrics(key) = averaged_m;
+        fprintf('%s\n', key)
     end
     
     Plotting(metrics)

@@ -10,7 +10,7 @@
 % options is a list of triple of [rows cols k] (these will be generated)
 % what_to_generate maps algorithms to options
 
-% options = {[4 3 10], [4 3 5]};
+% options = [4 3 10; 4 3 5];
 
 % files written to disk: contains TestOutput
 
@@ -26,8 +26,8 @@ parameters % load parameters (python executable, names of directories, etc)
 
 numsamples = 1;
 
-for option = options
-    vec = option{1};
+for option = options'
+    vec = option;
     rows = vec(1);
     cols = vec(2);
     k = vec(3);
@@ -44,7 +44,7 @@ for option = options
     for model=models
         filename = sprintf('%s/%s_%s',raw_directory,subdir,model{1});
         p = TestParameters();
-        p.rows = rows; p.cols = cols; p.nroutes = k; p.sparsity = 0;
+        p.rows = rows; p.cols = cols; p.nroutes = k; p.sparsity = 0.1;
         p.model_type = model{1};
         model_to_testparameters(p,filename);
         save(sprintf('%s/%s-%s-%d',param_directory,datestr(now, 30),getenv('USER'), numsamples),'p');
