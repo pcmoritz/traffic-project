@@ -16,7 +16,7 @@ if p.noise
         test_fn = str2func(test_mode);
         tic
         a = test_fn(p);
-        o.comparison = [p.real_a a];
+        o.a = a;
         o.runtime = toc;
     end
 else
