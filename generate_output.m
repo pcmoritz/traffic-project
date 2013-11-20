@@ -11,12 +11,12 @@
 
 
 function [output_list] = generate_output(p, algorithms) 
-    output_list = {};
+    output_list = [];
     for algorithm = algorithms
         o = TestOutput();
         o.test_parameters = p; o.algorithm = algorithm{1}; o.tester = getenv('USER');
         run_algorithm_test(o);
-        output_list = {output_list o};
+        output_list = [output_list o];
     end
 end
 

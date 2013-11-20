@@ -24,11 +24,21 @@ p.model_type = 'small_graph'; % 'small_graph_random', 'small_graph_OD'
 % TODO save p to disk (O, OD, random, aug)
 
 tests = {'cvx_L2','cvx_raw','cvx_unconstrained_L1','cvx_weighted_L1'};
-    % 'cvx_entropy'};
-    % 'cvx_hot_start_lp',...% 'cvx_block_descent_L_infty', ...
     
-output_list = generate_output(p, {'cvx_L2' 'cvx_raw'});
-display(output_list);
+options = {[4 3 10], [4 3 5]}; % The problems that will be generated
+generate_problem(options);
+
+parameters % load names of the directories
+
+% load the problems from the directory
+files = dir(fullfile(param_directory, '*.mat'));
+for file = files'
+    numsamples = 1;
+    data = load(fullfile(param_directory, file.name));
+    output_list = generate_output(data.p, tests);
+    % display(output_list);
+    numsamples = save_test_outputs(output_directory, output_list, numsamples);
+end
 
 % TODO load some p object
 

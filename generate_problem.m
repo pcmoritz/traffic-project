@@ -22,18 +22,9 @@ models = {'small_graph_random', 'small_graph_OD', 'small_graph'};
 
 date = datestr(now, 30);
 
-numsamples = 1;
+parameters % load parameters (python executable, names of directories, etc)
 
-user = getenv('USER');
-if strcmp(user,'cathywu') == 1
-    python = '/opt/local/bin/python';
-    raw_directory = './data/raw/';
-    param_directory = './data/params/';
-else
-    python = 'LD_LIBRARY_PATH= python';
-    raw_directory = '~/Dropbox/traffic/data/raw/';
-    param_directory = '~/Dropbox/traffic/data/params/';
-end
+numsamples = 1;
 
 for option = options
     vec = option{1};
@@ -56,12 +47,7 @@ for option = options
         p.rows = rows; p.cols = cols; p.nroutes = k; p.sparsity = 0;
         p.model_type = model{1};
         model_to_testparameters(p,filename);
-        save(sprintf('%s/%s-%s',param_directory,datestr(now, 30),getenv('USER')),'p');
-        % TODO save p to disk by user-timestamp
-    end
-    
-    for method = methods
-        create_dir(char(strcat(param_directory, method)));
+        save(sprintf('%s/%s-%s-%d',param_directory,datestr(now, 30),getenv('USER'), numsamples),'p');
     end
 end
 
