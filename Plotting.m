@@ -80,17 +80,9 @@ for i = 1:no_algos
         mysize = choice_sizes(j,:);
         
         % Average all results which have the algorithm and the size
-        relevant_metrics = {};
-        for m = all_metrics
-            m = m{:};
-            o = m.test_output;
-            p = o.test_parameters;
-            if p.rows == mysize(1) && p.cols == mysize(2) && p.nroutes == mysize(3) ...
-                    && strcmp(o.algorithm, algo)
-                relevant_metrics{length(relevant_metrics) + 1} = m;
-            end
-        end
-        averaged_m = average_metrics(relevant_metrics);
+        filtered_metrics = filter_metrics(all_metrics, mysize(1), mysize(2),...
+            mysize(3), algo);
+        averaged_m = average_metrics(filtered_metrics);
         results_sizesblock(j,:) = [averaged_m.test_output.runtime, ...
             averaged_m.error_L1, averaged_m.error_L2, averaged_m.error_support];
         
