@@ -168,7 +168,9 @@ for l = 1:no_errortypes
     % You plot the column vectors (error vs. dimensions) and the different plots are for the different
     % algos
     % eval(['error_mat = models{k}.' sprintf(error_types{l})]);
-    plotfrommat(size_xaxis, Value_vs_Size_Matrix, choice_algos, 'Tested Algorithms', file_name, ...
+    [sorted_size_xaxis, sorted_ind] = sort(size_xaxis);
+    plotfrommat(sorted_size_xaxis, Value_vs_Size_Matrix(sorted_ind,:), ...
+        choice_algos, 'Tested Algorithms', file_name, ...
         title_name, dimvalue_descrip, ylabel_str, colorsmatrix);
     
     %% Create Mat errors vs. sparsity
@@ -186,7 +188,8 @@ for l = 1:no_errortypes
     
     % You plot the column vectors (error vs. sparsity) and the different plots are for the different
     % algos
-    plotfrommat(sparsity_xaxis, Value_vs_Sparsity_Matrix, choice_algos, 'Tested Algorithms', file_name, ...
+    [sorted_sparsity_xaxis, sorted_ind] = sort(sparsity_xaxis);
+    plotfrommat(sparsity_xaxis, Value_vs_Sparsity_Matrix(sorted_ind,:), choice_algos, 'Tested Algorithms', file_name, ...
         title_name, 'Sparsity', ylabel_str, colorsmatrix);
 end
 
