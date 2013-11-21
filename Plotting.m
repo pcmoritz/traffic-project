@@ -189,7 +189,7 @@ for l = 1:no_errortypes
     % You plot the column vectors (error vs. sparsity) and the different plots are for the different
     % algos
     [sorted_sparsity_xaxis, sorted_ind] = sort(sparsity_xaxis);
-    plotfrommat(sparsity_xaxis, Value_vs_Sparsity_Matrix(sorted_ind,:), choice_algos, 'Tested Algorithms', file_name, ...
+    plotfrommat(sorted_sparsity_xaxis, Value_vs_Sparsity_Matrix(sorted_ind,:), choice_algos, 'Tested Algorithms', file_name, ...
         title_name, 'Sparsity', ylabel_str, colorsmatrix);
 end
 
