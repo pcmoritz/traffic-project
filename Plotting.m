@@ -78,6 +78,8 @@ for m = 1:no_algos
         
         % Get a test object which is an averaged version
         key = sprintf('%s::%s::%.3f::%d-%d-%d', choice_models{:}, algo, sparsity, int64(mysize));
+        % DEBUG prints out all the keys
+        % cellfun(@(x) disp(x), keys(averaged_metrics),'UniformOutput',false)
         assert(isKey(averaged_metrics, key), sprintf('%s not found in averaged_metrics', key));
         averaged_m = averaged_metrics(key);
         results_sizesblock(p,:) = [averaged_m.test_output.runtime, averaged_m.error_L1, ...

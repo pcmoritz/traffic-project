@@ -103,11 +103,4 @@ if(generate_plots_p)
     % Plot
     Plotting(averaged_metrics)
 end
-
-%%
-% Then to view the results test-by-test, select the test number, e.g.
-% errors(2)
-% comparison = comparisons(2);
-% comparison{1}
-
 end
