@@ -78,6 +78,7 @@ end
 
 if(generate_plots_p)
     metrics = containers.Map();
+    all_metrics = {};
     files = dir(fullfile(metrics_directory, '*.mat'));
     for file = files'
         data = load(fullfile(metrics_directory, file.name));
@@ -94,6 +95,7 @@ if(generate_plots_p)
         else
             metrics(key) = {data.m};
         end
+        all_metrics{length(all_metrics) + 1} = data.m;
     end
     
     % For each key, average each TestMetrics property (for all trials)
@@ -101,6 +103,6 @@ if(generate_plots_p)
     % Create new hashmap with averaged TestMetrics
     averaged_metrics = containers.Map(keys(metrics),averaged_ms,'UniformValues',false);
     % Plot
-    Plotting(averaged_metrics)
+    Plotting(averaged_metrics, all_metrics)
 end
 end

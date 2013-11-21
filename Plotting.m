@@ -1,5 +1,5 @@
 % Plotting the errors 
-function Plotting(averaged_metrics)
+function Plotting(averaged_metrics, all_metrics)
 
 % Load colors matrix
 load('colorsmatrix.mat');
@@ -39,9 +39,9 @@ choice_sizes = matrix_sizes(choice_sizes_ind,:);
 no_sizes = length(choice_sizes_ind);
 
 % Sparsities I want to plot
-choice_sparsities_ind = [1,2,3,4,5];
-choice_sparsities = sparsity_sizes(choice_sparsities_ind);
-[no_sparsities, ~] = size(choice_sparsities);
+choice_sparsities_ind = [1,2,3,4];
+choice_sparsities = sparsity_sizes(choice_sparsities_ind, :);
+no_sparsities = length(choice_sparsities_ind);
 
 
 % % Kind of plots I want
@@ -64,50 +64,59 @@ Phi_sizes = zeros(no_sizes, 2);
 results_sizesblock = zeros(no_sizes,4);%no_errortypes+1);
 results_sparsityblock = zeros(no_sparsities,4);% no_errortypes+1);
 
-for m = 1:no_algos
-    
+for i = 1:no_algos
     % Get the chosen algorithm string
-    algo = choice_algos{m};
+    algo = choice_algos{i};
     
-    for p = 1:no_sizes
-        
-        sparsity = default_sparsity;
-        
+    for j = 1:no_sizes
         % Get the chosen size vector
-        mysize = choice_sizes(p,:);
+        mysize = choice_sizes(j,:);
         
-        % Get a test object which is an averaged version
-        key = sprintf('%s::%s::%.3f::%d-%d-%d', choice_models{:}, algo, sparsity, int64(mysize));
-        % DEBUG prints out all the keys
-        % cellfun(@(x) disp(x), keys(averaged_metrics),'UniformOutput',false)
-        assert(isKey(averaged_metrics, key), sprintf('%s not found in averaged_metrics', key));
-        averaged_m = averaged_metrics(key);
-        results_sizesblock(p,:) = [averaged_m.test_output.runtime, averaged_m.error_L1, ...
+        % Average all results which have the algorithm and the size
+        relevant_metrics = {};
+        for m = all_metrics
+            m = m{:};
+            o = m.test_output;
+            p = o.test_parameters;
+            if p.rows == mysize(1) && p.cols == mysize(2) && p.nroutes == mysize(3) ...
+                    && strcmp(o.algorithm, algo)
+                relevant_metrics{length(relevant_metrics) + 1} = m;
+            end
+        end
+        averaged_m = average_metrics(relevant_metrics);
+        results_sizesblock(j,:) = [averaged_m.test_output.runtime, averaged_m.error_L1, ...
             averaged_m.error_L2, averaged_m.error_support];
         
-        if m == 1
-            Phi_sizes(p,:) = size(averaged_m.test_output.test_parameters.Phi);
+        if i == 1
+            Phi_sizes(j,:) = size(averaged_m.test_output.test_parameters.Phi);
         end
         
     end
     
-    for q = 1:no_sparsities
-        
-        mysize = default_size;
+    for j = 1:no_sparsities
         % Get the chosen size vector
-        sparsity = choice_sparsities(q);
+        sparsity_range = choice_sparsities(j,:);
         
-        % Get a test object which is an averaged version 
-        key = sprintf('%s::%s::%.3f::%d-%d-%d', choice_models{:}, algo, sparsity, mysize);
-        assert(isKey(averaged_metrics, key), sprintf('%s not found in averaged_metrics', key));
-        averaged_m = averaged_metrics(key);
-        results_sparsityblock(q,:) = [averaged_m.test_output.runtime, averaged_m.error_L1, ...
+        % Average all results which have the algorithm and sparsity
+        relevant_metrics = {};
+        for m = all_metrics
+            m = m{:};
+            o = m.test_output;
+            p = o.test_parameters;
+            if p.sparsity >= sparsity_range(1) && p.sparsity < sparsity_range(2) ...
+                    && strcmp(o.algorithm, algo)
+                relevant_metrics{length(relevant_metrics) + 1} = m;
+            end
+        end
+        % Get a test object which is an averaged version
+        averaged_m = average_metrics(relevant_metrics);
+        results_sparsityblock(j,:) = [averaged_m.test_output.runtime, averaged_m.error_L1, ...
             averaged_m.error_L2, averaged_m.error_support];
         
     end
     
     % Save the algo_matrix in the entire cell
-    algos_cell{m} = [results_sizesblock; results_sparsityblock];
+    algos_cell{i} = [results_sizesblock; results_sparsityblock];
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -130,7 +139,7 @@ dimvalue_descrip = 'ratio of matrix row vs. col';
 %% For Runtime
 size_xaxis_rt = log(size_mat(:,4) + size_mat(:,5));
 
-sparsity_xaxis = choice_sparsities;
+sparsity_xaxis = (choice_sparsities(:, 1) + choice_sparsities(:, 2)) / 2;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -152,8 +161,8 @@ for l = 1:no_errortypes
     end
     
     % Declare the file/title name for plot, dependent on matrix and error
-    title_name = sprintf('%s vs. Size on Model %s with fixed Sparsity %f', error_types_names{l}, choice_models{:}, default_sparsity);
-    file_name = sprintf('%s_vs_Size_Model%s_Sparsity%d.fig',  error_types_names{l}, choice_models{:}, default_sparsity);
+    title_name = sprintf('%s vs. Size on Model %s', error_types_names{l}, choice_models{:});
+    file_name = sprintf('%s_vs_Size_Model%s.fig',  error_types_names{l}, choice_models{:});
     ylabel_str = error_types_names{l}; %sprinf('%s of the reconstructed signal', choice_errortypes{l});
     
     % You plot the column vectors (error vs. dimensions) and the different plots are for the different
@@ -171,13 +180,13 @@ for l = 1:no_errortypes
     end
     
     % Declare the file/title name for plot, dependent on matrix and error
-    title_name = sprintf('%s vs. Sparsity on Model %s with fixed Size %d', error_types_names{l}, choice_models{:}, default_size);
-    file_name = sprintf('%s_vs_Sparsity_Model%s_Size%d.fig', error_types_names{l}, choice_models{:}, default_size);
+    title_name = sprintf('%s vs. Sparsity on Model %s', error_types_names{l}, choice_models{:});
+    file_name = sprintf('%s_vs_Sparsity_Model%s.fig', error_types_names{l}, choice_models{:});
     ylabel_str =  error_types_names{l}; %sprinf('%s of the reconstructed signal',);
     
     % You plot the column vectors (error vs. sparsity) and the different plots are for the different
     % algos
-    plotfrommat(size_xaxis(1), Value_vs_Sparsity_Matrix, choice_algos, 'Tested Algorithms', file_name, ...
+    plotfrommat(sparsity_xaxis, Value_vs_Sparsity_Matrix, choice_algos, 'Tested Algorithms', file_name, ...
         title_name, 'Sparsity', ylabel_str, colorsmatrix);
 end
 
@@ -191,8 +200,8 @@ for i = 1:length(algos_cell)
 end
 
 % Declare the file/title name for plot, dependent on matrix and error
-title_name = sprintf('Runtime vs. Size on Model %s with fixed Size %d', choice_models{:}, default_sparsity);
-file_name = sprintf('Runtime_vs_Size_Model%s_Sparsity%d.fig', choice_models{:}, default_sparsity);
+title_name = sprintf('Runtime vs. Size on Model %s', choice_models{:});
+file_name = sprintf('Runtime_vs_Size_Model%s.fig', choice_models{:});
 ylabel_str = 'Runtime (in sec)'; %sprinf('%s of the reconstructed signal', choice_errortypes{l});
 
 % You plot the column vectors (runtime vs. size) and the different plots are for the different
