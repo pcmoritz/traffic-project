@@ -50,6 +50,13 @@ no_sparsities = length(choice_sparsities_ind);
 % choice_plottypes = plottypes_names(choice_plots_ind);
 % no_plottypes = length(choice_plots_ind);
 
+%% Display plotting parameters to user
+disp('Plotting parameters');
+disp('ALGORITHMS'); cellfun(@(x) disp(x), choice_algos);
+disp('MODELS'); disp(choice_models);
+disp('SIZES'); disp(choice_sizes);
+disp('SPARSITIES'); disp(choice_sparsities);
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Getting averaged data points for each plot
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
