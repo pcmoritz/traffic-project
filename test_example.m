@@ -56,7 +56,8 @@ if(generate_output_p)
         % display(output_list);
         
         for o = output_list
-            filename = sprintf('TestOutput-%s-%s-%d', user, datestr(now, 30), numsamples);
+            filename = sprintf('TestOutput-%s-%s-%d', user, ...
+                datestr(now, 30), numsamples);
             save(strcat(output_directory, filename), 'o');
             numsamples = numsamples + 1;
         end
@@ -70,7 +71,8 @@ if(generate_metrics_p)
     for file = files'
         data = load(fullfile(output_directory, file.name));
         m = output_to_metrics(data.o);
-        filename = sprintf('TestMetrics-%s-%s-%d', user, datestr(now, 30), numsamples);
+        filename = sprintf('TestMetrics-%s-%s-%d', user, ...
+            datestr(now, 30), numsamples);
         save(strcat(metrics_directory, filename), 'm');
         numsamples = numsamples + 1;
     end
@@ -86,7 +88,9 @@ if(generate_plots_p)
         o = data.m.test_output;
         p = data.m.test_output.test_parameters;
         % FIXME
-        key = sprintf('%s::%s::%.3f::%d-%d-%d', p.model_type, o.algorithm, double(p.sparsity), int64(p.rows), int64(p.cols), int64(p.nroutes));
+        key = sprintf('%s::%s::%.3f::%d-%d-%d', p.model_type, ...
+            o.algorithm, double(p.sparsity), int64(p.rows), ...
+            int64(p.cols), int64(p.nroutes));
         
         if isKey(metrics, key)
             c = metrics(key);
@@ -99,9 +103,11 @@ if(generate_plots_p)
     end
     
     % For each key, average each TestMetrics property (for all trials)
-    averaged_ms = cellfun(@(key) average_metrics(metrics(key)), keys(metrics),'UniformOutput',false);
+    averaged_ms = cellfun(@(key) average_metrics(metrics(key)), ...
+        keys(metrics),'UniformOutput',false);
     % Create new hashmap with averaged TestMetrics
-    averaged_metrics = containers.Map(keys(metrics),averaged_ms,'UniformValues',false);
+    averaged_metrics = containers.Map(keys(metrics),averaged_ms, ...
+        'UniformValues',false);
     % Plot
     Plotting(averaged_metrics, all_metrics)
 end

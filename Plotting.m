@@ -84,8 +84,8 @@ for i = 1:no_algos
             end
         end
         averaged_m = average_metrics(relevant_metrics);
-        results_sizesblock(j,:) = [averaged_m.test_output.runtime, averaged_m.error_L1, ...
-            averaged_m.error_L2, averaged_m.error_support];
+        results_sizesblock(j,:) = [averaged_m.test_output.runtime, ...
+            averaged_m.error_L1, averaged_m.error_L2, averaged_m.error_support];
         
         if i == 1
             Phi_sizes(j,:) = size(averaged_m.test_output.test_parameters.Phi);
@@ -110,8 +110,9 @@ for i = 1:no_algos
         end
         % Get a test object which is an averaged version
         averaged_m = average_metrics(relevant_metrics);
-        results_sparsityblock(j,:) = [averaged_m.test_output.runtime, averaged_m.error_L1, ...
-            averaged_m.error_L2, averaged_m.error_support];
+        results_sparsityblock(j,:) = [averaged_m.test_output.runtime, ...
+            averaged_m.error_L1, averaged_m.error_L2, ...
+            averaged_m.error_support];
         
     end
     
@@ -161,8 +162,10 @@ for l = 1:no_errortypes
     end
     
     % Declare the file/title name for plot, dependent on matrix and error
-    title_name = sprintf('%s vs. Size on Model %s', error_types_names{l}, choice_models{:});
-    file_name = sprintf('%s_vs_Size_Model%s.fig',  error_types_names{l}, choice_models{:});
+    title_name = sprintf('%s vs. Size on Model %s', ...
+        error_types_names{l}, choice_models{:});
+    file_name = sprintf('%s_vs_Size_Model%s.fig',  ...
+        error_types_names{l}, choice_models{:});
     ylabel_str = error_types_names{l}; %sprinf('%s of the reconstructed signal', choice_errortypes{l});
     
     % You plot the column vectors (error vs. dimensions) and the different plots are for the different
@@ -170,8 +173,8 @@ for l = 1:no_errortypes
     % eval(['error_mat = models{k}.' sprintf(error_types{l})]);
     [sorted_size_xaxis, sorted_ind] = sort(size_xaxis);
     plotfrommat(sorted_size_xaxis, Value_vs_Size_Matrix(sorted_ind,:), ...
-        choice_algos, 'Tested Algorithms', file_name, ...
-        title_name, dimvalue_descrip, ylabel_str, colorsmatrix);
+        choice_algos, 'Tested Algorithms', file_name, title_name, ...
+        dimvalue_descrip, ylabel_str, colorsmatrix);
     
     %% Create Mat errors vs. sparsity
 
@@ -182,14 +185,18 @@ for l = 1:no_errortypes
     end
     
     % Declare the file/title name for plot, dependent on matrix and error
-    title_name = sprintf('%s vs. Sparsity on Model %s', error_types_names{l}, choice_models{:});
-    file_name = sprintf('%s_vs_Sparsity_Model%s.fig', error_types_names{l}, choice_models{:});
+    title_name = sprintf('%s vs. Sparsity on Model %s', ...
+        error_types_names{l}, choice_models{:});
+    file_name = sprintf('%s_vs_Sparsity_Model%s.fig', ...
+        error_types_names{l}, choice_models{:});
     ylabel_str =  error_types_names{l}; %sprinf('%s of the reconstructed signal',);
     
     % You plot the column vectors (error vs. sparsity) and the different plots are for the different
     % algos
     [sorted_sparsity_xaxis, sorted_ind] = sort(sparsity_xaxis);
-    plotfrommat(sorted_sparsity_xaxis, Value_vs_Sparsity_Matrix(sorted_ind,:), choice_algos, 'Tested Algorithms', file_name, ...
+    plotfrommat(sorted_sparsity_xaxis, ...
+        Value_vs_Sparsity_Matrix(sorted_ind,:), choice_algos, ...
+        'Tested Algorithms', file_name, ...
         title_name, 'Sparsity', ylabel_str, colorsmatrix);
 end
 
@@ -209,8 +216,9 @@ ylabel_str = 'Runtime (in sec)'; %sprinf('%s of the reconstructed signal', choic
 
 % You plot the column vectors (runtime vs. size) and the different plots are for the different
 % algos
-plotfrommat(size_xaxis_rt, Value_vs_Size_Matrix, choice_algos, 'Tested Algorithms', file_name, ...
-    title_name, dimvalue_descrip, ylabel_str, colorsmatrix);
+plotfrommat(size_xaxis_rt, Value_vs_Size_Matrix, choice_algos, ...
+    'Tested Algorithms', file_name, title_name, dimvalue_descrip, ...
+    ylabel_str, colorsmatrix);
 
 
 %{
