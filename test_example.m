@@ -96,34 +96,12 @@ if(generate_plots_p)
         end
     end
     
-    % Average each value in key
-    for key = keys(metrics)
-        key = key{:};
-        metrics_for_key = metrics(key);
-        len = length(metrics_for_key);
-        
-        averaged_m = TestMetrics();
-        averaged_m.test_output = TestOutput();
-        averaged_m.test_output.test_parameters = TestParameters();
-        averaged_m.test_output.test_parameters.Phi = 0;
-        averaged_m.test_output.runtime = 0;
-        averaged_m.error_L1 = 0;
-        averaged_m.error_L2 = 0; 
-        averaged_m.error_support = 0;
-        averaged_m.test_output.test_parameters.Phi = 0;
-        for m = metrics_for_key
-            m = m{:};
-            averaged_m.test_output.test_parameters.Phi = m.test_output.test_parameters.Phi; % Not averaged
-            averaged_m.test_output.runtime = averaged_m.test_output.runtime + (m.test_output.runtime / len);
-            averaged_m.error_L1 = averaged_m.error_L1 + (m.error_L1 / len);
-            averaged_m.error_L2 = averaged_m.error_L2 + (m.error_L2 / len);
-            averaged_m.error_support = averaged_m.error_support + (m.error_support / len);
-        end
-        metrics(key) = averaged_m;
-        fprintf('%s\n', key)
-    end
-    
-    Plotting(metrics)
+    % For each key, average each TestMetrics property (for all trials)
+    averaged_ms = cellfun(@(key) average_metrics(metrics(key)), keys(metrics),'UniformOutput',false);
+    % Create new hashmap with averaged TestMetrics
+    averaged_metrics = containers.Map(keys(metrics),averaged_ms,'UniformValues',false);
+    % Plot
+    Plotting(averaged_metrics)
 end
 
 %%
