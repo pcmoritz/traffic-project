@@ -140,7 +140,7 @@ dimvalue_descrip = 'ratio of matrix row vs. col';
 size_xaxis_rt = log(size_mat(:,4) + size_mat(:,5));
 
 sparsity_xaxis = (choice_sparsities(:, 1) + choice_sparsities(:, 2)) / 2;
-
+dimvalue_descrip = 'log (m+n) of matrix phi';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Creating the different plots
@@ -216,7 +216,7 @@ ylabel_str = 'Runtime (in sec)'; %sprinf('%s of the reconstructed signal', choic
 % You plot the column vectors (runtime vs. size) and the different plots are for the different
 % algos
 plotfrommat(size_xaxis_rt, Value_vs_Size_Matrix, choice_algos, ...
-    'Tested Algorithms', file_name, title_name, dimvalue_descrip, ...
+    'Tested Algorithms', file_name, title_name, dimvalue_descrip_rt, ...
     ylabel_str, colorsmatrix);
 
 
