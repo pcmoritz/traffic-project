@@ -140,7 +140,7 @@ dimvalue_descrip = 'ratio of matrix row vs. col';
 size_xaxis_rt = log(size_mat(:,4) + size_mat(:,5));
 
 sparsity_xaxis = (choice_sparsities(:, 1) + choice_sparsities(:, 2)) / 2;
-dimvalue_descrip = 'log (m+n) of matrix phi';
+dimvalue_descrip_rt = 'log (m+n) of matrix phi';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Creating the different plots
