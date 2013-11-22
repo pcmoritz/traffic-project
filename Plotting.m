@@ -1,5 +1,5 @@
 % Plotting the errors 
-function Plotting(averaged_metrics, all_metrics)
+function Plotting(all_metrics)
 
 % Load colors matrix
 load('colorsmatrix.mat');
