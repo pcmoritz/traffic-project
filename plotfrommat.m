@@ -47,6 +47,7 @@ legend_hdl1=legend(legend_str,'Location','NorthEastOutside'); %num2str(legend_st
 legend_hdl = get(legend_hdl1,'title');
 %legend(legend_hdl,'Location','NorthEastOutside');
 set(legend_hdl,'string',legend_label);
-saveas(fig,filename);
+saveas(fig,strcat(filename, '.fig'));
+print(fig, '-dpdf', strcat(filename, '.pdf'))
 end
 

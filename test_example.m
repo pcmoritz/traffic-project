@@ -79,36 +79,18 @@ if(generate_metrics_p)
 end
 
 if(generate_plots_p)
-    metrics = containers.Map();
     all_metrics = {};
     files = dir(fullfile(metrics_directory, '*.mat'));
     for file = files'
         data = load(fullfile(metrics_directory, file.name));
-        m = data.m;
-        o = data.m.test_output;
-        p = data.m.test_output.test_parameters;
-        % FIXME
-        key = sprintf('%s::%s::%.3f::%d-%d-%d', p.model_type, ...
-            o.algorithm, double(p.sparsity), int64(p.rows), ...
-            int64(p.cols), int64(p.nroutes));
-        
-        if isKey(metrics, key)
-            c = metrics(key);
-            c{length(c) + 1} = data.m;
-            metrics(key) = c;
-        else
-            metrics(key) = {data.m};
-        end
         all_metrics{length(all_metrics) + 1} = data.m;
     end
     
-    % For each key, average each TestMetrics property (for all trials)
-    averaged_ms = cellfun(@(key) average_metrics(metrics(key)), ...
-        keys(metrics),'UniformOutput',false);
-    % Create new hashmap with averaged TestMetrics
-    averaged_metrics = containers.Map(keys(metrics),averaged_ms, ...
-        'UniformValues',false);
+    % Make a graph directory
+    outdir = fullfile(graphs_directory, datestr(now, 30));
+    mkdir(outdir);
+
     % Plot
-    Plotting(averaged_metrics, all_metrics)
+    Plotting(strcat(outdir, '/'), all_metrics)
 end
 end
