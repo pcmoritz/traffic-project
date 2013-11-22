@@ -7,8 +7,8 @@ function m = output_to_metrics(o)
 
     lambda = p.lambda; noise = p.noise;
     
-    error_L1 = norm(real_a - a,1);
-    error_L2 = norm(real_a - a,2);
+    error_L1 = norm(real_a - a,1) / norm(real_a, 1);
+    error_L2 = norm(real_a - a,2) / norm(real_a, 2);
     error_support = 1-sum(abs(real_a)>1e-6 & abs(a)>1e-6)/length(a);
     real_sparsity = sum(abs(real_a)>1e-6)/length(a);
     test_sparsity = sum(abs(a)>1e-6)/length(a);
