@@ -86,7 +86,11 @@ if(generate_plots_p)
         all_metrics{length(all_metrics) + 1} = data.m;
     end
     
+    % Make a graph directory
+    outdir = fullfile(graphs_directory, datestr(now, 30));
+    mkdir(outdir);
+
     % Plot
-    Plotting(all_metrics)
+    Plotting(strcat(outdir, '/'), all_metrics)
 end
 end
