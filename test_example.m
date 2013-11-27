@@ -39,7 +39,7 @@ library_names;
 % TODO finish creating p object not via small_sparse_recovery
 % TODO save p to disk (O, OD, random, aug)
 
-tests = {'cvx_L2','cvx_raw','cvx_unconstrained_L1','cvx_weighted_L1'};
+tests = {'cvx_L2','cvx_raw','cvx_unconstrained_L1','cvx_weighted_L1', 'cvx_hot_start_lp'};
 
 if(generate_problems_p)
     generate_problem(matrix_sizes);

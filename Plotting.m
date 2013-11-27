@@ -17,7 +17,7 @@ run('library_names');
 %% Set parameters which determine the plots
 
 % Algorithms I want to plot
-choice_algos_ind = [1,2,3,4]; % <------ USER SETS which algos to plot
+choice_algos_ind = [1,2,3,4,5]; % <------ USER SETS which algos to plot
 choice_algos = algos_names(choice_algos_ind); % cell of strings
 no_algos = length(choice_algos_ind);
 
@@ -112,7 +112,6 @@ for i = 1:no_algos
         results_sparsityblock(j,:) = [averaged_m.test_output.runtime, ...
             averaged_m.error_L1, averaged_m.error_L2, ...
             averaged_m.error_support];
-        
     end
     
     % Save the algo_matrix in the entire cell
