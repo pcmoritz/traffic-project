@@ -125,7 +125,7 @@ end
 
 
 % All size information:
-% [Graph_rows Graph_cols ShortestRoutes_k Phi_no_rows Phi_no_cols];
+% [Graph_rows Graph_cols ShortestRoutes_k Sparsity Phi_no_rows Phi_no_cols];
 size_mat = [choice_sizes Phi_sizes];
 
 %% For Error
@@ -133,7 +133,7 @@ size_mat = [choice_sizes Phi_sizes];
 % matrix_sizes and gives us the x-axis for plotting
 
 % For now for example ratio of rows vs. columns of Phi
-size_xaxis = size_mat(:,4)./size_mat(:,5);
+size_xaxis = size_mat(:,5)./size_mat(:,6);
 dimvalue_descrip = 'ratio of matrix row vs. col';
 
 %% For Runtime
@@ -146,78 +146,88 @@ dimvalue_descrip_rt = 'log (m+n) of matrix phi';
 %% Creating the different plots
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Initialize intermediate matrices overwritten in each loop
-Value_vs_Size_Matrix = zeros(no_sizes,no_algos);
-Value_vs_Sparsity_Matrix = zeros(no_sparsities,no_algos);
+% % Initialize intermediate matrices overwritten in each loop
+% Value_vs_Size_Matrix = zeros(no_sizes,no_algos);
+% Value_vs_Sparsity_Matrix = zeros(no_sparsities,no_algos);
 
 for l = 1:no_errortypes
+    
+    error_name = error_types_names{l};
+    model_name = choice_models{:};
+    
     %% Create Mat errors vs. size
     
-    % Use a better implementation than forloop!
-    % Put all values in a matrix prepare for plotting
-    for i = 1:length(algos_cell)
-        mat_cache = algos_cell{i};
-        Value_vs_Size_Matrix(:,i) = mat_cache(1:no_sizes,l+1);
-    end
+    plotting_err_vs_sz(no_sizes, no_algos, algos_cell, size_xaxis, dimvalue_descrip, choice_algos, l, error_name, model_name, prefix, colorsmatrix);
     
-    % Declare the file/title name for plot, dependent on matrix and error
-    title_name = sprintf('%s vs. Size on Model %s', ...
-        error_types_names{l}, choice_models{:});
-    file_name = sprintf('%s_vs_Size_Model%s',  ...
-        error_types_names{l}, choice_models{:});
-    ylabel_str = error_types_names{l}; %sprinf('%s of the reconstructed signal', choice_errortypes{l});
-    
-    % You plot the column vectors (error vs. dimensions) and the different plots are for the different
-    % algos
-    % eval(['error_mat = models{k}.' sprintf(error_types{l})]);
-    [sorted_size_xaxis, sorted_ind] = sort(size_xaxis);
-    plotfrommat(sorted_size_xaxis, Value_vs_Size_Matrix(sorted_ind,:), ...
-        choice_algos, 'Tested Algorithms', strcat(prefix, file_name), title_name, ...
-        dimvalue_descrip, ylabel_str, colorsmatrix);
+%     % Use a better implementation than forloop!
+%     % Put all values in a matrix prepare for plotting
+%     for i = 1:length(algos_cell)
+%         mat_cache = algos_cell{i};
+%         Value_vs_Size_Matrix(:,i) = mat_cache(1:no_sizes,l+1);
+%     end
+%     
+%     % Declare the file/title name for plot, dependent on matrix and error
+%     title_name = sprintf('%s vs. Size on Model %s', ...
+%         error_types_names{l}, choice_models{:});
+%     file_name = sprintf('%s_vs_Size_Model%s',  ...
+%         error_types_names{l}, choice_models{:});
+%     ylabel_str = error_types_names{l}; %sprinf('%s of the reconstructed signal', choice_errortypes{l});
+%     
+%     % You plot the column vectors (error vs. dimensions) and the different plots are for the different
+%     % algos
+%     % eval(['error_mat = models{k}.' sprintf(error_types{l})]);
+%     [sorted_size_xaxis, sorted_ind] = sort(size_xaxis);
+%     plotfrommat(sorted_size_xaxis, Value_vs_Size_Matrix(sorted_ind,:), ...
+%         choice_algos, 'Tested Algorithms', strcat(prefix, file_name), title_name, ...
+%         dimvalue_descrip, ylabel_str, colorsmatrix);
     
     %% Create Mat errors vs. sparsity
-
-    % Put all values in a matrix prepare for plotting
-    for i = 1:length(algos_cell)
-        mat_cache = algos_cell{i};
-        Value_vs_Sparsity_Matrix(:,i) = mat_cache(no_sizes+1:no_sizes+no_sparsities,l+1);
-    end
     
-    % Declare the file/title name for plot, dependent on matrix and error
-    title_name = sprintf('%s vs. Sparsity on Model %s', ...
-        error_types_names{l}, choice_models{:});
-    file_name = sprintf('%s_vs_Sparsity_Model%s', ...
-        error_types_names{l}, choice_models{:});
-    ylabel_str =  error_types_names{l}; %sprinf('%s of the reconstructed signal',);
+    plotting_err_vs_spars(no_sizes, no_algos, no_sparsities, algos_cell,sparsity_xaxis, choice_algos, l, error_name, model_name, prefix, colorsmatrix);
     
-    % You plot the column vectors (error vs. sparsity) and the different plots are for the different
-    % algos
-    [sorted_sparsity_xaxis, sorted_ind] = sort(sparsity_xaxis);
-    plotfrommat(sorted_sparsity_xaxis, ...
-        Value_vs_Sparsity_Matrix(sorted_ind,:), choice_algos, ...
-        'Tested Algorithms', strcat(prefix, file_name), ...
-        title_name, 'Sparsity', ylabel_str, colorsmatrix);
+%     % Put all values in a matrix prepare for plotting
+%     for i = 1:length(algos_cell)
+%         mat_cache = algos_cell{i};
+%         Value_vs_Sparsity_Matrix(:,i) = mat_cache(no_sizes+1:no_sizes+no_sparsities,l+1);
+%     end
+%     
+%     % Declare the file/title name for plot, dependent on matrix and error
+%     title_name = sprintf('%s vs. Sparsity on Model %s', ...
+%         error_types_names{l}, choice_models{:});
+%     file_name = sprintf('%s_vs_Sparsity_Model%s', ...
+%         error_types_names{l}, choice_models{:});
+%     ylabel_str =  error_types_names{l}; %sprinf('%s of the reconstructed signal',);
+%     
+%     % You plot the column vectors (error vs. sparsity) and the different plots are for the different
+%     % algos
+%     [sorted_sparsity_xaxis, sorted_ind] = sort(sparsity_xaxis);
+%     plotfrommat(sorted_sparsity_xaxis, ...
+%         Value_vs_Sparsity_Matrix(sorted_ind,:), choice_algos, ...
+%         'Tested Algorithms', strcat(prefix, file_name), ...
+%         title_name, 'Sparsity', ylabel_str, colorsmatrix);
 end
 
 
 %% Create Mat runtime vs. size
 
-% Use a better implementation than forloop!
-for i = 1:length(algos_cell)
-    mat_cache = algos_cell{i};
-    Value_vs_Size_Matrix(:,i) = mat_cache(1:no_sizes,1);
-end
+plotting_rt_vs_sz(no_sizes, no_algos, algos_cell, size_xaxis_rt, dimvalue_descrip_rt, choice_algos, model_name, prefix, colorsmatrix);
 
-% Declare the file/title name for plot, dependent on matrix and error
-title_name = sprintf('Runtime vs. Size on Model %s', choice_models{:});
-file_name = sprintf('Runtime_vs_Size_Model%s', choice_models{:});
-ylabel_str = 'Runtime (in sec)'; %sprinf('%s of the reconstructed signal', choice_errortypes{l});
-
-% You plot the column vectors (runtime vs. size) and the different plots are for the different
-% algos
-plotfrommat(size_xaxis_rt, Value_vs_Size_Matrix, choice_algos, ...
-    'Tested Algorithms', strcat(prefix, file_name), title_name, dimvalue_descrip_rt, ...
-    ylabel_str, colorsmatrix);
+% % Use a better implementation than forloop!
+% for i = 1:length(algos_cell)
+%     mat_cache = algos_cell{i};
+%     Value_vs_Size_Matrix(:,i) = mat_cache(1:no_sizes,1);
+% end
+% 
+% % Declare the file/title name for plot, dependent on matrix and error
+% title_name = sprintf('Runtime vs. Size on Model %s', choice_models{:});
+% file_name = sprintf('Runtime_vs_Size_Model%s', choice_models{:});
+% ylabel_str = 'Runtime (in sec)'; %sprinf('%s of the reconstructed signal', choice_errortypes{l});
+% 
+% % You plot the column vectors (runtime vs. size) and the different plots are for the different
+% % algos
+% plotfrommat(size_xaxis_rt, Value_vs_Size_Matrix, choice_algos, ...
+%     'Tested Algorithms', strcat(prefix, file_name), title_name, dimvalue_descrip_rt, ...
+%     ylabel_str, colorsmatrix);
 
 
 %{
