@@ -14,11 +14,19 @@ classdef TestParameters < handle
       real_a
 
       model_type % string
+      type % 'random' or 'traffic'
       
+      % for 'random'
       rows
       cols
       nroutes
       sparsity
+      
+      % for 'traffic'
+      num_blocks
+      num_variables_per_block
+      num_nonzeros
+      num_constraints
    end
    methods
    end

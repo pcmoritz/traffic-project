@@ -14,11 +14,15 @@
 
 % files written to disk: contains TestOutput
 
-function generate_problem(options)
+% options for random matrix is a list of 4-tuples of the form
+% [rows, cols, num_blocks, num_vars_per_block]
+
+% type is 'traffic' or 'random'
+
+function generate_problem(type, options)
 %GENERATE_OUTPUT Convert python data files into "raw" algorithm input
 
-methods = {'O', 'OD', 'random'};
-models = {'small_graph_random', 'small_graph_OD', 'small_graph'};
+models = {'small_graph_random', 'small_graph_OD', 'small_graph', 'random'};
 
 date = datestr(now, 30);
 
@@ -34,16 +38,22 @@ for option = options'
     d = vec(4);
     subdir = char(strcat(num2str(rows), '_', num2str(cols), ...
         '_', num2str(k), '_', num2str(d), '_', num2str(date), '_', num2str(numsamples)));
-
+    
     command = sprintf('%s static_matrix.py --prefix %s%s_ --num_rows %d --num_cols %d --num_routes_per_od %d --num_nonzero_routes_per_o %d', python, ...
         raw_directory, subdir, rows, cols, k, d);
+
+    if strcmp(type, 'random')
+        command = sprintf('%s random_matrix.py --prefix %s%s_ --num_rows %d --num_cols %d --num_blocks %d --num_vars_per_block %d', python, ...
+            raw_directory, subdir, rows, cols, k, d);
+    end
+
     numsamples = numsamples + 1;
     fprintf('Generating "raw" for %s\n', subdir);
     system(command);
 
     fprintf('Generating "parameters" for %s\n', subdir);
     for model=models
-        filename = sprintf('%s/%s_%s',raw_directory,subdir,model{1});
+        filename = sprintf('%s%s_%s',raw_directory,subdir,model{1});
         p = TestParameters();
         p.rows = rows; p.cols = cols; p.nroutes = k;
         p.model_type = model{1};

@@ -17,9 +17,11 @@ elseif strcmp(user,'richard') == 1
     graphs_directory = './data/graphs/';
 else
     python = 'LD_LIBRARY_PATH= python';
-    raw_directory = '~/Dropbox/traffic/data/raw/';
-    param_directory = '~/Dropbox/traffic/data/params/';
-    output_directory = '~/Dropbox/traffic/data/output/';
-    metrics_directory = '~/Dropbox/traffic/data/metrics/';
-    graphs_directory = '~/Dropbox/traffic/data/graphs/';
+    base_directory = '~/Dropbox/traffic/data/';
+    % base_directory = '~/convex-project/data/';
+    raw_directory = [base_directory, 'raw/'];
+    param_directory = [base_directory, 'params/'];
+    output_directory = [base_directory, 'output/'];
+    metrics_directory = [base_directory, 'metrics/'];
+    graphs_directory = [base_directory, 'graphs/'];
 end
