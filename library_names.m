@@ -2,7 +2,7 @@
 max_sparsity = .5;
 
 %error_types_names = {'errors_L1', 'errors_L2','errors_support', 'diffs_sparsity'};
-error_types_names = {'L1', 'L2', 'support'};
+error_types_names = {'L1 error', 'L2 error', 'support error'};
 model_types_names = {'small_graph'};
 algos_names = {'cvx_L2','cvx_raw','cvx_unconstrained_L1','cvx_weighted_L1', 'cvx_hot_start_lp','cvx_single_block_L_infty'...
     'cvx_random_sample_L_infty', 'cvx_mult_blocks_L_infty','cvx_block_descent_L_infty','cvx_entropy'}; % the ones taking block into account

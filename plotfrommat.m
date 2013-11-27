@@ -1,7 +1,11 @@
 %plots matrix with 1st column  =x-axis, several following columns=y-axis
 
-function fig = plotfrommat(x_axis,matrix,legend_str,legend_label,filename,title_name,xlabel_str, ylabel_str, colorsmatrix)
+function fig = plotfrommat(x_axis,matrix,legend_str,legend_label,file_name,title_name,xlabel_str, ylabel_str, colorsmatrix)
 close all
+
+legend_str = strrep(legend_str,char(95),' ');
+legend_str = strrep(legend_str,'cvx','');
+title_name = strrep(title_name,char(95),' ');
 
 pltype_str_arr = ['- ';'--';'-.';': '];  
 no_pltypes = length(pltype_str_arr);
@@ -47,7 +51,7 @@ legend_hdl1=legend(legend_str,'Location','NorthEastOutside'); %num2str(legend_st
 legend_hdl = get(legend_hdl1,'title');
 %legend(legend_hdl,'Location','NorthEastOutside');
 set(legend_hdl,'string',legend_label);
-saveas(fig,strcat(filename, '.fig'));
-print(fig, '-dpdf', strcat(filename, '.pdf'))
+saveas(fig,strcat(file_name, '.fig'));
+print(fig, '-dpdf', strcat(file_name, '.pdf'))
 end
 
