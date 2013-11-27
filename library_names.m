@@ -13,8 +13,8 @@ for no_rows=2:5
     for no_cols = 2:5
         for no_shroutes = 2:4
             total_routes = (no_rows*no_cols-1)*no_shroutes;
-            max_spars = .5*total_routes;
-            for spars = no_shroutes:max_spars
+            max_spars = ceil(.1*total_routes);
+            for spars = no_shroutes:3:max_spars
                 % Spars stands for the number of nonzero routes you choose
                 % at each origin
                 matrix_sizes = [matrix_sizes; no_rows no_cols no_shroutes spars];
