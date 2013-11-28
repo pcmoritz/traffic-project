@@ -1,6 +1,5 @@
 import argparse
 import collections
-import os.path
 import random
 
 import matplotlib
@@ -136,30 +135,29 @@ def generate_random_matrix(graph, routes, sensors, flow_portions,
 def export_matrices(prefix, num_rows, num_cols, num_routes_per_od_pair, num_nonzero_routes_per_o):
   # G = (V,E,w)
   graph, routes, sensors = small_graph.generate_small_graph(num_cols=num_cols,
-          num_rows=num_rows, num_routes_per_od_pair=num_routes_per_od_pair)
+          num_rows=num_rows, num_routes_per_od_pair=num_routes_per_od_pair,
+          num_nonzero_routes=num_nonzero_routes_per_o)
   # (O,D),R,alpha
   (flow_portions,flow_portions_OD,flow_OD) = flows.annotate_with_flows(graph, 
-          routes, num_nonzero_routes=num_nonzero_routes_per_o)
+          routes)
   
   # static matrix considering origin flows
   phi, alpha, mu, f, num_routes = generate_static_matrix(graph, routes,
           sensors, flow_portions)
   scipy.io.savemat(prefix + 'small_graph.mat', {'phi': phi, 
-          'real_a': alpha, 'w': mu, 'f': f, 'num_routes': num_routes},
-                   oned_as='column')
+          'f': f, 'block_sizes': num_routes}, oned_as='column')
 
   # static matrix considering origin-destination flows
   phi, alpha, mu, f, num_routes = generate_static_matrix_OD(graph, routes,
           sensors, flow_portions_OD, flow_from_each_node=flow_OD)
-
   scipy.io.savemat(prefix + 'small_graph_OD.mat', {'phi': phi, 'real_a': alpha, 'w': mu,
-          'f': f, 'num_routes': num_routes}, oned_as='column')
+          'f': f, 'block_sizes': num_routes}, oned_as='column')
           
   # random matrix 'considering origin flows'
   phi, alpha, mu, f, num_routes = generate_random_matrix(graph, routes,
           sensors, flow_portions)
   scipy.io.savemat(prefix + 'small_graph_random.mat', {'phi': phi, 'real_a': alpha, 'w': mu,
-          'f': f, 'num_routes': num_routes}, oned_as='column')
+          'f': f, 'block_sizes': num_routes}, oned_as='column')
   
 if __name__ == '__main__':
   import sys

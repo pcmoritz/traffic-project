@@ -14,18 +14,18 @@ epsilon = 1e-9;
 
 %% Read in graph
 % inputs: small_graph, small_graph_OD, augmented_graph
-load(sprintf('%s.mat',filename)); % loads phi, f, real_a, num_routes
+load(sprintf('%s.mat',filename)); % loads phi, f, real_a, block_sizes
 Phi = sparse(phi);
-num_routes = int64(num_routes); % each entry is associated with one origin
+block_sizes = int64(block_sizes); % each entry is associated with one origin
 m = size(Phi,1);
 n = size(Phi,2);
 
 %% L1 constraint matrix
-L1 = zeros(length(num_routes),n);
-cum_nroutes = int64([0; cumsum(double(num_routes))]);
+L1 = zeros(length(block_sizes),n);
+cum_nroutes = int64([0; cumsum(double(block_sizes))]);
 % array with start and stop indices of the blocks:
-blocks = zeros(length(num_routes), 2);
-for j=1:length(num_routes)
+blocks = zeros(length(block_sizes), 2);
+for j=1:length(block_sizes)
     from = cum_nroutes(j) + 1;
     to = cum_nroutes(j + 1);
     L1(j,from:to) = ones(1,to-from+1);
@@ -33,7 +33,7 @@ for j=1:length(num_routes)
 end
 
 %% Test parameters object
-p.Phi = Phi; p.f = f; p.w = w; p.block_sizes = num_routes;
+p.Phi = Phi; p.f = f; p.w = w; p.block_sizes = block_sizes;
 p.real_a = real_a; p.n = n; p.L1 = L1; p.noise = noise;
 p.epsilon = epsilon; p.blocks = blocks;
 end

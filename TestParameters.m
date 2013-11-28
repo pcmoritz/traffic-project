@@ -12,12 +12,14 @@ classdef TestParameters < handle
       blocks
       real_a
 
-      model_type % string
       type % 'random' or 'traffic'
+      model_type % string describing how Phi/f/real_a was generated
+                 % (small_graph, small_graph_OD, etc. for 'traffic')
+                 % (gaussian, etc. for 'random')
       
-      block_sizes; % vector of the sizes of the blocks in alpha/a.
+      block_sizes; % vector of the sizes of the blocks in real_a.
                    % the length of this is the number of blocks.
-      sparsity     % fraction of non-zero entries in alpha/a.
+      sparsity     % fraction of non-zero entries in real_a.
       
       % for 'traffic'
       rows         % number of rows in the traffic grid
@@ -25,7 +27,7 @@ classdef TestParameters < handle
       nroutes      % number of non-zero routes between each OD pair
       
       % for 'random'
-      num_nonzeros % total number of nonzeros in alpha/a.
+      num_nonzeros % total number of nonzeros in real_a.
    end
    methods
    end
