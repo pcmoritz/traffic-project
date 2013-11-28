@@ -16,11 +16,13 @@ classdef TestParameters < handle
       model_type % string
       type % 'random' or 'traffic'
       
+      % shared by both 'random' and 'traffic'
+      sparsity
+      
       % for 'random'
       rows
       cols
       nroutes
-      sparsity
       
       % for 'traffic'
       num_blocks

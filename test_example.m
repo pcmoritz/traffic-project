@@ -43,7 +43,7 @@ tests = {'cvx_L2','cvx_raw','cvx_unconstrained_L1','cvx_weighted_L1', 'cvx_hot_s
 
 if(generate_problems_p)
     generate_problem('traffic', matrix_sizes);
-    % generate_problem('random', matrix_sizes);
+    generate_problem('random', matrix_sizes);
 end
 
 if(generate_output_p)

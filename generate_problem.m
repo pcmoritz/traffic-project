@@ -32,34 +32,63 @@ numsamples = 1;
 
 for option = options'
     vec = option;
-    rows = vec(1);
-    cols = vec(2);
-    k = vec(3);
-    d = vec(4);
-    subdir = char(strcat(num2str(rows), '_', num2str(cols), ...
-        '_', num2str(k), '_', num2str(d), '_', num2str(date), '_', num2str(numsamples)));
     
-    command = sprintf('%s static_matrix.py --prefix %s%s_ --num_rows %d --num_cols %d --num_routes_per_od %d --num_nonzero_routes_per_o %d', python, ...
-        raw_directory, subdir, rows, cols, k, d);
 
-    if strcmp(type, 'random')
-        command = sprintf('%s random_matrix.py --prefix %s%s_ --num_rows %d --num_cols %d --num_blocks %d --num_vars_per_block %d', python, ...
-            raw_directory, subdir, rows, cols, k, d);
+    subdir = char(strcat(num2str(vec(1)), '_', num2str(vec(2)), ...
+        '_', num2str(vec(3)), '_', num2str(vec(4)), '_', num2str(date), '_', num2str(numsamples)));
+    
+    if strcmp(type, 'traffic')
+        rows = vec(1);
+        cols = vec(2);
+        k = vec(3);
+        d = vec(4);
+        
+        command = sprintf('%s static_matrix.py --prefix %s%s_ --num_rows %d --num_cols %d --num_routes_per_od %d --num_nonzero_routes_per_o %d', python, ...
+        raw_directory, subdir, rows, cols, k, d);
+    
+        numsamples = numsamples + 1;
+        fprintf('Generating "raw" for %s\n', subdir);
+        system(command);
+
+        fprintf('Generating "parameters" for %s\n', subdir);
+        for model=models
+            filename = sprintf('%s%s_%s',raw_directory,subdir,model{1});
+            p = TestParameters();
+            p.rows = rows; p.cols = cols; p.nroutes = k;
+            p.model_type = model{1};
+            model_to_testparameters(p,filename);
+            p.sparsity = sum(abs(p.real_a)>1e-6)/length(p.real_a);
+            save(sprintf('%s/%s-%s-%d',param_directory,datestr(now, 30),getenv('USER'), numsamples),'p');
+        end
     end
 
-    numsamples = numsamples + 1;
-    fprintf('Generating "raw" for %s\n', subdir);
-    system(command);
+    if strcmp(type, 'random')
+        num_constraints = vec(1);
+        num_blocks = vec(2);
+        num_vars_per_block = vec(3);
+        num_nonzeros = vec(4);
+        
+        command = sprintf('%s random_matrix.py --prefix %s%s_ --num_constraints %d --num_blocks %d --num_cols %d--num_vars_per_block %d', python, ...
+            raw_directory, subdir, num_constraints, num_blocks, num_vars_per_block);
+        
+        numsamples = numsamples + 1;
+        fprintf('Generating "raw" for %s\n', subdir);
+        system(command);
 
-    fprintf('Generating "parameters" for %s\n', subdir);
-    for model=models
-        filename = sprintf('%s%s_%s',raw_directory,subdir,model{1});
-        p = TestParameters();
-        p.rows = rows; p.cols = cols; p.nroutes = k;
-        p.model_type = model{1};
-        model_to_testparameters(p,filename);
-        p.sparsity = sum(abs(p.real_a)>1e-6)/length(p.real_a);
-        save(sprintf('%s/%s-%s-%d',param_directory,datestr(now, 30),getenv('USER'), numsamples),'p');
+        fprintf('Generating "parameters" for %s\n', subdir);
+        for model=models
+            filename = sprintf('%s%s_%s',raw_directory,subdir,model{1});
+            p = TestParameters();
+            
+            p.block_sizes = num_vars_per_block * ones(num_blocks);
+            p.num_nonzeros = num_nonzeros;
+            p.num_constraints = num_constraints;
+            
+            p.model_type = model{1};
+            model_to_testparameters(p,filename);
+            p.sparsity = sum(abs(p.real_a)>1e-6)/length(p.real_a);
+            save(sprintf('%s/%s-%s-%d',param_directory,datestr(now, 30),getenv('USER'), numsamples),'p');
+        end
     end
 end
 
