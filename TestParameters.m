@@ -22,6 +22,7 @@ classdef TestParameters < handle
       % for 'traffic'
       rows         % number of rows in the traffic grid
       cols         % number of cols in the traffic grid
+      nroutes      % number of non-zero routes between each OD pair
       
       % for 'random'
       num_nonzeros % total number of nonzeros in alpha/a.
