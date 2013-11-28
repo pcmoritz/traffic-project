@@ -10,9 +10,10 @@ def export_matrices(prefix, num_blocks, num_vars_per_block, num_nonzeros, num_co
     matrix = numpy.random.randn(num_constraints, num_vars)
     alpha = generate_alpha(num_blocks, num_vars_per_block, num_nonzeros)
     f = numpy.dot(matrix, alpha)
+    block_sizes = num_blocks * [num_vars_per_block]
     scipy.io.savemat(prefix + 'random_matrix.mat', 
                      {'phi': matrix, 'real_a': alpha,
-                      'f': f, 'num_blocks' : num_blocks}, oned_as='column')
+                      'f': f, 'block_sizes' : block_sizes}, oned_as='column')
 
 def generate_alpha(num_blocks, num_vars_per_block, num_nonzeros):
     # first determine the entries that will be nonzero (by cycling through the blocks and turn by turn filling up the array nonzero_indices)

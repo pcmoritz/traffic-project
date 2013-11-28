@@ -68,26 +68,28 @@ for option = options'
         num_vars_per_block = vec(3);
         num_nonzeros = vec(4);
         
-        command = sprintf('%s random_matrix.py --prefix %s%s_ --num_constraints %d --num_blocks %d --num_cols %d--num_vars_per_block %d', python, ...
-            raw_directory, subdir, num_constraints, num_blocks, num_vars_per_block);
+        command = sprintf('%s random_matrix.py --prefix %s%s_ --num_constraints %d --num_blocks %d --num_vars_per_block %d --num_nonzeros %d', python, ...
+            raw_directory, subdir, num_constraints, num_blocks, num_vars_per_block, num_nonzeros);
         
         numsamples = numsamples + 1;
         fprintf('Generating "raw" for %s\n', subdir);
         system(command);
 
         fprintf('Generating "parameters" for %s\n', subdir);
-        for model=models
-            filename = sprintf('%s%s_%s',raw_directory,subdir,model{1});
-            p = TestParameters();
+        
+        model = 'random_matrix';
+        
+        filename = sprintf('%s%s_%s',raw_directory,subdir,model);
+        p = TestParameters();
             
-            p.block_sizes = num_vars_per_block * ones(num_blocks);
-            p.num_nonzeros = num_nonzeros;
-            
-            p.model_type = model{1};
-            model_to_testparameters(p,filename);
-            p.sparsity = sum(abs(p.real_a)>1e-6)/length(p.real_a);
-            save(sprintf('%s/%s-%s-%d',param_directory,datestr(now, 30),getenv('USER'), numsamples),'p');
-        end
+        p.block_sizes = num_vars_per_block * ones(num_blocks);
+        p.num_nonzeros = num_nonzeros;
+          
+        p.type = 'random';
+        p.model_type = 'gaussian';
+        model_to_testparameters(p,filename);
+        p.sparsity = sum(abs(p.real_a)>1e-6)/length(p.real_a);
+        save(sprintf('%s/%s-%s-%d',param_directory,datestr(now, 30),getenv('USER'), numsamples),'p');
     end
 end
 
