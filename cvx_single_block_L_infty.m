@@ -1,6 +1,6 @@
 %% cvx single-block L_infty
 function min_a = cvx_single_block_L_infty(p)
-    Phi = p.Phi; f = p.f; n = p.n; L1 = p.L1; num_routes = p.num_routes;
+    Phi = p.Phi; f = p.f; n = p.n; L1 = p.L1; block_sizes = p.block_sizes;
     noise = p.noise; epsilon = p.epsilon; lambda = p.lambda;
 
     min_a = Inf;
@@ -20,7 +20,7 @@ function min_a = cvx_single_block_L_infty(p)
                 square_pos(norm(Phi * a - f, 2)) <= epsilon
             end
             a >= 0
-            L1 * a == ones(length(num_routes),1)
+            L1 * a == ones(length(block_sizes),1)
             t >= 0
             a(i) >= lambda * inv_pos(t)
         cvx_end

@@ -1,22 +1,22 @@
 %% cvx multiple-block L_infty
 %% Has exponential complexity, so can take a very long time!
 function min_a = cvx_mult_blocks_L_infty(p)
-    Phi = p.Phi; f = p.f; n = p.n; L1 = p.L1; num_routes = p.num_routes;
+    Phi = p.Phi; f = p.f; n = p.n; L1 = p.L1; block_sizes = p.block_sizes;
     noise = p.noise; epsilon = p.epsilon; lambda = p.lambda;
 
-    len_num_routes = length(num_routes);
+    len_block_sizes = length(block_sizes);
     
     min_a = Inf;
     min_val = Inf;
-    fprintf(1,'Progress (of %d):  ', prod(num_routes));
+    fprintf(1,'Progress (of %d):  ', prod(block_sizes));
     
     k = 1;
-    i = ones(len_num_routes, 1);
-    all_ones = ones(len_num_routes, 1);
+    i = ones(len_block_sizes, 1);
+    all_ones = ones(len_block_sizes, 1);
     while true
-        for ii=1:len_num_routes
+        for ii=1:len_block_sizes
             i(ii) = i(ii) + 1;
-            if i(ii) > num_routes(ii)
+            if i(ii) > block_sizes(ii)
                 i(ii) = 1;
             else
                 break;
@@ -29,7 +29,7 @@ function min_a = cvx_mult_blocks_L_infty(p)
         
         cvx_begin quiet
             variable a(n)
-            variable t(len_num_routes)
+            variable t(len_block_sizes)
             if ~noise
                 minimize( sum(t) )
             else
@@ -40,7 +40,7 @@ function min_a = cvx_mult_blocks_L_infty(p)
                 square_pos(norm(Phi * a - f, 2)) <= epsilon
             end
             a >= 0
-            L1 * a == ones(len_num_routes, 1)
+            L1 * a == ones(len_block_sizes, 1)
             t >= 0
             if ~noise
                 a(i) >= inv_pos(t)

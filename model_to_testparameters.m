@@ -33,7 +33,7 @@ for j=1:length(num_routes)
 end
 
 %% Test parameters object
-p.Phi = Phi; p.f = f; p.w = w; p.num_routes = num_routes;
+p.Phi = Phi; p.f = f; p.w = w; p.block_sizes = num_routes;
 p.real_a = real_a; p.n = n; p.L1 = L1; p.noise = noise;
 p.epsilon = epsilon; p.blocks = blocks;
 end

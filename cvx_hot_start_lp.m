@@ -7,7 +7,7 @@
 % addpath '~/mosek/7/toolbox/r2009b'
 
 function result = cvx_hot_start_lp(p)
-    Phi = p.Phi; f = p.f; n = p.n; L1 = p.L1; num_routes = p.num_routes;
+    Phi = p.Phi; f = p.f; n = p.n; L1 = p.L1; block_sizes = p.block_sizes;
     noise = p.noise; epsilon = p.epsilon; lambda = p.lambda;
 
     max_a = -Inf;

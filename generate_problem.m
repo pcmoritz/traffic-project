@@ -61,7 +61,7 @@ for option = options'
             save(sprintf('%s/%s-%s-%d',param_directory,datestr(now, 30),getenv('USER'), numsamples),'p');
         end
     end
-
+    
     if strcmp(type, 'random')
         num_constraints = vec(1);
         num_blocks = vec(2);
