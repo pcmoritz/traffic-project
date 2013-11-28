@@ -82,7 +82,6 @@ for option = options'
             
             p.block_sizes = num_vars_per_block * ones(num_blocks);
             p.num_nonzeros = num_nonzeros;
-            p.num_constraints = num_constraints;
             
             p.model_type = model{1};
             model_to_testparameters(p,filename);
