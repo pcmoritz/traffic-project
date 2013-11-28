@@ -22,7 +22,6 @@ generate_metrics_p = input.Results.generate_metrics;
 generate_plots_p = input.Results.generate_plots;
 
 parameters;
-library_names;
 
 % rows = 5; cols = 5; k = 2; n = 2;
 % command = sprintf(horzcat(['%s static_matrix.py --prefix "" --num_rows %d ', ...
@@ -39,8 +38,6 @@ library_names;
 % TODO finish creating p object not via small_sparse_recovery
 % TODO save p to disk (O, OD, random, aug)
 
-tests = {'cvx_L2','cvx_raw','cvx_unconstrained_L1','cvx_weighted_L1', 'cvx_hot_start_lp'};
-
 if(generate_problems_p)
     generate_problem('traffic', matrix_sizes);
     % generate_problem('random', matrix_sizes);
@@ -55,7 +52,6 @@ if(generate_output_p)
         data = load(fullfile(param_directory, file.name));
         output_list = generate_output(data.p, tests);
         % display(output_list);
-        
         for o = output_list
             filename = sprintf('TestOutput-%s-%s-%d', user, ...
                 datestr(now, 30), numsamples);

@@ -5,7 +5,6 @@ classdef TestParameters < handle
       f
       n
       w
-      num_routes
       L1
       noise
       lambda
@@ -16,17 +15,16 @@ classdef TestParameters < handle
       model_type % string
       type % 'random' or 'traffic'
       
-      % for 'random'
-      rows
-      cols
-      nroutes
-      sparsity
+      block_sizes; % vector of the sizes of the blocks in alpha/a.
+                   % the length of this is the number of blocks.
+      sparsity     % fraction of non-zero entries in alpha/a.
       
       % for 'traffic'
-      num_blocks
-      num_variables_per_block
-      num_nonzeros
-      num_constraints
+      rows         % number of rows in the traffic grid
+      cols         % number of cols in the traffic grid
+      
+      % for 'random'
+      num_nonzeros % total number of nonzeros in alpha/a.
    end
    methods
    end

@@ -1,6 +1,6 @@
 %% L_2 regularization (unique solution)
 function a = cvx_L2(p)
-    Phi = p.Phi; f = p.f; n = p.n; L1 = p.L1; num_routes = p.num_routes;
+    Phi = p.Phi; f = p.f; n = p.n; L1 = p.L1; block_sizes = p.block_sizes;
     noise = p.noise; epsilon = p.epsilon; lambda = p.lambda;
 
     cvx_begin quiet
@@ -16,7 +16,7 @@ function a = cvx_L2(p)
             square_pos(norm(Phi * a - f, 2)) <= epsilon
         end
         a >= 0
-        L1 * a == ones(length(num_routes),1)
+        L1 * a == ones(length(block_sizes),1)
     cvx_end
 
 end

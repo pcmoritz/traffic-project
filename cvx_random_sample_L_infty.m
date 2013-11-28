@@ -1,10 +1,10 @@
 %% cvx multiple-blocks L_infty with random sampling
 function min_a = cvx_random_sample_L_infty(p)
-    Phi = p.Phi; f = p.f; n = p.n; L1 = p.L1; num_routes = p.num_routes;
+    Phi = p.Phi; f = p.f; n = p.n; L1 = p.L1; block_sizes = p.block_sizes;
     noise = p.noise; epsilon = p.epsilon; lambda = p.lambda;
     
-    cum_nroutes = int64([0; cumsum(double(num_routes))]);
-    len_num_routes = length(num_routes);
+    cum_nroutes = int64([0; cumsum(double(block_sizes))]);
+    len_block_sizes = length(block_sizes);
     
     num_iterations = 200;
     fprintf(1, 'Progress (of %d):  ', num_iterations);
@@ -13,15 +13,15 @@ function min_a = cvx_random_sample_L_infty(p)
     min_val = Inf;  
     
     a = zeros(n, 1);
-    for j=1:length(num_routes)
+    for j=1:length(block_sizes)
         from = cum_nroutes(j) + 1;
         to = cum_nroutes(j + 1);
         a(from:to) = ones(to - from + 1, 1) / double(to - from + 1);
     end
 
     for k=1:num_iterations
-        i = zeros(len_num_routes, 1);
-        for j=1:len_num_routes
+        i = zeros(len_block_sizes, 1);
+        for j=1:len_block_sizes
             from = cum_nroutes(j) + 1;
             to = cum_nroutes(j + 1);
             % ~ is max, i(j) is argmax
@@ -31,7 +31,7 @@ function min_a = cvx_random_sample_L_infty(p)
         
         cvx_begin quiet
             variable a(n)
-            variable t(len_num_routes)
+            variable t(len_block_sizes)
             if ~noise
                 minimize( sum(t) )
             else
@@ -42,7 +42,7 @@ function min_a = cvx_random_sample_L_infty(p)
                 square_pos(norm(Phi * a - f, 2)) <= epsilon
             end
             a >= 0
-            L1 * a == ones(len_num_routes, 1)
+            L1 * a == ones(len_block_sizes, 1)
             t >= 0
             if ~noise
                 a(i) >= inv_pos(t)

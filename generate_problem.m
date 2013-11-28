@@ -55,7 +55,7 @@ for option = options'
     for model=models
         filename = sprintf('%s%s_%s',raw_directory,subdir,model{1});
         p = TestParameters();
-        p.rows = rows; p.cols = cols; p.nroutes = k;
+        p.rows = rows; p.cols = cols;
         p.model_type = model{1};
         model_to_testparameters(p,filename);
         p.sparsity = sum(abs(p.real_a)>1e-6)/length(p.real_a);
