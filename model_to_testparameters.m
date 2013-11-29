@@ -35,7 +35,10 @@ end
 %% Test parameters object
 if strcmp(p.type, 'traffic')
     p.w = w;
+else
+    p.w = ones(n);
 end
+
 p.Phi = Phi; p.f = f; p.block_sizes = block_sizes;
 p.real_a = real_a; p.n = n; p.L1 = L1; p.noise = noise;
 p.epsilon = epsilon; p.blocks = blocks;
