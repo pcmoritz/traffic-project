@@ -25,11 +25,18 @@ max_sparsity = .5;
 
 %error_types_names = {'errors_L1', 'errors_L2','errors_support', 'diffs_sparsity'};
 error_types_names = {'L1 error', 'L2 error', 'support error'};
-model_types_names = {'small_graph'};
+type_names = {'traffic', 'random'};
+
+model_types_names = containers.Map();
+model_types_names('traffic') = {'small_graph'};
+model_types_names('random') = {'gaussian'};
+
 algos_names = {'cvx_L2','cvx_raw','cvx_unconstrained_L1','cvx_weighted_L1', 'cvx_hot_start_lp','cvx_single_block_L_infty'...
     'cvx_random_sample_L_infty', 'cvx_mult_blocks_L_infty','cvx_block_descent_L_infty','cvx_entropy'}; % the ones taking block into account
 
-matrix_sizes = [];
+matrix_sizes = containers.Map();
+
+matrix_sizes('traffic') = [];
     
 for no_rows=2:5
     for no_cols = 2:5
@@ -39,17 +46,40 @@ for no_rows=2:5
             for spars = no_shroutes:3:max_spars
                 % Spars stands for the number of nonzero routes you choose
                 % at each origin
-                matrix_sizes = [matrix_sizes; no_rows no_cols no_shroutes spars];
+                matrix_sizes('traffic') = [matrix_sizes('traffic'); no_rows no_cols no_shroutes spars];
             end
         end
     end
 end
+
+matrix_sizes('traffic') = [2 2 2 2; 2 2 2 3;];
 
     
 % each row is one size triple + sparsity measure
 %matrix_sizes = [2 2 2 2; 2 2 2 3; 2 2 2 4; 3 3 2 2; 3 3 2 3; ...
 %    3 3 3 4; 4 4 2 2; 4 4 3 3; 4 4 3 4; 5 5 2 2; 5 5 2 3; 5 5 2 4; 5 5 3 2; 5 5 3 3; 5 5 3 4]; 
 
-matrix_sizes = [2 2 2 2; 2 2 2 3];
+sparsity_values = linspace(0.1, 0.5, 9)
+sparsity_sizes = [sparsity_values'; sparsity_values' + 0.05]
 
-sparsity_sizes = [0.0 0.05; 0.05 0.1; 0.1 0.5; 0.5 1.0];
+% num_constraints = vec(1);
+% num_blocks = vec(2);
+% num_vars_per_block = vec(3);
+% num_nonzeros = vec(4);
+
+matrix_sizes('random') = [];
+
+for no_constraints=6:10
+    for no_blocks = 2:3
+        for no_vars_per_block = 10:12
+            for sparsity = sparsity_values
+                % Spars stands for the number of nonzero routes you choose
+                % at each origin
+                no_nonzeros = max(no_blocks, ...
+                    floor(no_blocks * no_vars_per_block * sparsity));
+                matrix_sizes('random') = [matrix_sizes('random'); no_constraints ...
+                    no_blocks no_vars_per_block no_nonzeros];
+            end
+        end
+    end
+end

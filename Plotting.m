@@ -16,6 +16,9 @@ run('parameters');
 
 %% Set parameters which determine the plots
 
+% Type I want to plot
+plot_type = 'random';
+
 % Algorithms I want to plot
 choice_algos_ind = [1,2,3,4,5]; % <------ USER SETS which algos to plot
 choice_algos = algos_names(choice_algos_ind); % cell of strings
@@ -29,13 +32,16 @@ no_errortypes = 3;
 
 % Matrices I want to plot (for now just one)
 choice_models_ind = 1; % < ---------- USER SETS which models to plot
-choice_models = model_types_names(choice_models_ind); % cell of strings
+models_to_plot = model_types_names(plot_type);
+choice_models = models_to_plot(choice_models_ind); % cell of strings
 no_models = length(choice_models);
 % models = cell(no_models); % Going to be a cell where everything is ordered wrt. model type
 
+
 % Matrix sizes I want to plot
 choice_sizes_ind = [1,2,3,4,5,6];
-choice_sizes = matrix_sizes(choice_sizes_ind,:);
+matrix_sizes_for_type = matrix_sizes(plot_type);
+choice_sizes = matrix_sizes_for_type(choice_sizes_ind,:);
 no_sizes = length(choice_sizes_ind);
 
 % Sparsities I want to plot
@@ -80,8 +86,7 @@ for i = 1:no_algos
         mysize = choice_sizes(j,:);
         
         % Average all results which have the algorithm and the size
-        filtered_metrics = filter_metrics(all_metrics, mysize(1), mysize(2),...
-            mysize(3), algo);
+        filtered_metrics = filter_metrics(plot_type, all_metrics, mysize, algo);
         averaged_m = average_metrics(filtered_metrics);
         results_sizesblock(j,:) = [averaged_m.test_output.runtime, ...
             averaged_m.error_L1, averaged_m.error_L2, averaged_m.error_support];
@@ -102,7 +107,7 @@ for i = 1:no_algos
             m = m{:};
             o = m.test_output;
             p = o.test_parameters;
-            if p.sparsity >= sparsity_range(1) && p.sparsity < sparsity_range(2) ...
+            if strcmp(p.type, plot_type) && p.sparsity >= sparsity_range(1) && p.sparsity < sparsity_range(2) ...
                     && strcmp(o.algorithm, algo)
                 relevant_metrics{length(relevant_metrics) + 1} = m;
             end
