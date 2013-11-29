@@ -33,7 +33,10 @@ for j=1:length(block_sizes)
 end
 
 %% Test parameters object
-p.Phi = Phi; p.f = f; p.w = w; p.block_sizes = block_sizes;
+if strcmp(p.type, 'traffic')
+    p.w = w;
+end
+p.Phi = Phi; p.f = f; p.block_sizes = block_sizes;
 p.real_a = real_a; p.n = n; p.L1 = L1; p.noise = noise;
 p.epsilon = epsilon; p.blocks = blocks;
 end
