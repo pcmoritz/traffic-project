@@ -29,6 +29,8 @@ r3 = cvx_hot_start_lp(p);
 
 r4 = cvx_block_descent_L_infty(p);
 
+r5 = cvx_unconstrained_L1(p);
+
 [[before; r1; after] - alpha, ...
     [before; r2; after] - alpha, ...
     r3 - alpha, ...
@@ -36,3 +38,4 @@ r4 = cvx_block_descent_L_infty(p);
 
 sum(abs(r3-alpha))
 sum(abs(r4-alpha))
+sum(abs(r5-alpha))

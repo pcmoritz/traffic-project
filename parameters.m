@@ -71,7 +71,7 @@ sparsity_sizes = [sparsity_values', sparsity_values' + 0.05];
 
 matrix_sizes('random') = [];
 
-for no_constraints=6:10
+for no_constraints=10:15
     for no_blocks = 2:3
         for no_vars_per_block = 10:12
             for sparsity = sparsity_values
@@ -87,9 +87,9 @@ for no_constraints=6:10
 end
 
 % to reduce computation time
-num_subsamples = 40;
-if length(matrix_sizes('random')) > num_subsamples
-    p = randperm(length(matrix_sizes('random')));
-    temp = matrix_sizes('random');
-    matrix_sizes('random') = temp(p(1:num_subsamples), :);
-end
+% num_subsamples = 40;
+% if length(matrix_sizes('random')) > num_subsamples
+%     p = randperm(length(matrix_sizes('random')));
+%     temp = matrix_sizes('random');
+%     matrix_sizes('random') = temp(p(1:num_subsamples), :);
+% end
