@@ -8,7 +8,7 @@ elseif strcmp(user,'richard') == 1
     base_directory = './data-local/';
 else
     python = 'LD_LIBRARY_PATH= python';
-    base_directory = '~/Dropbox/traffic/data/';
+    % base_directory = '~/Dropbox/traffic/data/';
     base_directory = '~/convex-project/data/';
 end
 
