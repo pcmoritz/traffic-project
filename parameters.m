@@ -1,8 +1,8 @@
 % The parameters for the file system structure, etc.
 user = getenv('USER');
 if strcmp(user,'cathywu') == 1
-    python = '/opt/local/bin/python';
-    base_directory = './data/';
+    python = '/usr/local/bin/python';
+    base_directory = './data-local/';
 elseif strcmp(user,'richard') == 1
     python = 'python';
     base_directory = './data-local/';
