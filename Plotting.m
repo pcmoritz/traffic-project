@@ -39,7 +39,7 @@ no_models = length(choice_models);
 
 
 % Matrix sizes I want to plot
-choice_sizes_ind = [1:50];
+choice_sizes_ind = [1:20];
 matrix_sizes_for_type = matrix_sizes(plot_type);
 choice_sizes = matrix_sizes_for_type(choice_sizes_ind,:);
 no_sizes = length(choice_sizes_ind);

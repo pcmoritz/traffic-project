@@ -18,7 +18,7 @@ output_directory = [base_directory, 'output/'];
 metrics_directory = [base_directory, 'metrics/'];
 graphs_directory = [base_directory, 'graphs/'];
 
-tests = {'cvx_L2','cvx_raw','cvx_unconstrained_L1','cvx_weighted_L1'};
+tests = {'cvx_L2','cvx_raw','cvx_unconstrained_L1','cvx_weighted_L1', 'cvx_hot_start_lp'};
 
 % Library with names for the different parameters/settings/algorithms
 max_sparsity = .5;
@@ -82,4 +82,12 @@ for no_constraints=6:10
             end
         end
     end
+end
+
+% to reduce computation time
+num_subsamples = 20;
+if length(matrix_sizes('random')) > num_subsamples
+    p = randperm(length(matrix_sizes('random')));
+    temp = matrix_sizes('random');
+    matrix_sizes('random') = temp(p(1:num_subsamples), :);
 end
