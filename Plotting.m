@@ -20,7 +20,7 @@ run('parameters');
 plot_type = 'random';
 
 % Algorithms I want to plot
-choice_algos_ind = [1,2,3,4,5]; % <------ USER SETS which algos to plot
+choice_algos_ind = [1,2,3,4,5,6]; % <------ USER SETS which algos to plot
 choice_algos = algos_names(choice_algos_ind); % cell of strings
 no_algos = length(choice_algos_ind);
 

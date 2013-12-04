@@ -18,7 +18,7 @@ output_directory = [base_directory, 'output/'];
 metrics_directory = [base_directory, 'metrics/'];
 graphs_directory = [base_directory, 'graphs/'];
 
-tests = {'cvx_L2','cvx_raw','cvx_unconstrained_L1','cvx_weighted_L1', 'cvx_hot_start_lp'};
+tests = {'cvx_L2','cvx_raw','cvx_unconstrained_L1','cvx_weighted_L1', 'cvx_hot_start_lp', 'cvx_block_descent_L_infty'};
 
 % Library with names for the different parameters/settings/algorithms
 max_sparsity = .5;
@@ -31,8 +31,10 @@ model_types_names = containers.Map();
 model_types_names('traffic') = {'small_graph'};
 model_types_names('random') = {'gaussian'};
 
-algos_names = {'cvx_L2','cvx_raw','cvx_unconstrained_L1','cvx_weighted_L1', 'cvx_hot_start_lp','cvx_single_block_L_infty'...
-    'cvx_random_sample_L_infty', 'cvx_mult_blocks_L_infty','cvx_block_descent_L_infty','cvx_entropy'}; % the ones taking block into account
+% algos_names = {'cvx_L2','cvx_raw','cvx_unconstrained_L1','cvx_weighted_L1', 'cvx_hot_start_lp','cvx_single_block_L_infty'...
+%     'cvx_random_sample_L_infty', 'cvx_mult_blocks_L_infty','cvx_block_descent_L_infty','cvx_entropy'}; % the ones taking block into account
+
+algos_names = tests;
 
 matrix_sizes = containers.Map();
 
@@ -85,7 +87,7 @@ for no_constraints=6:10
 end
 
 % to reduce computation time
-num_subsamples = 20;
+num_subsamples = 40;
 if length(matrix_sizes('random')) > num_subsamples
     p = randperm(length(matrix_sizes('random')));
     temp = matrix_sizes('random');
