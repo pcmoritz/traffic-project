@@ -17,17 +17,17 @@ function min_a = cvx_entropy(p)
         L1 * a == ones(length(block_sizes), 1)
     cvx_end
 
-    num_iterations = 200;
+    num_iterations = 10;
     fprintf(1,'Progress (of %d):  ', num_iterations);
     
     for k=1:num_iterations
-        y = -a .* log(a + epsilon) - a;
+        y = -a .* log(a + epsilon) - a; % gradient of entropy
         
         cvx_begin quiet
             variable a_delta(n)
             minimize( y' * a_delta )
             
-            subject to
+            subject to % still feasible
             square_pos(norm(Phi * (a + a_delta) - f, 2)) <= epsilon
             Phi * (a + a_delta) == f
             (a + a_delta) >= 0

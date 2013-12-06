@@ -3,6 +3,7 @@ user = getenv('USER');
 if strcmp(user,'cathywu') == 1
     python = '/usr/local/bin/python';
     base_directory = './data-local/';
+    addpath '~/mosek/7/toolbox/r2012a';
 elseif strcmp(user,'richard') == 1
     python = 'python';
     base_directory = './data-local/';
@@ -10,6 +11,7 @@ else
     python = 'LD_LIBRARY_PATH= python';
     % base_directory = '~/Dropbox/traffic/data/';
     base_directory = '~/convex-project/data/';
+    addpath '~/mosek/7/toolbox/r2009b';
 end
 
 raw_directory = [base_directory, 'raw/'];
@@ -18,7 +20,7 @@ output_directory = [base_directory, 'output/'];
 metrics_directory = [base_directory, 'metrics/'];
 graphs_directory = [base_directory, 'graphs/'];
 
-tests = {'cvx_L2','cvx_raw','cvx_unconstrained_L1','cvx_weighted_L1', 'cvx_hot_start_lp'};
+tests = {'cvx_L2','cvx_raw','cvx_unconstrained_L1','cvx_weighted_L1', 'cvx_entropy'};
 
 % Library with names for the different parameters/settings/algorithms
 max_sparsity = .5;
@@ -70,7 +72,7 @@ sparsity_sizes = [sparsity_values', sparsity_values' + 0.05];
 matrix_sizes('random') = [];
 
 for no_constraints=6:10
-    for no_blocks = 2:3
+    for no_blocks = 1:3
         for no_vars_per_block = 10:12
             for sparsity = sparsity_values
                 % Spars stands for the number of nonzero routes you choose
@@ -85,7 +87,7 @@ for no_constraints=6:10
 end
 
 % to reduce computation time
-num_subsamples = 20;
+num_subsamples = 40;
 if length(matrix_sizes('random')) > num_subsamples
     p = randperm(length(matrix_sizes('random')));
     temp = matrix_sizes('random');
