@@ -1,35 +1,27 @@
+%% Usage
+% Run this to get the appropriate test file:
+% python random_matrix.py --prefix 'blah' --num_blocks 2 --num_vars_per_block 10 --num_nonzeros 10 --num_constraints 10
+
 %% cvx code for sparse recovery of on small graphs
 clear all;
 cvx_solver mosek;
 
 %% Read in graph
-load('small_graph.mat')
-% load('augmented_graph.mat')
-% load('small_graph_OD.mat')
+load('blahrandom_matrix.mat')
 
 Phi = sparse(phi);
 m = size(Phi,1);
 n = size(Phi,2);
-% n = 200;
-% m = 10;
-
-% Phi = [abs(randn(m,n))];
-% for j=1:m*n
-%     Phi(ceil(rand*m),ceil(rand*n)) = 0;
-% end
-% f = [abs(randn(m,1))];
 
 %% Define parameters
 min_a = Inf;
 min_val = Inf;
 lambda = 1e-5;
 Phi_original = Phi;
-% Phi = sparse(Phi_original);
 
 tic
-% nroutes = [1,2,5,3];
-num_routes = int64(num_routes); % each entry is associated with one origin
-cum_nroutes = int64([0; cumsum(double(num_routes))]);
+num_routes = int64(block_sizes); % each entry is associated with one origin
+cum_nroutes = int64([0; cumsum(double(block_sizes))]);
 
 %% L1 constraint matrix
 a = zeros(n, 1);
@@ -56,7 +48,8 @@ cvx_end
 %% Iteratively minimize entropy
 num_iterations = 1000;
 for k=1:num_iterations
-    y = -a .* log(a + 1e-10) - a;
+    % y = -a .* log(a + 1e-10) - a;
+    y = -log(a + 1e-10)-1;
     
     cvx_begin quiet
         variable a_delta(n)
@@ -78,9 +71,10 @@ for k=1:num_iterations
         to = cum_nroutes(j + 1); 
         t(j) = -sum(a(from:to) .* log(a(from:to) + 1e-10));
     end
-    fprintf('%d/%d: a_delta %f, opt %f, ent %f\n', k, num_iterations, sum(abs(a_delta)), cvx_optval, sum(t))
+    fprintf('%d/%d: a_delta %f, opt %f, ent %f, err %f\n', k, num_iterations, ...
+        sum(abs(a_delta)), cvx_optval, sum(t), norm(real_a - a, 1));
 end
 toc
 
-error = norm(real_a - min_a, 1) % 38.6043 on small graph, 29.9805 on small graph OD
-comparison = [real_a min_a];
+error = norm(real_a - a, 1)
+comparison = [real_a a];
