@@ -9,21 +9,26 @@ function a = cvx_block_descent_L_infty(p)
     blocks = p.blocks;
     
     a = zeros(n, 1);
+    [m M] = size(L1);
 
     % set up a initial guess that is feasible
-    for k = 1:length(blocks)
-        block = blocks(k);
-        a(block(1)) = 1;
-    end
+    % think about good starting values here
+    cvx_begin quiet
+        variable a(n)
+        minimize norm(a, 2); % L2 for a start
+        subject to
+        [Phi; L1] * a == [f; ones(m, 1)];
+        a >= 0
+    cvx_end
     
-    total_iterations = 5;
+    total_iterations = 20;
 
     for j = [1:total_iterations]
     fprintf('sweep %d/%d , iteration (of %d) ', j, total_iterations, length(blocks));
     for k = [1:length(blocks)]
         fprintf(1,[repmat('\b',1,ceil(log(k)/log(10))) '%d'],k);
         block = blocks(k,:);
-        result = solve_block(Phi, a, f, block, 1.0);
+        result = solve_block_hot_start_lp(Phi, a, f, block);
         a(block(1):block(2)) = result;
     end
     fprintf('\n');
