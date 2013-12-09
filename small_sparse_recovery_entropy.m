@@ -47,22 +47,41 @@ cvx_end
 
 %% Iteratively minimize entropy
 num_iterations = 1000;
+prev_ent = 0;
+curr_ent = 1;
+a_delta = 1;
 for k=1:num_iterations
-    % y = -a .* log(a + 1e-10) - a;
-    y = -log(a + 1e-10)-1;
+    y = -a .* log(a + 1e-10) - a;
+    % y = -log(a + 1e-10)-1;
     
-    cvx_begin quiet
-        variable a_delta(n)
-        minimize( y' * a_delta )
-        
-        subject to
-        % square_pos(norm(Phi * (a + a_delta) - f, 2)) <= 1e-6
-        Phi * (a + a_delta) == f
-        (a + a_delta) >= 0
-        L1 * (a + a_delta) == ones(length(num_routes), 1)
-    cvx_end
+    if norm(a_delta,1) >= 1e-15 % curr_ent < prev_ent - 1e-17
+        disp('down')
+        cvx_begin quiet
+            variable a_delta(n)
+            minimize( y' * a_delta )
+
+            subject to
+            % square_pos(norm(Phi * (a + a_delta) - f, 2)) <= 1e-6
+            Phi * (a + a_delta) == f
+            (a + a_delta) >= 0
+            L1 * (a + a_delta) == ones(length(num_routes), 1)
+        cvx_end
+    else
+        disp('up')
+        cvx_begin quiet
+            variable a_delta(n)
+            minimize( -y' * a_delta )
+
+            subject to
+            % square_pos(norm(Phi * (a + a_delta) - f, 2)) <= 1e-6
+            Phi * (a + a_delta) == f
+            (a + a_delta) >= 0
+            L1 * (a + a_delta) == ones(length(num_routes), 1)
+        cvx_end
+
+    end
     a = a + a_delta;
-    a(1:num_routes(1))'
+    % a(1:num_routes(1))'
     
     % Compute entropy of a
     t = zeros(length(num_routes), 1);
@@ -71,8 +90,10 @@ for k=1:num_iterations
         to = cum_nroutes(j + 1); 
         t(j) = -sum(a(from:to) .* log(a(from:to) + 1e-10));
     end
+    prev_ent = curr_ent;
+    curr_ent = sum(t);
     fprintf('%d/%d: a_delta %f, opt %f, ent %f, err %f\n', k, num_iterations, ...
-        sum(abs(a_delta)), cvx_optval, sum(t), norm(real_a - a, 1));
+        sum(abs(a_delta)), cvx_optval, curr_ent, norm(real_a - a, 1));
 end
 toc
 
