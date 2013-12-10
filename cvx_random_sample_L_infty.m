@@ -6,11 +6,11 @@ function min_a = cvx_random_sample_L_infty(p)
     cum_nroutes = int64([0; cumsum(double(block_sizes))]);
     len_block_sizes = length(block_sizes);
     
-    num_iterations = 200;
+    num_iterations = 100;
     fprintf(1, 'Progress (of %d):  ', num_iterations);
     
     min_a = Inf;
-    min_val = Inf;  
+    min_val = Inf;
     
     a = zeros(n, 1);
     for j=1:length(block_sizes)
@@ -19,16 +19,27 @@ function min_a = cvx_random_sample_L_infty(p)
         a(from:to) = ones(to - from + 1, 1) / double(to - from + 1);
     end
 
+    %% Sampling prior via unconstrained L1 and L2 solutions
+    % Find a feasible solution
+    a_L1 = cvx_unconstrained_L1(p);
+    a_L2 = cvx_L2(p);
+    a_raw = cvx_raw(p);
+    a0 = a_L1 + a_L2 + 0.1;
+
+    %% Random sampling
     for k=1:num_iterations
         i = zeros(len_block_sizes, 1);
+
+        % Sample
         for j=1:len_block_sizes
             from = cum_nroutes(j) + 1;
             to = cum_nroutes(j + 1);
             % ~ is max, i(j) is argmax
             % mnrnd(1, ...) returns a vector with one 1 and the rest 0.
-            [~, i(j)] = max(mnrnd(1, a(from:to) / sum(a(from:to))));
+            [~, i(j)] = max(mnrnd(1, a0(from:to) / sum(a0(from:to))));
         end
         
+        % Try sample
         cvx_begin quiet
             variable a(n)
             variable t(len_block_sizes)
@@ -56,6 +67,13 @@ function min_a = cvx_random_sample_L_infty(p)
             min_val = cvx_optval;
             min_a = a;
         end
+        
+        % DEBUG
+%         if mod(k,100) == 0
+%             [p.real_a a_raw a_L1 a_L2 a0 min_a]
+%             [norm(p.real_a - a_L1,1) norm(p.real_a - a_raw,1) norm(p.real_a - a_L2,1) norm(p.real_a - a0,1) norm(p.real_a - min_a,1)]
+%         end
     end
     fprintf(1, '\n');
+    [norm(p.real_a - a_L1,1) norm(p.real_a - a_raw,1) norm(p.real_a - a_L2,1) norm(p.real_a - a0,1) norm(p.real_a - min_a,1)]
 end

@@ -1,5 +1,6 @@
 % The parameters for the file system structure, etc.
 user = getenv('USER');
+addpath 'lbfgsb-matlab/src';
 if strcmp(user,'cathywu') == 1
     python = '/usr/local/bin/python';
     base_directory = './data-local/';
@@ -21,6 +22,7 @@ metrics_directory = [base_directory, 'metrics/'];
 graphs_directory = [base_directory, 'graphs/'];
 
 tests = {'cvx_L2','cvx_raw','cvx_unconstrained_L1','cvx_weighted_L1', 'cvx_hot_start_lp', 'cvx_block_descent_L_infty'};
+% tests = {'cvx_random_sample_L_infty'};
 
 % Library with names for the different parameters/settings/algorithms
 max_sparsity = .5;
@@ -50,7 +52,8 @@ for no_rows=2:5
             for spars = no_shroutes:3:max_spars
                 % Spars stands for the number of nonzero routes you choose
                 % at each origin
-                matrix_sizes('traffic') = [matrix_sizes('traffic'); no_rows no_cols no_shroutes spars];
+                matrix_sizes('traffic') = [matrix_sizes('traffic'); ...
+                    no_rows no_cols no_shroutes spars];
             end
         end
     end
