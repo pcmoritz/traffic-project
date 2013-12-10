@@ -15,13 +15,17 @@ else
     addpath '~/mosek/7/toolbox/r2009b';
 end
 
+mode = 'REAL'; % DEBUG, REAL
+
 raw_directory = [base_directory, 'raw/'];
 param_directory = [base_directory, 'params/'];
 output_directory = [base_directory, 'output/'];
 metrics_directory = [base_directory, 'metrics/'];
 graphs_directory = [base_directory, 'graphs/'];
 
-tests = {'cvx_L2','cvx_raw','cvx_unconstrained_L1','cvx_weighted_L1', 'cvx_hot_start_lp', 'cvx_block_descent_L_infty'};
+tests = {'cvx_L2','cvx_raw','cvx_unconstrained_L1','cvx_weighted_L1', ...
+    'cvx_hot_start_lp', 'cvx_block_descent_L_infty', ...
+    'cvx_random_sample_L_infty'};
 % tests = {'cvx_random_sample_L_infty'};
 
 % Library with names for the different parameters/settings/algorithms
@@ -42,6 +46,7 @@ algos_names = tests;
 
 matrix_sizes = containers.Map();
 
+%% Traffic Matrix
 matrix_sizes('traffic') = [];
     
 for no_rows=2:5
@@ -59,8 +64,8 @@ for no_rows=2:5
     end
 end
 
-matrix_sizes('traffic') = [2 2 2 2; 2 2 2 3;];
-
+% For now, we are not considering the traffic matrix
+% matrix_sizes('traffic') = [2 2 2 2; 2 2 2 3;];
     
 % each row is one size triple + sparsity measure
 %matrix_sizes = [2 2 2 2; 2 2 2 3; 2 2 2 4; 3 3 2 2; 3 3 2 3; ...
@@ -74,6 +79,7 @@ sparsity_sizes = [sparsity_values', sparsity_values' + 0.05];
 % num_vars_per_block = vec(3);
 % num_nonzeros = vec(4);
 
+%% Random matrix
 matrix_sizes('random') = [];
 
 for no_constraints=10:15
@@ -91,10 +97,12 @@ for no_constraints=10:15
     end
 end
 
-% to reduce computation time
-% num_subsamples = 40;
-% if length(matrix_sizes('random')) > num_subsamples
-%     p = randperm(length(matrix_sizes('random')));
-%     temp = matrix_sizes('random');
-%     matrix_sizes('random') = temp(p(1:num_subsamples), :);
-% end
+% Run subset of modes we care about to reduce computation time
+if strcmp(mode,'DEBUG') == 1
+    num_subsamples = 40;
+    if length(matrix_sizes('random')) > num_subsamples
+        p = randperm(length(matrix_sizes('random')));
+        temp = matrix_sizes('random');
+        matrix_sizes('random') = temp(p(1:num_subsamples), :);
+    end
+end

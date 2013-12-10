@@ -40,6 +40,7 @@ code_bs = repmat('BS', m, 1);
         % for variable a in \R^n, maximize a(i),
         % subject to sum(a) = 1, a >= 0, Phi * a == f
         
+        % Set initial condition
         if length(a) > 1 % one iteration is already done
             % Beware: This only works for the primal!
             bas.skc = code_eq;
