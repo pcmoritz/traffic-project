@@ -37,7 +37,6 @@ choice_models = models_to_plot(choice_models_ind); % cell of strings
 no_models = length(choice_models);
 % models = cell(no_models); % Going to be a cell where everything is ordered wrt. model type
 
-
 % Matrix sizes I want to plot
 choice_sizes_ind = [1:20];
 matrix_sizes_for_type = matrix_sizes(plot_type);
@@ -48,6 +47,17 @@ no_sizes = length(choice_sizes_ind);
 choice_sparsities_ind = [1,2,3,4];
 choice_sparsities = sparsity_sizes(choice_sparsities_ind, :);
 no_sparsities = length(choice_sparsities_ind);
+
+% For random matrices plotting m vs. n, choose no_blocks and no_vars_per_block I wanne fix
+plot_noblocks = 3; plot_novars = 10; 
+%plot_nocols = 20; % Fix number of cols 
+%no_cols = matrix_sizes_for_type(:,4); % All experiments 
+% Get indeces with matrix size you want
+active_indices = intersect(find(matrix_sizes_for_type(:,2) == plot_noblocks),find(matrix_sizes_for_type(:,3) == plot_novars));
+constraint_sizes = matrix_sizes_for_type(active_indices,1);
+% blockvar_sizes = matrix_sizes_for_type(indices,2:3); % Same no_cols might have different blocks, variables sizes
+choice_constraints = unique(constraint_sizes); % well actually don't need unique here
+no_constraints = length(choice_constraints);
 
 
 % % Kind of plots I want
@@ -76,6 +86,7 @@ Phi_sizes = zeros(no_sizes, 2);
 % Initialize intermediate matrices
 results_sizesblock = zeros(no_sizes,4);%no_errortypes+1);
 results_sparsityblock = zeros(no_sparsities,4);% no_errortypes+1);
+results_constraintsblock = zeros(no_constraints,4);
 
 for i = 1:no_algos
     % Get the chosen algorithm string
@@ -86,7 +97,7 @@ for i = 1:no_algos
         mysize = choice_sizes(j,:);
         
         % Average all results which have the algorithm and the size
-        filtered_metrics = filter_metrics(plot_type, all_metrics, mysize, algo);
+        filtered_metrics = filter_metrics(plot_type, all_metrics, mysize, algo, 0);
         averaged_m = average_metrics(filtered_metrics);
         results_sizesblock(j,:) = [averaged_m.test_output.runtime, ...
             averaged_m.error_L1, averaged_m.error_L2, averaged_m.error_support];
@@ -95,6 +106,17 @@ for i = 1:no_algos
             Phi_sizes(j,:) = size(averaged_m.test_output.test_parameters.Phi);
         end
         
+    end
+    
+    % Get the ones 
+    for k = 1:no_constraints
+        mysize = [choice_constraints(k) plot_noblocks plot_novars];
+        %myconstraints = choice_constraints(k);
+        % Average all results which have 
+        filtered_metrics = filter_metrics(plot_type, all_metrics, mysize, algo, 1);
+        averaged_m = average_metrics(filtered_metrics);
+        results_constraintsblock(k,:) = [averaged_m.test_output.runtime, ...
+            averaged_m.error_L1, averaged_m.error_L2, averaged_m.error_support];        
     end
     
     for j = 1:no_sparsities
@@ -120,7 +142,7 @@ for i = 1:no_algos
     end
     
     % Save the algo_matrix in the entire cell
-    algos_cell{i} = [results_sizesblock; results_sparsityblock];
+    algos_cell{i} = [results_sizesblock; results_sparsityblock; results_constraintsblock];
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -139,6 +161,11 @@ size_mat = [choice_sizes Phi_sizes];
 size_xaxis = size_mat(:,5)./size_mat(:,6);
 dimvalue_descrip = 'ratio of matrix row vs. col';
 
+
+%% For vs. Constraints
+constraints_xaxis = choice_constraints;
+dimvalue_descrip_cst = sprintf('number of constraints m with fixed %d no. of blocks and %d variables per block',plot_noblocks,plot_novars);
+
 %% For Runtime
 size_xaxis_rt = log(size_mat(:,4) + size_mat(:,5));
 
@@ -156,12 +183,19 @@ dimvalue_descrip_rt = 'log (m+n) of matrix phi';
 for l = 1:no_errortypes
     error_name = error_types_names{l};
     model_name = choice_models{:};
-    
+    if strcmp(plot_type,'random')
+        model_name = 'random';
+    end
     %% Create Mat errors vs. size
     plotting_err_vs_sz(no_sizes, no_algos, algos_cell, size_xaxis, dimvalue_descrip, choice_algos, l, error_name, model_name, prefix, colorsmatrix);
     
     %% Create Mat errors vs. sparsity
     plotting_err_vs_spars(no_sizes, no_algos, no_sparsities, algos_cell,sparsity_xaxis, choice_algos, l, error_name, model_name, prefix, colorsmatrix);
+
+    %% Create Mat errors vs. no. constraints
+    % Choose one no_matrix_cols 
+    % For this one size
+    plotting_err_vs_constraints(no_sizes, no_algos, no_sparsities, algos_cell, constraints_xaxis, dimvalue_descrip_cst, choice_algos, l, error_name, model_name, prefix, colorsmatrix, plot_noblocks, plot_novars);
 end
 
 
