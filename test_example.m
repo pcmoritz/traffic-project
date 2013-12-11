@@ -63,7 +63,7 @@ end
 
 if(generate_metrics_p)
     numsamples = 1;
-    delete(dir(fullfile(metrics_directory, '*.mat')));
+    delete(fullfile(metrics_directory, '*.mat'));
 
     files = dir(fullfile(output_directory, '*.mat'));
     for file = files'
