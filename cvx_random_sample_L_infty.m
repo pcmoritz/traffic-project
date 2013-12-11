@@ -38,6 +38,7 @@ function min_a = cvx_random_sample_L_infty(p)
             % mnrnd(1, ...) returns a vector with one 1 and the rest 0.
             [~, i(j)] = max(mnrnd(1, a0(from:to) / sum(a0(from:to))));
         end
+        i = int64(i) + int64(cum_nroutes(1:end-1));
         
         % Try sample
         cvx_begin quiet

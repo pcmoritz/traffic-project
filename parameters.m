@@ -26,7 +26,7 @@ graphs_directory = [base_directory, 'graphs/'];
 tests = {'cvx_L2','cvx_raw','cvx_unconstrained_L1','cvx_weighted_L1', ...
     'cvx_hot_start_lp', 'cvx_block_descent_L_infty', ...
     'cvx_random_sample_L_infty'};
-% tests = {'cvx_dual_decomposition'};
+tests = {'cvx_random_sample_L_infty_hot_start'};
 
 % Library with names for the different parameters/settings/algorithms
 max_sparsity = .5;
