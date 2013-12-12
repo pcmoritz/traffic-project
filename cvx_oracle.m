@@ -3,19 +3,12 @@ function a = cvx_oracle(p)
     Phi = p.Phi; f = p.f; n = p.n; L1 = p.L1; block_sizes = p.block_sizes;
     noise = p.noise; epsilon = p.epsilon; lambda = p.lambda;
     
-    cum_nroutes = int64([0; cumsum(double(block_sizes))]);
-    len_block_sizes = length(block_sizes);
-    
     %% Sampling prior via unconstrained L1 and L2 solutions
     % Find a feasible solution
     a_L1 = cvx_unconstrained_L1(p);
     a_L2 = cvx_L2(p);
     a_raw = cvx_raw(p);
     a0 = a_L1 + a_L2 + 0.1;
-
-    %% Hot start
-    max_a = -Inf;
-    max_val = -Inf;
 
     % Augment with L1 constraints
     f = [f; ones(size(L1,1),1)];
@@ -28,17 +21,7 @@ function a = cvx_oracle(p)
     code_bs = repmat('BS', m, 1);
         
     %% Oracle
-    i = zeros(len_block_sizes, 1);
-
-    % Sample
-    for j=1:len_block_sizes
-        from = cum_nroutes(j) + 1;
-        to = cum_nroutes(j + 1);
-        % ~ is max, i(j) is argmax
-        % mnrnd(1, ...) returns a vector with one 1 and the rest 0.
-        [~, i(j)] = max(p.real_a(from:to) / sum(p.real_a(from:to)));
-    end
-    i = int64(i) + int64(cum_nroutes(1:end-1));
+    i = get_max_support(p);
 
     % The program we have to solve here is (in the noiseless case):
     % for variable a in \R^n, maximize a(i),
