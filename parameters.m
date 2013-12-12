@@ -48,7 +48,7 @@ matrix_sizes = containers.Map();
 
 % %% Traffic Matrix
 matrix_sizes('traffic') = [];
-%     
+
 % for no_rows=2:5
 %     for no_cols = 2:5
 %         for no_shroutes = 2:4
@@ -65,13 +65,14 @@ matrix_sizes('traffic') = [];
 % end
 
 % For now, we are not considering the traffic matrix
+
 % matrix_sizes('traffic') = [2 2 2 2; 2 2 2 3;];
     
 % each row is one size triple + sparsity measure
 %matrix_sizes = [2 2 2 2; 2 2 2 3; 2 2 2 4; 3 3 2 2; 3 3 2 3; ...
 %    3 3 3 4; 4 4 2 2; 4 4 3 3; 4 4 3 4; 5 5 2 2; 5 5 2 3; 5 5 2 4; 5 5 3 2; 5 5 3 3; 5 5 3 4]; 
 
-sparsity_values = linspace(0.1, 0.5, 9);
+sparsity_values = linspace(0.1, 0.2, 4);
 sparsity_sizes = [sparsity_values', sparsity_values' + 0.05];
 
 % num_constraints = vec(1);

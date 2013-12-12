@@ -76,5 +76,5 @@ function min_a = cvx_random_sample_L_infty(p)
 %         end
     end
     fprintf(1, '\n');
-    [norm(p.real_a - a_L1,1) norm(p.real_a - a_raw,1) norm(p.real_a - a_L2,1) norm(p.real_a - a0,1) norm(p.real_a - min_a,1)]
+    [norm(p.real_a - a_L1,1) norm(p.real_a - a_raw,1) norm(p.real_a - a_L2,1) norm(p.real_a - min_a,1)]
 end

@@ -53,7 +53,7 @@ no_sparsities = length(choice_sparsities_ind);
 
 % For random matrices plotting m vs. n, choose no_blocks and no_vars_per_block I wanne fix
 plot_noblocks = 4; plot_novars = 12; 
-plot_sparsity = [0.2 0.3];
+plot_sparsity = [0.1 0.15];
 %plot_nocols = 20; % Fix number of cols 
 %no_cols = matrix_sizes_for_type(:,4); % All experiments 
 % Get indeces with matrix size you want
