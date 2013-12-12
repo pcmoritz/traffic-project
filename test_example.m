@@ -39,6 +39,7 @@ parameters;
 % TODO save p to disk (O, OD, random, aug)
 
 if(generate_problems_p)
+    delete(fullfile(param_directory, '*.mat'));
     generate_problem('traffic', matrix_sizes('traffic'));
     generate_problem('random', matrix_sizes('random'));
 end
