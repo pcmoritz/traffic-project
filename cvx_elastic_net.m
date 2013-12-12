@@ -14,7 +14,7 @@ function a = cvx_elastic_net(p, mu_L2)
     cvx_begin quiet
         variable a(n)
         if ~noise
-            minimize( mu_L1 * norm(a,2) + mu_L2 * norm(a,2) )
+            minimize( mu_L1 * norm(a,1) + mu_L2 * norm(a,2) )
         else
             minimize( square_pos(norm(Phi * a - f, 2)) + ...
                 mu_L1 * norm(a,2) + mu_L2 * norm(a,2) )
