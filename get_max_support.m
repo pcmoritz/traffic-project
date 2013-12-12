@@ -7,7 +7,8 @@ function i = get_max_support(p)
     len_block_sizes = length(block_sizes);
     
     i = zeros(len_block_sizes, 1);
-
+    k = zeros(len_block_sizes, 1);
+    
     % Sample
     for j=1:len_block_sizes
         from = cum_nroutes(j) + 1;

@@ -32,8 +32,7 @@ function avg_test_mu = cross_validation(n,k)
             for p=train
                 p = p{1};
                 a = cvx_elastic_net(p,mu);
-                ind = get_max_support(p);
-                err = err + sum(a(ind) > 1e-5)/sum(p.real_a(ind) > 1e-5);
+                err = err + get_max_support_error(p,a);
             end
             if err < min_err
                 min_err = err;
@@ -47,8 +46,7 @@ function avg_test_mu = cross_validation(n,k)
         for p=test
             p = p{1};
             a = cvx_elastic_net(p,min_mu)
-            ind = get_max_support(p);
-            err = err + sum(a(ind) > 1e-5)/sum(p.real_a(ind) > 1e-5);
+            err = err + get_max_support_error(p,a);
         end
         test_err = [test_err err];
         test_mu = [test_mu min_mu];
