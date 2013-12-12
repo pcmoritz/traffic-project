@@ -88,5 +88,5 @@ function max_a = cvx_random_sample_L_infty_hot_start(p)
         end
     end
     fprintf(1, '\n');
-    [p.num_nonzeros/p.n norm(p.real_a - a_L1,1) norm(p.real_a - a_raw,1) norm(p.real_a - a_L2,1) norm(p.real_a - a0,1) norm(p.real_a - max_a,1)]
+    [p.num_nonzeros/p.n norm(p.real_a - a_L1,1) norm(p.real_a - a_raw,1) norm(p.real_a - a_L2,1) norm(p.real_a - max_a,1)]
 end

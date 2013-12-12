@@ -25,7 +25,8 @@ graphs_directory = [base_directory, 'graphs/'];
 
 tests = {'cvx_L2','cvx_raw','cvx_unconstrained_L1','cvx_weighted_L1', ...
     'cvx_hot_start_lp', 'cvx_block_descent_L_infty', ...
-    'cvx_random_sample_L_infty_hot_start'};
+    'cvx_random_sample_L_infty_hot_start','cvx_oracle'};
+% tests = {'cvx_oracle'};
 
 % Library with names for the different parameters/settings/algorithms
 max_sparsity = .5;
@@ -48,29 +49,29 @@ matrix_sizes = containers.Map();
 %% Traffic Matrix
 matrix_sizes('traffic') = [];
     
-for no_rows=2:5
-    for no_cols = 2:5
-        for no_shroutes = 2:4
-            total_routes = (no_rows*no_cols-1)*no_shroutes;
-            max_spars = ceil(.1*total_routes);
-            for spars = no_shroutes:3:max_spars
-                % Spars stands for the number of nonzero routes you choose
-                % at each origin
-                matrix_sizes('traffic') = [matrix_sizes('traffic'); ...
-                    no_rows no_cols no_shroutes spars];
-            end
-        end
-    end
-end
-
-% For now, we are not considering the traffic matrix
+% for no_rows=2:5
+%     for no_cols = 2:5
+%         for no_shroutes = 2:4
+%             total_routes = (no_rows*no_cols-1)*no_shroutes;
+%             max_spars = ceil(.1*total_routes);
+%             for spars = no_shroutes:3:max_spars
+%                 % Spars stands for the number of nonzero routes you choose
+%                 % at each origin
+%                 matrix_sizes('traffic') = [matrix_sizes('traffic'); ...
+%                     no_rows no_cols no_shroutes spars];
+%             end
+%         end
+%     end
+% end
+% 
+% % For now, we are not considering the traffic matrix
 % matrix_sizes('traffic') = [2 2 2 2; 2 2 2 3;];
     
 % each row is one size triple + sparsity measure
 %matrix_sizes = [2 2 2 2; 2 2 2 3; 2 2 2 4; 3 3 2 2; 3 3 2 3; ...
 %    3 3 3 4; 4 4 2 2; 4 4 3 3; 4 4 3 4; 5 5 2 2; 5 5 2 3; 5 5 2 4; 5 5 3 2; 5 5 3 3; 5 5 3 4]; 
 
-sparsity_values = linspace(0.1, 0.5, 9);
+sparsity_values = linspace(0.1, 0.2, 4);
 sparsity_sizes = [sparsity_values', sparsity_values' + 0.05];
 
 % num_constraints = vec(1);
@@ -81,9 +82,9 @@ sparsity_sizes = [sparsity_values', sparsity_values' + 0.05];
 %% Random matrix
 matrix_sizes('random') = [];
 
-for no_constraints=5:2:15
-    for no_blocks = 2:4
-        for no_vars_per_block = 10:2:12
+for no_constraints=10:2:15 % size of f
+    for no_blocks = 2:4 % number of blocks r
+        for no_vars_per_block = 10:2:12 % size of each block
             for sparsity = sparsity_values
                 % Spars stands for the number of nonzero routes you choose
                 % at each origin
