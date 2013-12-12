@@ -4,7 +4,7 @@
 % second parameter: shall the output be generated?
 % third parameter: shall the metrics be generated?
 
-function test_example(varargin)
+function filtered_metrics = test_example(varargin)
 
 input = inputParser;
 input.FunctionName = 'TEST_EXAMPLE';
@@ -39,8 +39,8 @@ parameters;
 % TODO save p to disk (O, OD, random, aug)
 
 if(generate_problems_p)
-    % delete(fullfile(param_directory, '*.mat'));
-    % delete(fullfile(raw_directory, '*.mat'));
+    %delete(fullfile(param_directory, '*.mat'));
+
     generate_problem('traffic', matrix_sizes('traffic'));
     generate_problem('random', matrix_sizes('random'));
 end
@@ -91,6 +91,6 @@ if(generate_plots_p)
     mkdir(outdir);
 
     % Plot
-    Plotting(strcat(outdir, '/'), all_metrics)
+    filtered_metrics = Plotting(strcat(outdir, '/'), all_metrics)
 end
 end
