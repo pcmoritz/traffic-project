@@ -14,7 +14,13 @@ function avg_test_mu = cross_validation(n,k)
     params(1) = [];
     
     mus = [linspace(0,1,11) linspace(10,100,10)];
-    Indices = crossvalind('Kfold', n, k);
+    % Requires bioinformatics toolbox
+    % Indices = crossvalind('Kfold', n, k);
+    Indices = ones(n,1);
+    temp = randperm(n,n);
+    for i=1:k-1
+        Indices(temp>i*k & temp<=(i+1)*k) = i+1;
+    end
     
     test_err = [];
     test_mu = [];
