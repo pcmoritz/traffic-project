@@ -6,7 +6,7 @@ function max_a = cvx_random_sample_L_infty_hot_start(p)
     cum_nroutes = int64([0; cumsum(double(block_sizes))]);
     len_block_sizes = length(block_sizes);
     
-    num_iterations = 100;
+    num_iterations = 300; %10*log(double(len_block_sizes^block_sizes(1)));
     fprintf(1, 'Progress (of %d):  ', num_iterations);
     
     a = zeros(n, 1);
@@ -81,12 +81,13 @@ function max_a = cvx_random_sample_L_infty_hot_start(p)
         a = sol.bas.xx;
         val = sol.bas.pobjval;
 
-        fprintf(1,[repmat('\b',1,ceil(log(k)/log(10))) '%d'],k); % Progress
+        fprintf(1,[repmat('\b',1,ceil(log(double(k))/log(10))) '%d'],k); % Progress
         if val > max_val
             max_val = val;
             max_a = a;
         end
     end
     fprintf(1, '\n');
-    [p.num_nonzeros/p.n norm(p.real_a - a_L1,1) norm(p.real_a - a_raw,1) norm(p.real_a - a_L2,1) norm(p.real_a - a0,1) norm(p.real_a - max_a,1)]
+    %[ len_block_sizes block_sizes(1)]
+    %[p.num_nonzeros/p.n norm(p.real_a - a_L1,1) norm(p.real_a - a_raw,1) norm(p.real_a - a_L2,1) norm(p.real_a - a0,1) norm(p.real_a - max_a,1)]
 end

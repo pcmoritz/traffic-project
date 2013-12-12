@@ -8,9 +8,14 @@ function min_a = cvx_dual_decomposition(p)
     to = cum_nroutes(2:end);
     len_block_sizes = length(block_sizes);
     
+    % compare to other algos
+    a_L1 = cvx_unconstrained_L1(p);
+    a_L2 = cvx_L2(p);
+    a_raw = cvx_raw(p);
+    
     % initial condition
-    mu = 1e4 * ones(size(Phi,1),1);
-    delta = 1e-3;
+    mu = ones(size(Phi,1),1);
+    delta = 1e-1;
     lambda = 1;
     stop = false;
     
@@ -21,7 +26,8 @@ function min_a = cvx_dual_decomposition(p)
             min_val = Inf;
             % Solve the n convex programs for each block
             fprintf(1,'Progress (of %d):  ', n);
-            for i=1:block_sizes(k)
+            mu' * Phi(:,from(k):to(k))
+            for i=1:block_sizes(k)            
                 cvx_begin quiet
                     variable a(double(block_sizes(k)))
                     variable t
@@ -36,7 +42,9 @@ function min_a = cvx_dual_decomposition(p)
                 if cvx_optval < min_val
                     min_val = cvx_optval;
                     min_a(from(k):to(k)) = a;
-                end
+                    a
+                end  
+                
             end
             fprintf('\n')
         end
@@ -57,5 +65,5 @@ function min_a = cvx_dual_decomposition(p)
 %             [p.real_a a_raw a_L1 a_L2 a0 min_a]
 %             [norm(p.real_a - a_L1,1) norm(p.real_a - a_raw,1) norm(p.real_a - a_L2,1) norm(p.real_a - a0,1) norm(p.real_a - min_a,1)]
 %         end
-    [norm(p.real_a - a_L1,1) norm(p.real_a - a_raw,1) norm(p.real_a - a_L2,1) norm(p.real_a - a0,1) norm(p.real_a - min_a,1)]
+    [norm(p.real_a - a_L1,1) norm(p.real_a - a_raw,1) norm(p.real_a - a_L2,1) norm(p.real_a - min_a,1)]
 end

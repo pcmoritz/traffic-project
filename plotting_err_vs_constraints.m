@@ -1,5 +1,5 @@
 
-function plotting_err_vs_constraints(no_sizes, no_algos, no_sparsities, algos_cell, constraints_xaxis, dimvalue_descrip, choice_algos, l, error_name, model_name, prefix, colorsmatrix, plot_noblocks, plot_novars)
+function plotting_err_vs_constraints(no_sizes, no_algos, no_sparsities, algos_cell, constraints_xaxis, dimvalue_descrip, choice_algos, l, error_name, model_name, prefix, colorsmatrix, plot_noblocks, plot_novars, plot_sparsity)
 no_constraints = length(constraints_xaxis);
 Value_vs_Size_Matrix = zeros(no_constraints,no_algos);
 
@@ -13,8 +13,8 @@ Value_vs_Size_Matrix = zeros(no_constraints,no_algos);
     end
     
     % Declare the file/title name for plot, dependent on matrix and error
-    title_name = sprintf('%s vs. number of constraints for %d number of blocks each with %d number of variables on Model %s', ...
-        error_name, plot_noblocks, plot_novars, model_name);
+    title_name = sprintf('%s vs. number of constraints for \n %d number of blocks each with \n %d number of variables and \n sparsity %d on Model %s', ...
+        error_name, plot_noblocks, plot_novars, plot_sparsity(1), model_name);
     file_name = sprintf('%s_vs_Constraints_Model%s',  ...
         error_name, model_name);
     ylabel_str = error_name; %sprinf('%s of the reconstructed signal', choice_errortypes{l});
