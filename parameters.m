@@ -13,7 +13,7 @@ elseif strcmp(user,'richard') == 1
 else
     python = 'LD_LIBRARY_PATH= python';
     % base_directory = '~/Dropbox/traffic/data/';
-    base_directory = '~/convex-project/data/';
+    base_directory = '~/convex-project/data2/';
     addpath '~/mosek/7/toolbox/r2009b';
 end
 
@@ -24,8 +24,7 @@ metrics_directory = [base_directory, 'metrics/'];
 graphs_directory = [base_directory, 'graphs/'];
 
 tests = {'cvx_L2','cvx_raw','cvx_unconstrained_L1','cvx_weighted_L1', ...
-    'cvx_hot_start_lp', 'cvx_block_descent_L_infty', ...
-    'cvx_random_sample_L_infty_hot_start','cvx_oracle'};
+    'cvx_random_sample_L_infty_hot_start','cvx_random_sample_L_infty_hot_start_update','cvx_random_sample_L_infty_hot_start_uniform'};
     %'cvx_hot_start_lp', 'cvx_block_descent_L_infty', ...
 % tests = {'cvx_elastic_net'};
 
