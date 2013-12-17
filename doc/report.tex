@@ -169,16 +169,14 @@ Setting $t = 2(1+\epsilon) \cdot s\cdot \log n
 \subsection{Recovery of sparse block probability measures}
 \section{Algorithms for reconstructing block probability measures}
 \subsection{Entropy minimization}
-For a probability distribution, entropy is defined as
-\begin{equation*} H(X) = E[-\ln P(X)] = \sum_{i=1}^{n} -p_i \ln p_i \end{equation*}
-where $p_i$ is probability of discrete event $i$.
-Intuitively, a random variable with a sparse probability measure has a more unpredictable value, and therefore lower entropy (in particular, if the random variable has only one possible value, meaning that the probability of one event is 1 and the rest are 0, then the entropy is minimized at 0).
-In addition, entropy provides a lower bound on the cardinality of a probability distribution. When $\|x\|_0 = n$, then maximum entropy is attained when the $n$ non-zero possibilities have equal weight. $\max H(x) = -\sum \frac{1}{n} \log \frac{1}{n} = -\log \frac{1}{n} = \log n$; therefore, $H(x) < \|x\|_0$.
+For a discrete random variable $X$ with values in $\{1, \dots, n\}$ and probabilities $\P(X = k) = p_k$, the entropy is defined as $H(X)  = -\sum_{i=1}^{n} p_i \log p_i$.
+Intuitively, a random variable with a sparse probability measure has a more unpredictable value, and therefore lower entropy (in particular, if the random variable has only one possible outcome, then the entropy is 0).
+In addition, entropy provides a lower bound on the cardinality of a probability distribution. When $\|x\|_0 = n$, then maximum entropy $H(x) = \log n$ is attained when the $n$ non-zero possibilities have equal weight and therefore $H(x) < \|x\|_0$.
 
 We provide the following argument for why it may be preferable to optimize for entropy instead of the $\ell_\infty$ norm.
-Consider the probability distribution $x = [0.5, 0.5, 0]$ over three discrete possibilities.
-If we use $\frac{1}{\max x_i}$ as the criterion to optimize, then all distributions where one of the entries remains $0.5$ are equally preferred.
-With entropy, as we increase the $x_3 = 0$, one of $x_1$ and $x_2$ must increase correspondingly; for example, $x' = [0.7729, 0.1135, 0.1135]$ has the same entropy as $x$.
+Consider the probability distribution $p = (0.5, 0.5, 0)$ over three discrete possibilities.
+If we use $\norm{p}_{\infty}^{-1}$ as the criterion to optimize, then all distributions where one of the entries remains $0.5$ are equally preferred.
+With entropy, as we increase $p_3$, one of $p_1$ or $p_2$ must increase correspondingly; for example, $q = (0.7729, 0.1135, 0.1135)$ has the same entropy as $p$.
 This seems to better fit our assumption that most people from each origin will go to a small number of destinations, which is why we desired sparsity in the first place.
 
 In entropy minimization, we attempt to solve the following:
