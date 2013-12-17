@@ -3,9 +3,18 @@
 function fig = plotfrommat(x_axis,matrix,legend_str,legend_label,file_name,title_name,xlabel_str, ylabel_str, colorsmatrix)
 close all
 
-legend_str = strrep(legend_str,char(95),' ');
-legend_str = strrep(legend_str,'cvx','');
-title_name = strrep(title_name,char(95),' ');
+parameters;
+
+% legend_str = strrep(legend_str,char(95),' ');
+% legend_str = strrep(legend_str,'cvx','');
+
+% Get the right legend
+for i = 1:length(legend_str)
+    legend_str{i} = algo_names(legend_str{i});
+end
+
+% Don't need title and legend label
+title_name = ''; %strrep(title_name,char(95),' ');
 
 pltype_str_arr = ['- ';'--';'-.';': '];  
 no_pltypes = length(pltype_str_arr);
@@ -45,9 +54,7 @@ if n_plots > 1
     end
 end
 
-
-
-legend_hdl1=legend(legend_str,'Location','NorthEastOutside'); %num2str(legend_str));
+legend_hdl1 = legend(legend_str,'Location','NorthEast'); %num2str(legend_str));
 legend_hdl = get(legend_hdl1,'title');
 %legend(legend_hdl,'Location','NorthEastOutside');
 set(legend_hdl,'string',legend_label);

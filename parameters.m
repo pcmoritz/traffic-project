@@ -23,10 +23,20 @@ output_directory = [base_directory, 'output/'];
 metrics_directory = [base_directory, 'metrics/'];
 graphs_directory = [base_directory, 'graphs/'];
 
-tests = {'cvx_L2','cvx_raw','cvx_unconstrained_L1','cvx_weighted_L1', ...
-    'cvx_random_sample_L_infty_hot_start','cvx_random_sample_L_infty_hot_start_update','cvx_random_sample_L_infty_hot_start_uniform'};
+tests = {'cvx_L2','cvx_unconstrained_L1','cvx_weighted_L1', ...
+    'cvx_random_sample_L_infty_hot_start'}; %,'cvx_random_sample_L_infty_hot_start_update','cvx_random_sample_L_infty_hot_start_uniform'};
     %'cvx_hot_start_lp', 'cvx_block_descent_L_infty', ...
 % tests = {'cvx_elastic_net'};
+
+algo_names = containers.Map();
+algo_names('cvx_L2') = 'constrained L2';
+algo_names('cvx_unconstrained_L1') = 'unconstrained L1';
+algo_names('cvx_weighted_L1') = 'weighted L1';
+algo_names('cvx_random_sample_L_infty_hot_start') = 'random sampling';
+algo_names('cvx_block_descent_L_infty') = 'block descent';
+algo_names('cvx_entropy') = 'entropy';
+algo_names('cvx_hot_start_lp') = 'simple block';
+
 
 % Library with names for the different parameters/settings/algorithms
 max_sparsity = .5;
@@ -83,9 +93,9 @@ sparsity_sizes = [sparsity_values', sparsity_values' + 0.05];
 %% Random matrix
 matrix_sizes('random') = [];
 
-for no_constraints=5:5:15
-    for no_blocks = 4
-        for no_vars_per_block = 10:2:12
+for no_constraints=50:10:70
+    for no_blocks = 10
+        for no_vars_per_block = 20:5:30
             for sparsity = sparsity_values
                 % Spars stands for the number of nonzero routes you choose
                 % at each origin
