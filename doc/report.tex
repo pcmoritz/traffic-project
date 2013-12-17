@@ -86,7 +86,7 @@ To guarantee exact sparse recovery, the following procedure will be used: First,
 To show that the original vector is actually the unique sparsest one, we use the following theorem from \cite{Dahmen_CS}.
 \begin{theorem}
 \label{thm:l0unique}
-Let $A \in \R^{m\times n}$ and $x\in\R^$ be $s$-sparse. In the case
+Let $A \in \R^{m\times n}$ and $x\in\R^n$ be $s$-sparse. In the case
 $m\geq 2k$, the problem $Ax = b$ can be recovered if and only if
 \begin{inparaenum}[(a)]
 \item the set $\Sigma_{2k}$ of $2k$-sparse vectors intersects with the null space of the matrix $A$ only at the singleton $\{0\}$ (see also section 2 of \cite{Dahmen_CS}).
@@ -161,6 +161,36 @@ If $S$ is the true support, the primal-dual witness pair $(x, \lambda)$ can then
 \subsection{Recovery of sparse probability measures}
 \subsection{Recovery of sparse block probability measures}
 \section{Algorithms for reconstructing block probability measures}
+\subsection{Entropy minimization}
+For a probability distribution, entropy is defined as
+\begin{equation*} H(X) = E[-\ln P(X)] = \sum_{i=1}^{n} -p_i \ln p_i \end{equation*}
+where $p_i$ is probability of discrete event $i$.
+Intuitively, a random variable with a sparse probability measure has a more unpredictable value, and therefore lower entropy (in particular, if the random variable has only one possible value, meaning that the probability of one event is 1 and the rest are 0, then the entropy is minimized at 0).
+In addition, entropy provides a lower bound on the cardinality of a probability distribution. When $\|x\|_0 = n$, then maximum entropy is attained when the $n$ non-zero possibilities have equal weight. $\max H(x) = -\sum \frac{1}{n} \log \frac{1}{n} = -\log \frac{1}{n} = \log n$; therefore, $H(x) < \|x\|_0$.
+
+We provide the following argument for why it may be preferable to optimize for entropy instead of the $\ell_\infty$ norm.
+Consider the probability distribution $x = [0.5, 0.5, 0]$ over three discrete possibilities.
+If we use $\frac{1}{\max x_i}$ as the criterion to optimize, then all distributions where one of the entries remains $0.5$ are equally preferred.
+With entropy, as we increase the $x_3 = 0$, one of $x_1$ and $x_2$ must increase correspondingly; for example, $x' = [0.7729, 0.1135, 0.1135]$ has the same entropy as $x$.
+This seems to better fit our assumption that most people from each origin will go to a small number of destinations, which is why we desired sparsity in the first place.
+
+In entropy minimization, we attempt to solve the following:
+\begin{align*}
+&  \min_{x} \sum_\gamma H(x_\gamma) \qquad \text{ s.t. } Ax = b, \sum_i x_{\gamma, i} = 1\ \forall \gamma \\
+=& \min_{x} \gamma H(x) \qquad \text{ s.t. } Ax = b, \sum_i x_{\gamma, i} = 1\ \forall \gamma
+\end{align*}
+%This problem also allows us to distinguish between multiple solutions which have the same cardinality, since two solutions which are not exactly the same will have different entropy.
+Unfortunately, $H(X)$ is a concave function, so the above is a concave minimization problem, albeit with a convex set as the constraint.
+However, as $H(X)$ is differentiable, we can still use a first-order gradient descent method for constrained problems (without any guarantees on optimality) in the following way:
+\begin{itemize}
+  \item Find a feasible $x$, i.e., which satisfies $Ax = b, \sum_i x_{\gamma, i} = 1\ \forall \gamma$.
+  \item Compute the gradient of the objective function at $x_0$.
+  \item Find a feasible update direction $\Delta x$, selected to minimize the dot product between it and the gradient.
+  \item Find $\alpha \le 1$ so that $H(x + \alpha \Delta x) < H(x)$. If no such $\alpha$ exists, terminate.
+  \item Update $x_\textrm{new} = x + \alpha \Delta x$, and repeat the above steps.
+\end{itemize}
+\cite{sudoku} describes a similar method for entropy minimization, but they take additional steps to try to escape local minima, by occasionally updating $x$ to increase entropy instead of decreasing it.
+
 \section{Numerical Results}
 \section{References}
 
