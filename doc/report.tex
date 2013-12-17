@@ -16,6 +16,8 @@
 \usepackage{natbib}
 \usepackage{paralist}
 
+\renewcommand{\null}{\operatorname{null}}
+
 \input math.tex
 
 \nipsfinalcopy
@@ -80,19 +82,82 @@ We evaluate several possible regularizers that can be used if the usual $\ell^1$
 \end{equation}
 \section{Guarantees for sparse recovery}
 To guarantee exact sparse recovery, the following procedure will be used: First, we make sure that the original vector~$x^*$ is actually the sparsest solution to~\eqref{l0-minimization}. Then, we prove that the solution of the relaxed problems~\eqref{l1-minimization} and~\eqref{l8-minimization} are unique and equal to $x^*$.
-\subsection{Sparse representation and approximation results}
-To show that the original vector is actually the unique sparsest one, we use the following theorem from
+\subsection{Sparse representation results}
+To show that the original vector is actually the unique sparsest one, we use the following theorem from \cite{Dahmen_CS}.
 \begin{theorem}
 \label{thm:l0unique}
 Let $A \in \R^{m\times n}$ and $x\in\R^$ be $s$-sparse. In the case
 $m\geq 2k$, the problem $Ax = b$ can be recovered if and only if
 \begin{inparaenum}[(a)]
-\item the set $\Sigma_{2k}$ of $2k$-sparse vectors intersects with the null space of the matrix $\Phi$ only at the singleton $\{0\}$ (see also section 2 of \cite{Dahmen_CS}).
-\item For any subset $S$ with $|S| = 2k$, the matrix $\rank \Phi_S = 2k$ and
-\item $\Phi_S^T \Phi_S$ is invertible.
+\item the set $\Sigma_{2k}$ of $2k$-sparse vectors intersects with the null space of the matrix $A$ only at the singleton $\{0\}$ (see also section 2 of \cite{Dahmen_CS}).
+\item For any subset $S$ with $|S| = 2k$, the matrix $A_S$ has rank $2k$ and
+\item $A_S^\T A_S$ is invertible.
 \end{inparaenum}
+\end{theorem}
 
 \subsection{Obtaining the sparse solution by Compressed Sensing}
+The convex relaxation of the original $\ell_0$-minimization problem
+has been studied in many different settings by the Compressed Sensing
+community.
+The following elementary but particularly elegant (although not optimal) example was given by Benjamin Recht during the ``BigData Bootcamp'' at the Simons Institute in Berkeley.
+\begin{theorem}
+  Let $x^*\in \R^n$ be $s$-sparse and $A \in \R^{m\times n}$ be a
+  random matrix with independent entries $A_{ij}\sim \text{N}(0,
+  m^{-1})$. If $m \geq 2 (1+\epsilon) s\log n + s + 1$ then $x^*$ is
+  the unique solution of
+  \begin{align}
+    &\text{minimize}\quad \norm{x}_1\label{CS}\\
+    &\text{subject to}\quad Ax = Ax^* = b \nonumber
+  \end{align}
+  with probability at least $1 - 2\exp\bigl(-\bigl(\sqrt{(1+\epsilon)/(2s) +
+      \epsilon} - \sqrt{(1+\epsilon)/(2s)}\bigr)^2\cdot \log n\bigr).$
+\end{theorem}
+
+With a stronger albeit less elegant technique than the one Ben used, the factor $\log n$ in the bound on the number of constraints can be improved to $\log(n/s)$.
+\begin{proof}
+The proof relies on the so called \emph{primal-dual witness} technique \cite{Wainwright2009}: We construct a pair of vectors that are primal and dual optimal and act as a witness for correct support recovery.
+The following lemma formalizes the notion of a primal-dual witness $(x, \lambda)\in \R^{n\times m}$.
+\begin{lemma}
+  (a) A vector $x \in \R^n$ is optimal for \eqref{CS} if there exists
+  a vector $\lambda\in \R^m$ such that $A^\T \lambda\in \partial
+  \norm{x}_1$ and $Ax = b$ and (b) if the vector $\lambda$
+  satisfies the strict dual feasibility condition $|\lambda_j| < 1$
+  for all $j\not\in S$, any optimal solution to \eqref{CS} satisfies
+  $x_j = 0$ for all $j\not\in S$.
+\end{lemma}
+The proof is immediate: The problem \eqref{CS} is solved by $x\in
+\R^n$ if and only if $f(x + h) \geq f(x)$ for all $h\in \null(A)$.
+The latter condition is true if there is a $\lambda \in \R^m$ such
+that $A^\T \lambda \in \partial f(x)$ and $Ax = b$, because from
+the subgradient condition we can then for all $h\in \null(A)$ conclude
+\begin{equation*}
+f(x + h) \geq f(x) + \sprod{A^\T \lambda, h} = f(x) +
+  \sprod{\lambda, A h} = f(x).
+\end{equation*}
+For the second part,
+
+If $S$ is the true support, the primal-dual witness pair $(x, \lambda)$ can then be constructed by
+\begin{compactenum}
+  \item solving the \emph{restricted problem}: minimize $f(x)$ subject
+    to $A_S x_S = b$
+  \item choosing $\lambda_S \in \R^k$ as an element of the
+    subdifferential of the $\ell_1$ norm evaluated at $x_S$
+  \item 
+\end{compactenum}
+
+   We thus have to construct
+  a Lagrange multiplier $\lambda$ such that $v = A^\T \lambda$ and $v_k = \sign((x_0)_k)$ if $(x_0)_k\neq 0$ and $|v_k| < 1$ otherwise. Let $S$ be the support of $x_0$, then we define $e = \sign(x_0)_S\in \R^s$ (for a vector $u\in \R^n$, $u_S$ denotes the restriction of $u$ to indices in $S$). Our task is then to find $\lambda$ such that
+  \begin{align}\label{compressed_equation}
+  (A^\T \lambda)_S = e\quad\text{and}\quad \norm{(A^\T \lambda)_{S^c}}_\infty < 1.
+  \end{align}
+  We can assume that $A = (A_S, A_{S^c})$ and $x = (x_S, x_{S^c})^\T$. The strategy is to solve the first equation in~\eqref{compressed_equation} by least squares and then verify the second equation. The optimization problem that has to be solved is
+  \begin{align*}
+    &\text{minimize}\quad \norm{\lambda}^2\\
+    &\text{subject to}\quad A_S^\T \lambda = e.
+  \end{align*}
+    Because $A$ is Gaussian and thus in general position (it cannot satisfy a polynomial equation like $\det A = 0$), the solution can be calculated using the Moore-Penrose pseudoinverse $\lambda = A_S(A_S^\T A_S)^{-1} e$. For Gaussian matrices we know that such a $\lambda$ can be constructed (WHY???) with high probability so that it remains to show that for $z = A_{S^c}^T\lambda$ the $l^{\infty}$ norm is strictly smaller than $1$ with high probability. First observe that $\|\lambda\|_2^2 = e^T(A_S^TA_S)^{-1} e$. From here it follows that $\|\lambda\|_2^2 \sim smB_{11}$ where $B_{11}$ is the inverse Wishart matrix with $m$ degrees of freedom. Therefore $\|\lambda\|_2^2$ follows a $ms$ inverse $\chi^2$ squared distribution with $m-s+1$ degrees of freedom.  
+    \end{proof}
+
 \subsection{Recovery of sparse probability measures}
 \subsection{Recovery of sparse block probability measures}
 \section{Algorithms for reconstructing block probability measures}
