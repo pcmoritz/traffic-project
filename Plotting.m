@@ -20,7 +20,7 @@ run('parameters');
 plot_type = 'random';
 
 % Algorithms I want to plot
-choice_algos_ind = [3,4,5,6,7]; % <------ USER SETS which algos to plot
+choice_algos_ind = [1,2,3,4]; % <------ USER SETS which algos to plot
 choice_algos = algos_names(choice_algos_ind); % cell of strings
 no_algos = length(choice_algos_ind);
 
@@ -52,7 +52,8 @@ choice_sparsities = sparsity_sizes(choice_sparsities_ind, :);
 no_sparsities = length(choice_sparsities_ind);
 
 % For random matrices plotting m vs. n, choose no_blocks and no_vars_per_block I wanne fix
-plot_noblocks = 4; plot_novars = 12; 
+plot_noblocks = 10; plot_novars = 30; 
+plot_noconstraints = .2*plot_noblocks*plot_novars;
 plot_sparsity = [0.1 0.15];
 %plot_nocols = 20; % Fix number of cols 
 %no_cols = matrix_sizes_for_type(:,4); % All experiments 
@@ -151,9 +152,11 @@ for i = 1:no_algos
     
     for j = 1:no_sparsities
         % Get the chosen size vector
+        mysize = [plot_noconstraints plot_noblocks plot_novars];
         sparsity_range = choice_sparsities(j,:);
         
         % Average all results which have the algorithm and sparsity
+        % Filter by sparsity
         relevant_metrics = {};
         for m = all_metrics
             m = m{:};
@@ -164,8 +167,11 @@ for i = 1:no_algos
                 relevant_metrics{length(relevant_metrics) + 1} = m;
             end
         end
+        % Filter by sizes
+        filtered_metrics = filter_metrics(plot_type, relevant_metrics, mysize, algo, 1);
+
         % Get a test object which is an averaged version
-        averaged_m = average_metrics(relevant_metrics);
+        averaged_m = average_metrics(filtered_metrics);
         results_sparsityblock(j,:) = [averaged_m.test_output.runtime, ...
             averaged_m.error_L1, averaged_m.error_L2, ...
             averaged_m.error_support];
@@ -189,7 +195,7 @@ size_mat = [choice_sizes Phi_sizes];
 
 % For now for example ratio of rows vs. columns of Phi
 if strcmp(plot_type,'random')==1
-    size_xaxis = size_mat(:,4)./size_mat(:,5);
+    size_xaxis = size_mat(:,4)./size_mat(:,5); %(mean(plot_sparsity)*log(1/mean(plot_sparsity)));
 else
 size_xaxis = size_mat(:,5)./size_mat(:,6);
 end
@@ -221,15 +227,20 @@ for l = 1:no_errortypes
         model_name = 'random';
     end
     %% Create Mat errors vs. size
-    plotting_err_vs_sz(no_sizes, no_algos, algos_cell, size_xaxis, dimvalue_descrip, choice_algos, l, error_name, model_name, prefix, colorsmatrix);
+    
+    plotting_err_vs_sz(no_sizes, no_algos, algos_cell, size_xaxis, dimvalue_descrip, choice_algos, l, error_name, model_name, prefix, colorsmatrix, plot_sparsity);
     
     %% Create Mat errors vs. sparsity
-    %plotting_err_vs_spars(no_sizes, no_algos, no_sparsities, algos_cell,sparsity_xaxis, choice_algos, l, error_name, model_name, prefix, colorsmatrix);
+    file_name = sprintf('%s_vs_Sparsity_B%d_V%d_C%d',  ...
+        error_name, plot_noblocks, plot_novars, plot_noconstraints);
+    plotting_err_vs_spars(no_sizes, no_algos, no_sparsities, algos_cell,sparsity_xaxis, choice_algos, l, error_name, model_name, prefix, colorsmatrix, file_name);
 
     %% Create Mat errors vs. no. constraints
     % Choose one no_matrix_cols 
     % For this one size
-    plotting_err_vs_constraints(no_sizes, no_algos, no_sparsities, algos_cell, constraints_xaxis, dimvalue_descrip_cst, choice_algos, l, error_name, model_name, prefix, colorsmatrix, plot_noblocks, plot_novars, plot_sparsity);
+    file_name = sprintf('%s_vs_Constraints_B%d_V%d_S%.2f',  ...
+        error_name, plot_noblocks, plot_novars, mean(plot_sparsity));
+    plotting_err_vs_constraints(no_sizes, no_algos, no_sparsities, algos_cell, constraints_xaxis, dimvalue_descrip_cst, choice_algos, l, error_name, model_name, prefix, colorsmatrix, file_name);
 end
 
 
