@@ -14,6 +14,9 @@
 \usepackage{relsize}
 \usepackage{placeins}
 \usepackage{natbib}
+\usepackage{paralist}
+
+\input math.tex
 
 \nipsfinalcopy
 
@@ -55,8 +58,49 @@ We evaluate several possible regularizers that can be used if the usual $\ell^1$
 \section{Introduction}
 \paragraph{Related work.}
 \section{Problem formulation}
-\section{Theory}
-\section{Algorithms for reconstructing blocks of probability measures}
+\begin{equation}\label{l0-minimization}
+  \begin{split}
+    \text{minimize} &\quad \norm{x}_0\\
+    \text{subject to} &\quad Ax = f\quad\text{and}\quad 1^\T x = 1
+  \end{split}
+\end{equation}
+
+\begin{equation}\label{l1-minimization}
+  \begin{split}
+    \text{minimize} &\quad \norm{x}_1\\
+    \text{subject to} &\quad Ax = f\quad\text{and}\quad 1^\T x = 1
+  \end{split}
+\end{equation}
+
+\begin{equation}\label{l8-minimization}
+  \begin{split}
+    \text{minimize} &\quad \norm{x}_\infty\\
+    \text{subject to} &\quad Ax = f\quad\text{and}\quad 1^\T x = 1
+  \end{split}
+\end{equation}
+\section{Guarantees for sparse recovery}
+To guarantee exact sparse recovery, the following procedure will be used: First, we make sure that the original vector~$x^*$ is actually the sparsest solution to~\eqref{l0-minimization}. Then, we prove that the solution of the relaxed problems~\eqref{l1-minimization} and~\eqref{l8-minimization} are unique and equal to $x^*$.
+\subsection{Sparse representation and approximation results}
+To show that the original vector is actually the unique sparsest one, we use the following theorem from
+\begin{theorem}
+\label{thm:l0unique}
+Let $A \in \R^{m\times n}$ and $x\in\R^$ be $s$-sparse. In the case
+$m\geq 2k$, the problem $Ax = b$ can be recovered if and only if
+\begin{inparaenum}[(a)]
+\item the set $\Sigma_{2k}$ of $2k$-sparse vectors intersects with the null space of the matrix $\Phi$ only at the singleton $\{0\}$ (see also section 2 of \cite{Dahmen_CS}).
+\item For any subset $S$ with $|S| = 2k$, the matrix $\rank \Phi_S = 2k$ and
+\item $\Phi_S^T \Phi_S$ is invertible.
+\end{inparaenum}
+
+\subsection{Obtaining the sparse solution by Compressed Sensing}
+\subsection{Recovery of sparse probability measures}
+\subsection{Recovery of sparse block probability measures}
+\section{Algorithms for reconstructing block probability measures}
 \section{Numerical Results}
 \section{References}
+
+\FloatBarrier
+\vskip 0.2in
+\bibliographystyle{plainnat}
+\bibliography{lit}
 \end{document}
