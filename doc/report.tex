@@ -223,23 +223,35 @@ We build on the guarantees given in \cite{inverse_problems} for the reconstructi
   have $z_{S^c} = \hat x_{S^c} \geq 0$ and $1^\T z = 0$ and thus
 \end{proof}
 
+The second factor $\E_g[\norm{g}_\infty]$ can be bounded in the following way.
+For $g\sim N(0, 1)$ we have $\P(|g|>t) \leq 2e^{-t^2/2}$ and therefore $\P(\max_{1\leq i\leq n} |g_i| > t) \leq 2ne^{-t^2/2}$. Therefore, we get
+\begin{equation*}
+  \E_g[\norm{g}_\infty] \leq x + 2n\int_{t=x}^\infty e^{-t^2/2}\,\d t
+  \leq x + 2n\cdot \frac 1 x \cdot e^{-x^2/2}.
+\end{equation*}
+Choosing $x = \sqrt{2\log n}$ yields $\E_g[\norm{g}_\infty] \leq
+\sqrt{2\log(n)} + 2$.
+
 This reconstruction procedure may seem suboptimal, because it does not
-take into account the block structure of our measurements. However,
+take into account the block structure of our measurements.
+However,
 knowledge of this structure does not help much in our situation as we
 argue now. The number of measurements needed for reconstruction in
 compressed sensing is typically of the order
-$\O(k\log(n/k))$. Intuitively, the first factor specifies the number
+$\O(k\log(n/k))$.
+Intuitively, the first factor specifies the number
 of measurements necessary to recover the $k$ nonzero entries of the
 true parameter and the second factor is the number of measurements
 needed for estimating the right support. If we have constraints on the
 support, we can use a technique like \emph{model-based compressed
-  sensing} \cite{model_sensing} to reduce this second factor. Let
-$m_k$ be the number of possible support configurations with sparsity
-$k$, then with a model-based approach we need on the order or
-$\O(k\log(m_k))$ measurements. For $m_k = {n\choose k}\approx
-(ne/k)^k$, we recover the compressed sensing result. In our case, if
-we have $b$ blocks of size $\nu$ each, each with sparsity $\kappa$
-(thus $n = b\nu$ and $k=b\kappa$), we get
+  sensing} \cite{model_sensing} to reduce this second factor.  
+Let $m_k$ be the number of possible support configurations with
+sparsity $k$, then with a model-based approach we need on the order or
+$\O(k\log(m_k))$ measurements.
+For $m_k = {n\choose k}\approx (ne/k)^k$, we recover the compressed
+sensing result.
+In our case, if we have $b$ blocks of size $\nu$ each, each with
+sparsity $\kappa$ (thus $n = b\nu$ and $k=b\kappa$), we get
 \begin{equation*}
 m_k = {\nu \choose \kappa}^b \approx \left(\frac{\nu
   e}{\kappa}\right)^{b\kappa} = \left(\frac{ne}{k}\right)^k,
