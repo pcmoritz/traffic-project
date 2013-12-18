@@ -81,6 +81,33 @@ We evaluate several possible regularizers that can be used if the usual $\ell^1$
     \text{subject to} &\quad Ax = b\quad\text{and}\quad 1^\T x = 1
   \end{split}
 \end{equation}
+
+\subsection{Block $\ell^\infty$ regularization}
+Instead of a single probability measure $x\in \R^n$, in the traffic
+flow problem we are given blockwise probability measures $x = (x_1,
+\dots, x_b)^\T$ where $1^\T x_\gamma = 1$ for all blocks $\gamma\in
+\{1, \dots, b\}$. Define
+\begin{equation*}
+  \mathcal B_n^k = \{x = (x_1, \dots, x_b)^\T : x_\gamma \in \R_+^{n_\gamma}, \norm{x_\gamma}_0 = k_\gamma, \norm{x_\gamma}_1 = 1\text{ for $1\leq \gamma\leq b$}\},
+\end{equation*}
+where $n = (n_1, \dots, n_b)$ are the respective sizes of the blocks
+and $k = (k_1, \dots, k_b)$ their sparsities. The minimum cardinality
+reconstruction can then be formulated as
+\begin{equation}
+  \begin{split}
+    &\text{minimize}\quad \norm{x}_0\\
+    &\text{subject to}\quad Ax = b\quad\text{and}\quad x\in \mathcal B_n^k.
+  \end{split}
+\end{equation}
+Similar to the $\ell^\infty$ relaxation in the one-block case, we can
+relax this intractable problem to
+\begin{equation}\label{block-relaxation}
+  \begin{split}
+    &\text{minimize}\quad \textstyle\sum_{\gamma=1}^b {\norm{x_\gamma}_\infty^{-1}}\\
+    &\text{subject to}\quad Ax = b\quad\text{and}\quad x\in \mathcal B_n^k.
+  \end{split}
+\end{equation}
+
 \section{Guarantees for sparse recovery}
 To guarantee exact sparse recovery, the following procedure will be used: First, we make sure that the original vector~$x^*$ is actually the sparsest solution to~\eqref{l0-minimization}. Then, we prove that the solution of the relaxed problems~\eqref{l1-minimization} and~\eqref{l8-minimization} are unique and equal to $x^*$.
 \subsection{Sparse representation results}
@@ -281,14 +308,37 @@ In entropy minimization, we attempt to solve the following:
 %This problem also allows us to distinguish between multiple solutions which have the same cardinality, since two solutions which are not exactly the same will have different entropy.
 Unfortunately, $H(X)$ is a concave function, so the above is a concave minimization problem, albeit with a convex set as the constraint.
 However, as $H(X)$ is differentiable, we can still use a first-order gradient descent method for constrained problems (without any guarantees on optimality) in the following way:
-\begin{itemize}
-  \item Find a feasible $x$, i.e., which satisfies $Ax = b, \sum_i x_{\gamma, i} = 1\ \forall \gamma$.
+\begin{enumerate}
+  \item Find a feasible $x$, i.e., which satisfies $Ax = b, \sum_i x_{\gamma, i} = 1$ for all $\gamma$.
   \item Compute the gradient of the objective function at $x_0$.
   \item Find a feasible update direction $\Delta x$, selected to minimize the dot product between it and the gradient.
   \item Find $\alpha \le 1$ so that $H(x + \alpha \Delta x) < H(x)$. If no such $\alpha$ exists, terminate.
   \item Update $x_\textrm{new} = x + \alpha \Delta x$, and repeat the above steps.
-\end{itemize}
+\end{enumerate}
 \cite{sudoku} describes a similar method for entropy minimization, but they take additional steps to try to escape local minima, by occasionally updating $x$ to increase entropy instead of decreasing it.
+
+\subsection{Random sampling}
+The objective in \eqref{block-relaxation} can be rewritten as
+$\sum_\gamma \norm{x_\gamma}_\infty = \sum_\gamma (\max_i\,x_{\gamma
+  i})^{-1} = \min_{(i_1, \dots, i_b)} \sum_\gamma x_{\gamma i_\gamma}$.
+Optimizing it over $\mathcal C = \mathcal B_n^k \cap \{x : Ax =
+b\}$ we get
+\begin{equation*}
+  p_\infty^* = \min_{i_1, \dots, i_p} \min_{x\in \mathcal C}\,
+  {\textstyle \sum_\gamma x_{\gamma i_\gamma}},\quad
+  \text{or equivalently}\quad
+  (p_\infty^*)^{-1} = \min_{i_1, \dots, i_p} \max_{x\in \mathcal C} \,
+  {\textstyle \sum_\gamma x_{\gamma i_\gamma}.
+\end{equation*}
+The minimum is now over exponentially many configurations and thus
+computationally intractable. We suggest to use a random sampling
+strategy: Get a pilot estimate $\check x$ for $x^*$, for example by
+minimizing the $\ell^1$ norm or the elastic net over all $x$ with $Ax
+= b$ (without the block probability constraints). Then, random
+sampling proceeds as follows:
+\begin{enumerate}
+  \item 
+\end{enumerate}
 
 \section{Numerical Results}
 \section{References}
