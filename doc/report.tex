@@ -27,11 +27,6 @@
 \title{Compressed Sensing for Traffic Networks}
 
 \author{
-Cathy Wu\\
-University of California\\
-Berkeley, CA 94720, USA\\
-\texttt{cathywu@eecs.berkeley.edu}\\
-\And
 Philipp Moritz\\
 University of California\\
 Berkeley, CA 94720, USA\\
@@ -41,6 +36,11 @@ Richard Shin\\
 University of California\\
 Berkeley, CA 94720, USA\\
 \texttt{ricshin@eecs.berkeley.edu}\\
+\And
+Cathy Wu\\
+University of California\\
+Berkeley, CA 94720, USA\\
+\texttt{cathywu@eecs.berkeley.edu}\\
 \And
 Fanny Yang\\
 University of California\\
@@ -64,21 +64,21 @@ We evaluate several possible regularizers that can be used if the usual $\ell^1$
 \begin{equation}\label{l0-minimization}
   \begin{split}
     \text{minimize} &\quad \norm{x}_0\\
-    \text{subject to} &\quad Ax = f\quad\text{and}\quad 1^\T x = 1
+    \text{subject to} &\quad Ax = b\quad\text{and}\quad 1^\T x = 1
   \end{split}
 \end{equation}
 
 \begin{equation}\label{l1-minimization}
   \begin{split}
     \text{minimize} &\quad \norm{x}_1\\
-    \text{subject to} &\quad Ax = f\quad\text{and}\quad 1^\T x = 1
+    \text{subject to} &\quad Ax = b\quad\text{and}\quad 1^\T x = 1
   \end{split}
 \end{equation}
 
 \begin{equation}\label{l8-minimization}
   \begin{split}
     \text{minimize} &\quad \norm{x}_\infty\\
-    \text{subject to} &\quad Ax = f\quad\text{and}\quad 1^\T x = 1
+    \text{subject to} &\quad Ax = b\quad\text{and}\quad 1^\T x = 1
   \end{split}
 \end{equation}
 \section{Guarantees for sparse recovery}
@@ -115,10 +115,11 @@ The following elementary but particularly elegant (although not optimal) example
 \end{theorem}
 
 With a stronger albeit less elegant technique than the one Ben used, the factor $\log n$ in the bound on the number of constraints can be improved to $\log(n/s)$.
+%% TODO: Uniqueness
 \begin{proof}
 Let $S$ denote the support of $x^*$. The proof relies on the so called \emph{primal-dual witness} technique \cite{Wainwright2009}: We construct a pair of vectors that are primal and dual optimal and act as a witness for correct support recovery.
 The following lemma formalizes the notion of a primal-dual witness $(x, \lambda)\in \R^{n\times m}$.
-\begin{lemma}
+\begin{lemma}\label{l1-lemma}
   (a) A vector $x \in \R^n$ is optimal for \eqref{CS} if there exists
   a vector $\lambda\in \R^m$ such that $A^\T \lambda\in \partial
   \norm{x}_1$ and $Ax = b$ and (b) if the vector $v = A^\T \lambda$
@@ -166,7 +167,48 @@ Setting $t = 2(1+\epsilon) \cdot s\cdot \log n
     \end{proof}
 
 \subsection{Recovery of sparse probability measures}
+We will present two methods for the reconstruction of sparse probability measures:  Regularization with the $\ell^\infty$ norm and minimal cardinality selection.
+\paragraph{Regularization with the $\ell^\infty$ norm.} If the vector $x^*$ to be recovered is a sparse probability measure, the technique described in the previous section is not applicable, because $\norm{x}_1 = 1$ for probability measures.
+Unless the $k$-sparse probability measure $x^*$ is the unique solution of \eqref{l1-minimization}, we thus have to come up with a different regularization scheme to achieve strong recovery results.
+In \cite{mert} it was observed that for probability measures $x$ we have $1 = \norm{x}_1 \leq \norm{x}_0\cdot \norm{x}_\infty$ and thus $\norm{x}_{\infty}^{-1}$ is a lower bound on the size of the support of $x$.
+This suggests trying to use the inverse $\ell^\infty$ norm as a proxy for sparsity.
+
+Let $p^*$ denote the minimum value of $\norm{x}_0$ over $Ax = b$, we then consider the relaxation
+\begin{equation}\label{l8-recovery}
+  \begin{array}{rcllllr}
+  p^* \geq& p_\infty^* &= \min\limits_x\, \norm{x}_\infty^{-1}&\text{such that $Ax = b$, $1^\T x = 1$}\quad \text{and}\\[5pt]
+  &1/p_\infty^* &= \max\limits_{i=1,\dots,n} \max\limits_{x}\,x_i&\text{such that $Ax = b$, $1^\T x = 1$.}
+  \end{array}
+\end{equation}
+
+\paragraph{Minimal cardinality selection.} Instead of taking the maximum over $1\leq i\leq n$ in the linear program formulation of \eqref{l8-recovery}
+
+%% Vandermonde matrix: if min card(x) unique, then recovery, not for L1
+
+%% Boyd, Candes: reweighted L1, gives the card-approximation
+
+%% Sahan, Negaban + martin: unified framework for M-estimators
+
+%% \cite{foygel}
+
 \subsection{Recovery of sparse block probability measures}
+%% TODO Fanny: Theory and definitions go here
+We build on the guarantees given in \cite{inverse_problems} for the reconstruction of Gaussian measurements.
+\begin{theorem}
+  Let $A\in \R^{m\times n}$ be a random matrix with independent
+  entries $A_{ij}\sim N(0, m^{-1})$ and let $\Omega = T_{\mathcal
+    A}(x^*)\cap \mathbb{S}^{n-1}$ denote the spherical part of the
+  tangent cone $T_{\mathcal A}(x^*)$. Suppose that we have
+  measurements $b = Ax^*$. Then $x^*$ is the unique optimum of
+  \eqref{l1-minimization} with probability at least $1 - \exp(-\frac 1
+  2 (\lambda_n - w(\Omega))^2$ if we have $m\geq w(\Omega)^2 + 1$
+  constraints.
+\end{theorem}
+\begin{proof}
+  This is Corollary 3.3 from \cite{inverse_problems}.
+\end{proof}
+
+
 \section{Algorithms for reconstructing block probability measures}
 \subsection{Entropy minimization}
 For a discrete random variable $X$ with values in $\{1, \dots, n\}$ and probabilities $\P(X = k) = p_k$, the entropy is defined as $H(X)  = -\sum_{i=1}^{n} p_i \log p_i$.
@@ -201,6 +243,7 @@ However, as $H(X)$ is differentiable, we can still use a first-order gradient de
 
 \FloatBarrier
 \vskip 0.2in
+\nocite{*}
 \bibliographystyle{plainnat}
 \bibliography{lit}
 \end{document}
