@@ -150,7 +150,7 @@ Back to the main proof, we thus have to construct a Lagrange multiplier $\lambda
   \end{align*}
     Because $A$ is Gaussian and thus of full rank\footnote{this is in fact in general true for matrices with indices drawn i.i.d. from a continuous distribution}, the solution can be calculated using the Moore-Penrose pseudoinverse $\lambda = A_S(A_S^\T A_S)^{-1} e$.
 It remains to show that for $z = A_{S^c}^\T\lambda$ the $l^{\infty}$ norm is strictly smaller than $1$ with high probability. First observe that $\|\lambda\|^2 = e^\T(A_S^\T A_S)^{-1} e$.
-From this it follows\footnote{if $x_k \sim \operatorname{N}_p(0, \Sigma)$ is from a multivariate Gaussian and $X = (x_1, \dots, x_n)^\T \in \R^{n\times p}$, then $(X^\T X)^{-1} \sim W_p^{-1}(\Sigma^{-1}, n)$ is from an inverse Wishart distribution and therefore $z^\T (X^\T X)^{-1} z$ is an inverse gamma variable with parameters $z^\T \Sigma^{-1} z/2$ and $(n-p+1)/2$.} that $\|\lambda\|^2\sim \Gamma^{-1}((m-s+1)/2, m \norm{e}^2/2)$ where $\norm{e}^2 = s$. With the large deviation bound for the inverse gamma
+From this it follows\footnote{if $x_k \sim \operatorname{N}_p(0, \Sigma)$ is from a multivariate Gaussian and $X = (x_1, \dots, x_n)^\T \in \R^{n\times p}$, then $(X^\T X)^{-1} \sim W_p^{-1}(\Sigma^{-1}, n)$ is from an inverse Wishart distribution and therefore $z^\T (X^\T X)^{-1} z$ is an inverse $\chi^2$ variable with parameters $z^\T \Sigma^{-1} z/2$ and $(n-p+1)/2$.} that $\|\lambda\|^2\sim \text{Inv-$\chi^2$}((m-s+1)/2, m \norm{e}^2/2)$ where $\norm{e}^2 = s$. With the large deviation bound for the inverse $\chi^2$
 \begin{align*}
   \P\left(\norm{\lambda} > \sqrt{\frac{ms}{m-s+1-t}}\right) \leq
   \exp\left(-\frac{t^2}{4(m-s+1)}\right)
@@ -208,6 +208,23 @@ We build on the guarantees given in \cite{inverse_problems} for the reconstructi
   This is Corollary 3.3 from \cite{inverse_problems}.
 \end{proof}
 
+\begin{theorem}
+  If we want to recover a block structured probability measure, we
+  need a certain number of measurements for reconstruction with
+  certain probability.
+
+  Assume the sparsities in the blocks are $(k_1, k_2, \dots, k_b)$
+  with $k=\sum_i k_i$.
+\end{theorem}
+\begin{proof}
+  The Gaussian width of $\Omega$ can be calculated as
+  \begin{align*}
+    w(\Omega) = \E_g\left(\sup_{z\in \Omega}\,\sprod{g, z}\right) \leq
+    \E_g\left(\sup_{z\in\Omega}\,\norm{g}_{\infty}\norm{z}_1\right)
+  \end{align*}
+  Let $S$ be the support set of $x^*$ and $z = \hat x - x^*$, then we
+  have $z_{S^c} = \hat x_{S^c} \geq 0$ and $1^\T z = 0$ and thus
+\end{proof}
 
 \section{Algorithms for reconstructing block probability measures}
 \subsection{Entropy minimization}
