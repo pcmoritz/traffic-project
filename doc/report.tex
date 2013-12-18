@@ -212,9 +212,6 @@ We build on the guarantees given in \cite{inverse_problems} for the reconstructi
   If we want to recover a block structured probability measure, we
   need a certain number of measurements for reconstruction with
   certain probability.
-
-  Assume the sparsities in the blocks are $(k_1, k_2, \dots, k_b)$
-  with $k=\sum_i k_i$.
 \end{theorem}
 \begin{proof}
   The Gaussian width of $\Omega$ can be calculated as
@@ -225,6 +222,32 @@ We build on the guarantees given in \cite{inverse_problems} for the reconstructi
   Let $S$ be the support set of $x^*$ and $z = \hat x - x^*$, then we
   have $z_{S^c} = \hat x_{S^c} \geq 0$ and $1^\T z = 0$ and thus
 \end{proof}
+
+This reconstruction procedure may seem suboptimal, because it does not
+take into account the block structure of our measurements. However,
+knowledge of this structure does not help much in our situation as we
+argue now. The number of measurements needed for reconstruction in
+compressed sensing is typically of the order
+$\O(k\log(n/k))$. Intuitively, the first factor specifies the number
+of measurements necessary to recover the $k$ nonzero entries of the
+true parameter and the second factor is the number of measurements
+needed for estimating the right support. If we have constraints on the
+support, we can use a technique like \emph{model-based compressed
+  sensing} \cite{model_sensing} to reduce this second factor. Let
+$m_k$ be the number of possible support configurations with sparsity
+$k$, then with a model-based approach we need on the order or
+$\O(k\log(m_k))$ measurements. For $m_k = {n\choose k}\approx
+(ne/k)^k$, we recover the compressed sensing result. In our case, if
+we have $b$ blocks of size $\nu$ each, each with sparsity $\kappa$
+(thus $n = b\nu$ and $k=b\kappa$), we get
+\begin{equation*}
+m_k = {\nu \choose \kappa}^b \approx \left(\frac{\nu
+  e}{\kappa}\right)^{b\kappa} = \left(\frac{ne}{k}\right)^k,
+\end{equation*}
+which is the same result as above. The interpretation of this is that
+the support configurations that violate the block assumption are a
+negligible portion of all the possible support configurations.
+
 
 \section{Algorithms for reconstructing block probability measures}
 \subsection{Entropy minimization}
