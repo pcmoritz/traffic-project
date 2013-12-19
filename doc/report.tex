@@ -81,6 +81,33 @@ We evaluate several possible regularizers that can be used if the usual $\ell^1$
     \text{subject to} &\quad Ax = b,\quad x\geq 0\quad\text{and}\quad 1^\T x = 1
   \end{split}
 \end{equation}
+
+\subsection{Block $\ell^\infty$ regularization}
+Instead of a single probability measure $x\in \R^n$, in the traffic
+flow problem we are given blockwise probability measures $x = (x_1,
+\dots, x_b)^\T$ where $1^\T x_\gamma = 1$ for all blocks $\gamma\in
+\{1, \dots, b\}$. Define
+\begin{equation*}
+  \mathcal B_n^k = \{x = (x_1, \dots, x_b)^\T : x_\gamma \in \R_+^{n_\gamma}, \norm{x_\gamma}_0 = k_\gamma, \norm{x_\gamma}_1 = 1\text{ for $1\leq \gamma\leq b$}\},
+\end{equation*}
+where $n = (n_1, \dots, n_b)$ are the respective sizes of the blocks
+and $k = (k_1, \dots, k_b)$ their sparsities. The minimum cardinality
+reconstruction can then be formulated as
+\begin{equation}
+  \begin{split}
+    &\text{minimize}\quad \norm{x}_0\\
+    &\text{subject to}\quad Ax = b\quad\text{and}\quad x\in \mathcal B_n^k.
+  \end{split}
+\end{equation}
+Similar to the $\ell^\infty$ relaxation in the one-block case, we can
+relax this intractable problem to
+\begin{equation}\label{block-relaxation}
+  \begin{split}
+    &\text{minimize}\quad \textstyle\sum_{\gamma=1}^b {\norm{x_\gamma}_\infty^{-1}}\\
+    &\text{subject to}\quad Ax = b\quad\text{and}\quad x\in \mathcal B_n^k.
+  \end{split}
+\end{equation}
+
 \section{Guarantees for sparse recovery}
 To guarantee exact sparse recovery, the following procedure will be used: First, we make sure that the original vector~$x^*$ is actually the sparsest solution to~\eqref{l0-minimization}. Then, we prove that the solution of the relaxed problems~\eqref{l1-minimization} and~\eqref{l8-minimization} are unique and equal to $x^*$.
 \subsection{Sparse representation results}
@@ -167,31 +194,9 @@ Setting $t = 2(1+\epsilon) \cdot s\cdot \log n
     \end{proof}
 
 \subsection{Recovery of sparse probability measures}
-We will present two methods for the reconstruction of sparse probability measures:  Regularization with the $\ell^\infty$ norm and minimal cardinality selection.
-\paragraph{Regularization with the $\ell^\infty$ norm.} If the vector $x^*$ to be recovered is a sparse probability measure, the technique described in the previous section is not applicable, because $\norm{x}_1 = 1$ for probability measures.
-Unless the $k$-sparse probability measure $x^*$ is the unique solution of \eqref{l1-minimization}, we thus have to come up with a different regularization scheme to achieve strong recovery results.
-In \cite{mert} it was observed that for probability measures $x$ we have $1 = \norm{x}_1 \leq \norm{x}_0\cdot \norm{x}_\infty$ and thus $\norm{x}_{\infty}^{-1}$ is a lower bound on the size of the support of $x$.
-This suggests trying to use the inverse $\ell^\infty$ norm as a proxy for sparsity.
+We will present two methods for the reconstruction of sparse probability measures:  Classical Lasso, regularization with the $\ell^\infty$ norm and minimal cardinality selection.
 
-Let $p^*$ denote the minimum value of $\norm{x}_0$ over $Ax = b$, we then consider the relaxation
-\begin{equation}\label{l8-recovery}
-  \begin{array}{rcllllr}
-  p^* \geq& p_\infty^* &= \min\limits_x\, \norm{x}_\infty^{-1}&\text{such that $Ax = b$, $1^\T x = 1$}\quad \text{and}\\[5pt]
-  &1/p_\infty^* &= \max\limits_{i=1,\dots,n} \max\limits_{x}\,x_i&\text{such that $Ax = b$, $1^\T x = 1$.}
-  \end{array}
-\end{equation}
-
-\paragraph{Minimal cardinality selection.} Instead of taking the maximum over $1\leq i\leq n$ in the linear program formulation of \eqref{l8-recovery}
-
-%% Vandermonde matrix: if min card(x) unique, then recovery, not for L1
-
-%% Boyd, Candes: reweighted L1, gives the card-approximation
-
-%% Sahan, Negaban + martin: unified framework for M-estimators
-
-%% \cite{foygel}
-
-\subsection{Recovery of sparse block probability measures}
+Since we always consider the case when our probability measures are sparse, one natural approach would be to use the classical Lasso - if our probability measure is the unique $k$-sparse solution to $Ax  = b$, then we can abandon the $\ell^1$ constraints and use classical $\ell^1$ regularization. Guarantees for random measurement matrices with Gaussian entries are given in the following.
 
 It is well-known (\cite{inverse_problems}) that the $\ell^1$ relaxation in \eqref{l1-minimization} is an instance of the following more general problem 
 \begin{equation}
@@ -252,47 +257,68 @@ Using Theorem \ref{thm:UniqueRecovery} we only need to calculate $w(\Omega)$. Fi
 \begin{equation*}
 \|z\|_1 \leq \|z_{S^c}\|_1  +\|z_S\|_1 \leq 2 \|z_S\|_1 \leq 2\sqrt{k} \|z\|_2 = 2\sqrt{k},
 \end{equation*} 
-in the last step we used $\|z\|_2=1$ on $\Omega$. Thus the calculation of the Gaussian width boils down to bounding
+in the last step we used $\|z\|_2=1$ on $\Omega$. Using H\"older's inequality, the Gaussian width can be bounded by
 \begin{equation}
-w(\Omega) = \EE_g \left[ \sup_{z}\, \sprod{g, z} \:\:  \text{ s.t. } \|z\|_1 \leq 2\sqrt{k} \right] \leq \E_g \left[\sup_z \norm{g}_\infty \norm{z}_1 \text{ s.t. } \|z\|_1 \leq 2\sqrt{k}\right].
+w(\Omega) = \EE_g \left[ \sup_{z}\, \sprod{g, z} \:\:  \text{ s.t. } \|z\|_1 \leq 2\sqrt{k} \right] \leq 2\sqrt k\cdot \E_g \left[\sup_z\,\norm{g}_\infty\right].
 \end{equation}
+The term $\E_g[\norm{g}_\infty]$ can be bounded in the following way.
+For $g\sim N(0, 1)$ we have $\P(|g|>t) \leq 2e^{-t^2/2}$ and therefore $\P(\max_{1\leq i\leq n} |g_i| > t) \leq 2ne^{-t^2/2}$. Therefore, we get
+\begin{equation*}
+  \E_g[\norm{g}_\infty] \leq x + 2n\int_{t=x}^\infty e^{-t^2/2}\,\d t
+  \leq x + 2n\cdot \frac 1 x \cdot e^{-x^2/2}.
+\end{equation*}
+Choosing $x = \sqrt{2\log n}$ yields $\E_g[\norm{g}_\infty] \leq
+\sqrt{2\log(n)} + 2$.
+
 Then we could use Theorem \ref{thm:UniqueRecovery} and obtain $m\geq  w(\Omega)^2 + 1$.\\
-
-Using Hoelder's inequality the remaining work is to bound $\EE_g \|g\|_{\infty}$. 
 \end{proof}
 
-\begin{theorem}
-  If we want to recover a block structured probability measure, we
-  need a certain number of measurements for reconstruction with
-  certain probability.
-\end{theorem}
-\begin{proof}
-  The Gaussian width of $\Omega$ can be calculated as
-  \begin{align*}
-    w(\Omega) = \E_g\left(\sup_{z\in \Omega}\,\sprod{g, z}\right) \leq
-    \E_g\left(\sup_{z\in\Omega}\,\norm{g}_{\infty}\norm{z}_1\right)
-  \end{align*}
-  Let $S$ be the support set of $x^*$ and $z = \hat x - x^*$, then we
-  have $z_{S^c} = \hat x_{S^c} \geq 0$ and $1^\T z = 0$ and thus
-\end{proof}
+After establishing the guarantees for the Lasso approach, the question now is whether we can improve them, i.e. need smaller amount of measurements while maintaining the same probability of recovery. This seems intuitively possible since we are given one additional sum to one constraints, i.e.an additional measurement. 
 
+\paragraph{Regularization with the $\ell^\infty$ norm.} If the vector $x^*$ to be recovered is a sparse probability measure, the technique described in the previous section is not applicable, because $\norm{x}_1 = 1$ for probability measures.
+Unless the $k$-sparse probability measure $x^*$ is the unique solution of \eqref{l1-minimization}, we thus have to come up with a different regularization scheme to achieve strong recovery results.
+In \cite{mert} it was observed that for probability measures $x$ we have $1 = \norm{x}_1 \leq \norm{x}_0\cdot \norm{x}_\infty$ and thus $\norm{x}_{\infty}^{-1}$ is a lower bound on the size of the support of $x$.
+This suggests trying to use the inverse $\ell^\infty$ norm as a proxy for sparsity.
+
+Let $p^*$ denote the minimum value of $\norm{x}_0$ over $Ax = b$, we then consider the relaxation
+\begin{equation}\label{l8-recovery}
+  \begin{array}{rcllllr}
+  p^* \geq& p_\infty^* &= \min\limits_x\, \norm{x}_\infty^{-1}&\text{such that $Ax = b$, $1^\T x = 1$}\quad \text{and}\\[5pt]
+  &1/p_\infty^* &= \max\limits_{i=1,\dots,n} \max\limits_{x}\,x_i&\text{such that $Ax = b$, $1^\T x = 1$.}
+  \end{array}
+\end{equation}
+
+\paragraph{Minimal cardinality selection.} Instead of taking the maximum over $1\leq i\leq n$ in the linear program formulation of \eqref{l8-recovery}
+
+%% Vandermonde matrix: if min card(x) unique, then recovery, not for L1
+
+%% Boyd, Candes: reweighted L1, gives the card-approximation
+
+%% Sahan, Negaban + martin: unified framework for M-estimators
+
+%% \cite{foygel}
+
+\subsection{Recovery of sparse block probability measures}
 This reconstruction procedure may seem suboptimal, because it does not
-take into account the block structure of our measurements. However,
+take into account the block structure of our measurements.
+However,
 knowledge of this structure does not help much in our situation as we
 argue now. The number of measurements needed for reconstruction in
 compressed sensing is typically of the order
-$\O(k\log(n/k))$. Intuitively, the first factor specifies the number
+$\O(k\log(n/k))$.
+Intuitively, the first factor specifies the number
 of measurements necessary to recover the $k$ nonzero entries of the
 true parameter and the second factor is the number of measurements
 needed for estimating the right support. If we have constraints on the
 support, we can use a technique like \emph{model-based compressed
-  sensing} \cite{model_sensing} to reduce this second factor. Let
-$m_k$ be the number of possible support configurations with sparsity
-$k$, then with a model-based approach we need on the order or
-$\O(k\log(m_k))$ measurements. For $m_k = {n\choose k}\approx
-(ne/k)^k$, we recover the compressed sensing result. In our case, if
-we have $b$ blocks of size $\nu$ each, each with sparsity $\kappa$
-(thus $n = b\nu$ and $k=b\kappa$), we get
+  sensing} \cite{model_sensing} to reduce this second factor.  
+Let $m_k$ be the number of possible support configurations with
+sparsity $k$, then with a model-based approach we need on the order or
+$\O(k\log(m_k))$ measurements.
+For $m_k = {n\choose k}\approx (ne/k)^k$, we recover the compressed
+sensing result.
+In our case, if we have $b$ blocks of size $\nu$ each, each with
+sparsity $\kappa$ (thus $n = b\nu$ and $k=b\kappa$), we get
 \begin{equation*}
 m_k = {\nu \choose \kappa}^b \approx \left(\frac{\nu
   e}{\kappa}\right)^{b\kappa} = \left(\frac{ne}{k}\right)^k,
@@ -322,14 +348,37 @@ In entropy minimization, we attempt to solve the following:
 %This problem also allows us to distinguish between multiple solutions which have the same cardinality, since two solutions which are not exactly the same will have different entropy.
 Unfortunately, $H(X)$ is a concave function, so the above is a concave minimization problem, albeit with a convex set as the constraint.
 However, as $H(X)$ is differentiable, we can still use a first-order gradient descent method for constrained problems (without any guarantees on optimality) in the following way:
-\begin{itemize}
-  \item Find a feasible $x$, i.e., which satisfies $Ax = b, \sum_i x_{\gamma, i} = 1\ \forall \gamma$.
+\begin{enumerate}
+  \item Find a feasible $x$, i.e., which satisfies $Ax = b, \sum_i x_{\gamma, i} = 1$ for all $\gamma$.
   \item Compute the gradient of the objective function at $x_0$.
   \item Find a feasible update direction $\Delta x$, selected to minimize the dot product between it and the gradient.
   \item Find $\alpha \le 1$ so that $H(x + \alpha \Delta x) < H(x)$. If no such $\alpha$ exists, terminate.
   \item Update $x_\textrm{new} = x + \alpha \Delta x$, and repeat the above steps.
-\end{itemize}
+\end{enumerate}
 \cite{sudoku} describes a similar method for entropy minimization, but they take additional steps to try to escape local minima, by occasionally updating $x$ to increase entropy instead of decreasing it.
+
+\subsection{Random sampling}
+The objective in \eqref{block-relaxation} can be rewritten as
+$\sum_\gamma \norm{x_\gamma}_\infty = \sum_\gamma (\max_i\,x_{\gamma
+  i})^{-1} = \min_{(i_1, \dots, i_b)} \sum_\gamma x_{\gamma i_\gamma}$.
+Optimizing it over $\mathcal C = \mathcal B_n^k \cap \{x : Ax =
+b\}$ we get
+\begin{equation*}
+  p_\infty^* = \min_{i_1, \dots, i_p} \min_{x\in \mathcal C}\,
+  {\textstyle \sum_\gamma x_{\gamma i_\gamma}},\quad
+  \text{or equivalently}\quad
+  (p_\infty^*)^{-1} = \min_{i_1, \dots, i_p} \max_{x\in \mathcal C} \,
+  {\textstyle \sum_\gamma x_{\gamma i_\gamma}.
+\end{equation*}
+The minimum is now over exponentially many configurations and thus
+computationally intractable. We suggest to use a random sampling
+strategy: Get a pilot estimate $\check x$ for $x^*$, for example by
+minimizing the $\ell^1$ norm or the elastic net over all $x$ with $Ax
+= b$ (without the block probability constraints). Then, random
+sampling proceeds as follows:
+\begin{enumerate}
+  \item 
+\end{enumerate}
 
 \section{Numerical Results}
 \section{References}
