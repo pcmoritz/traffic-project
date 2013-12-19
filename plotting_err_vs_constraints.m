@@ -1,15 +1,16 @@
 
 function plotting_err_vs_constraints(no_sizes, no_algos, no_sparsities, algos_cell, constraints_xaxis, dimvalue_descrip, choice_algos, l, error_name, model_name, prefix, colorsmatrix, file_name)
 no_constraints = length(constraints_xaxis);
-Value_vs_Size_Matrix = zeros(no_constraints,no_algos);
+
+% Third dimension is value and stddev
+Value_vs_Size_Matrix = zeros(no_constraints,no_algos,2);
 
 %% Create Mat errors vs. size
     
     % Use a better implementation than forloop!
     % Put all values in a matrix prepare for plotting
     for i = 1:length(algos_cell)
-        mat_cache = algos_cell{i};
-        Value_vs_Size_Matrix(:,i) = mat_cache(no_sizes+no_sparsities+1:no_sizes+no_sparsities+no_constraints,l+1);
+        Value_vs_Size_Matrix(:,i,:) = algos_cell{i}(no_sizes+no_sparsities+1:no_sizes+no_sparsities+no_constraints,l+1,:);
     end
     
     % Declare the file/title name for plot, dependent on matrix and error
@@ -23,7 +24,7 @@ Value_vs_Size_Matrix = zeros(no_constraints,no_algos);
     % algos
     % eval(['error_mat = models{k}.' sprintf(error_types{l})]);
     [sorted_constraints_xaxis, sorted_ind] = sort(constraints_xaxis);
-    plotfrommat(sorted_constraints_xaxis, Value_vs_Size_Matrix(sorted_ind,:), ...
+    plotfrommat(sorted_constraints_xaxis, Value_vs_Size_Matrix(sorted_ind,:,:), ...
         choice_algos, legend_label, strcat(prefix, file_name), '', ...
         dimvalue_descrip, ylabel_str, colorsmatrix);
 end
