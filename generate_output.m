@@ -10,13 +10,16 @@
 % we return a cell of test output objects, one for each algorithm
 
 
-function [output_list] = generate_output(p, algorithms) 
+function [output_list] = generate_output(p, algorithms, existing_output)
     output_list = [];
     for algorithm = algorithms
         o = TestOutput();
         o.test_parameters = p; o.algorithm = algorithm{1}; o.tester = getenv('USER');
-        run_algorithm_test(o);
-        output_list = [output_list o];
+        out = o.isAmong(existing_output);
+        if ~isa(out,'TestOutput')
+            run_algorithm_test(o);
+            output_list = [output_list o];
+        end
     end
 end
 

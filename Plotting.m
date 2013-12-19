@@ -118,7 +118,8 @@ for i = 1:no_algos
         filtered_metrics = filter_metrics(plot_type, relevant_metrics, mysize, algo, 0);
         averaged_m = average_metrics(filtered_metrics);
         results_sizesblock(j,:) = [averaged_m.test_output.runtime, ...
-            averaged_m.error_L1, averaged_m.error_L2, averaged_m.error_support];
+            averaged_m.error_L1, averaged_m.error_L2, ...
+            averaged_m.error_support, averaged_m.error_max_support];
         
         if i == 1
             Phi_sizes(j,:) = size(averaged_m.test_output.test_parameters.Phi);

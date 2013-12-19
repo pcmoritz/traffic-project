@@ -8,6 +8,7 @@ function averaged_m = average_metrics(ms)
     averaged_m.error_L1 = mean(cellfun(@(x) x.error_L1, ms));
     averaged_m.error_L2 = mean(cellfun(@(x) x.error_L2, ms)); 
     averaged_m.error_support = mean(cellfun(@(x) x.error_support, ms));
+    averaged_m.error_max_support = mean(cellfun(@(x) x.error_max_support, ms));
     averaged_m.real_sparsity = mean(cellfun(@(x) x.real_sparsity, ms));
     averaged_m.test_sparsity = mean(cellfun(@(x) x.test_sparsity, ms));
     for m = ms
