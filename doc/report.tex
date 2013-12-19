@@ -60,7 +60,9 @@ We evaluate several possible regularizers that can be used if the usual $\ell^1$
 
 \section{Introduction}
 \paragraph{Related work.}
-\section{Problem formulation}
+\section{Problem formulation and relaxations}
+
+\subsection{Mathematical modeling}
 \begin{equation}\label{l0-minimization}
   \begin{split}
     \text{minimize} &\quad \norm{x}_0\\
@@ -68,6 +70,21 @@ We evaluate several possible regularizers that can be used if the usual $\ell^1$
   \end{split}
 \end{equation}
 
+\subsection{Relaxations}
+This problem can be solved if the original signal is the unique sparse solution. The following theorem gives conditions when this is the case. To show that the original vector is actually the unique sparsest one, we use the following theorem from \cite{Dahmen_CS}.
+\begin{theorem}
+\label{thm:l0unique}
+Let $A \in \R^{m\times n}$ and $x\in\R^n$ be $s$-sparse. In the case
+$m\geq 2k$, the problem $Ax = b$ can be recovered if and only if
+\begin{inparaenum}[(a)]
+\item the set $\Sigma_{2k}$ of $2k$-sparse vectors intersects with the null space of the matrix $A$ only at the singleton $\{0\}$ (see also section 2 of \cite{Dahmen_CS}).
+\item For any subset $S$ with $|S| = 2k$, the matrix $A_S$ has rank $2k$ and
+\item $A_S^\T A_S$ is invertible.
+\end{inparaenum}
+\end{theorem}
+However these are not checkable in polynomial time, see \cite{DonohoCheckable}. For random matrices with Gaussian entries this holds with high probability. Similar conditions which are easier to check is the mutual coherence, see e.g. \cite{Fuchs}.
+
+Cardinality minimization is known to be a combinatorically hard problem. Therefore in the past decade there has been a lot of work done linked to Compressed Sensing
 \begin{equation}\label{l1-minimization}
   \begin{split}
     \text{minimize} &\quad \norm{x}_1\\
@@ -82,46 +99,12 @@ We evaluate several possible regularizers that can be used if the usual $\ell^1$
   \end{split}
 \end{equation}
 
-\subsection{Block $\ell^\infty$ regularization}
-Instead of a single probability measure $x\in \R^n$, in the traffic
-flow problem we are given blockwise probability measures $x = (x_1,
-\dots, x_b)^\T$ where $1^\T x_\gamma = 1$ for all blocks $\gamma\in
-\{1, \dots, b\}$. Define
-\begin{equation*}
-  \mathcal B_n^k = \{x = (x_1, \dots, x_b)^\T : x_\gamma \in \R_+^{n_\gamma}, \norm{x_\gamma}_0 = k_\gamma, \norm{x_\gamma}_1 = 1\text{ for $1\leq \gamma\leq b$}\},
-\end{equation*}
-where $n = (n_1, \dots, n_b)$ are the respective sizes of the blocks
-and $k = (k_1, \dots, k_b)$ their sparsities. The minimum cardinality
-reconstruction can then be formulated as
-\begin{equation}
-  \begin{split}
-    &\text{minimize}\quad \norm{x}_0\\
-    &\text{subject to}\quad Ax = b\quad\text{and}\quad x\in \mathcal B_n^k.
-  \end{split}
-\end{equation}
-Similar to the $\ell^\infty$ relaxation in the one-block case, we can
-relax this intractable problem to
-\begin{equation}\label{block-relaxation}
-  \begin{split}
-    &\text{minimize}\quad \textstyle\sum_{\gamma=1}^b {\norm{x_\gamma}_\infty^{-1}}\\
-    &\text{subject to}\quad Ax = b\quad\text{and}\quad x\in \mathcal B_n^k.
-  \end{split}
-\end{equation}
+
 
 \section{Guarantees for sparse recovery}
 To guarantee exact sparse recovery, the following procedure will be used: First, we make sure that the original vector~$x^*$ is actually the sparsest solution to~\eqref{l0-minimization}. Then, we prove that the solution of the relaxed problems~\eqref{l1-minimization} and~\eqref{l8-minimization} are unique and equal to $x^*$.
 \subsection{Sparse representation results}
-To show that the original vector is actually the unique sparsest one, we use the following theorem from \cite{Dahmen_CS}.
-\begin{theorem}
-\label{thm:l0unique}
-Let $A \in \R^{m\times n}$ and $x\in\R^n$ be $s$-sparse. In the case
-$m\geq 2k$, the problem $Ax = b$ can be recovered if and only if
-\begin{inparaenum}[(a)]
-\item the set $\Sigma_{2k}$ of $2k$-sparse vectors intersects with the null space of the matrix $A$ only at the singleton $\{0\}$ (see also section 2 of \cite{Dahmen_CS}).
-\item For any subset $S$ with $|S| = 2k$, the matrix $A_S$ has rank $2k$ and
-\item $A_S^\T A_S$ is invertible.
-\end{inparaenum}
-\end{theorem}
+
 
 \subsection{Obtaining the sparse solution by Compressed Sensing}
 The convex relaxation of the original $\ell_0$-minimization problem
@@ -299,10 +282,38 @@ Let $p^*$ denote the minimum value of $\norm{x}_0$ over $Ax = b$, we then consid
 %% \cite{foygel}
 
 \subsection{Recovery of sparse block probability measures}
+
+\subsection{Block $\ell^\infty$ regularization}
+Instead of a single probability measure $x\in \R^n$, in the traffic
+flow problem we are given blockwise probability measures $x = (x_1,
+\dots, x_b)^\T$ where $1^\T x_\gamma = 1$ for all blocks $\gamma\in
+\{1, \dots, b\}$. Define
+\begin{equation*}
+  \mathcal B_n^k = \{x = (x_1, \dots, x_b)^\T : x_\gamma \in \R_+^{n_\gamma}, \norm{x_\gamma}_0 = k_\gamma, \norm{x_\gamma}_1 = 1\text{ for $1\leq \gamma\leq b$}\},
+\end{equation*}
+where $n = (n_1, \dots, n_b)$ are the respective sizes of the blocks
+and $k = (k_1, \dots, k_b)$ their sparsities. The minimum cardinality
+reconstruction can then be formulated as
+\begin{equation}
+  \begin{split}
+    &\text{minimize}\quad \norm{x}_0\\
+    &\text{subject to}\quad Ax = b\quad\text{and}\quad x\in \mathcal B_n^k.
+  \end{split}
+\end{equation}
+Similar to the $\ell^\infty$ relaxation in the one-block case, we can
+relax this intractable problem to
+\begin{equation}\label{block-relaxation}
+  \begin{split}
+    &\text{minimize}\quad \textstyle\sum_{\gamma=1}^b {\norm{x_\gamma}_\infty^{-1}}\\
+    &\text{subject to}\quad Ax = b\quad\text{and}\quad x\in \mathcal B_n^k.
+  \end{split}
+\end{equation}
+
+??? Transition needed ???
+
 This reconstruction procedure may seem suboptimal, because it does not
 take into account the block structure of our measurements.
-However,
-knowledge of this structure does not help much in our situation as we
+However, knowledge of this structure does not help much in our situation as we
 argue now. The number of measurements needed for reconstruction in
 compressed sensing is typically of the order
 $\O(k\log(n/k))$.

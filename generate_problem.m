@@ -22,7 +22,7 @@
 function p=generate_problem(type, options)
 %GENERATE_OUTPUT Convert python data files into "raw" algorithm input
 
-models = {'small_graph_random', 'small_graph_OD', 'small_graph'};
+models = {'small_graph_random', 'small_graph_OD', 'small_graph'}; %'small_graph_augmented', 
 
 date = datestr(now, 30);
 
