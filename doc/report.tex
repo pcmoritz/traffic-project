@@ -3,6 +3,7 @@
 \usepackage{hyperref}
 \usepackage{url}
 \usepackage{subfig}
+\usepackage{booktabs}
 
 \usepackage{graphicx}
 \usepackage{amsmath}
@@ -21,6 +22,9 @@
 \newcommand{\given}{\,|\,}
 
 \input math.tex
+
+\newcommand{\OO}{{\cal O}}
+\newcommand{\RR}{{\cal R}}
 
 \nipsfinalcopy
 
@@ -81,6 +85,31 @@ Compressed sensing
 
 \paragraph{Related work.}
 \section{Problem formulation}
+\begin{table}[htbp]
+\caption{Notation for the traffic estimation problem}
+\label{tab-notation}
+\centering
+\begin{tabular}{cl}
+\toprule
+Notation & Description \\
+\midrule
+$\OO$ & Set of origins. Its size $|\OO|$ is the number of zones. \\
+$\RR$ & Set of all routes $r\in \RR$\\
+$\RR^\gamma \subset\RR$ & Subset of routes starting at origin $\gamma\in\OO$ \\
+$\RR^{\gamma \lambda} \subset\RR$ & Subset of routes from $\gamma\in\OO$ to $\lambda\in \OO$ \\
+$b^\gamma$ & Flow (vehicle count) measured at origin $\gamma\in\OO$ \\
+$n_\gamma$ & Number of routes from origin $\gamma\in \OO$\\
+$x_\gamma \in[0, 1]^{n_\gamma}$ & $x_{\gamma r}$ is the portion of flow $b^\gamma$ directed to route $r \in \RR^\gamma$ \\
+$A_{\gamma}$ & Corresponding blocks of $n_{\gamma}$ columns of $A$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Losses.} (do we need to define these?)
+$l(\alpha, \hat\alpha) = \norm{\hat\alpha - \alpha}_2$ & Loss/error of the estimated split vectors $\alpha$ in $\ell^2$ norm
+$l'(\alpha, \hat\alpha) = \norm{\hat\alpha - \alpha}_1$ & Loss/error of the estimated split vectors $\alpha$ in $\ell^1$ norm
+$l^*(\alpha, \hat \alpha) = \sum_{i}|1_{(\hat{\alpha}_i > 0)} - 1_{(\alpha_i > 0)}|.$ & Loss/error of the estimated split vectors $\alpha$ with respect to support recovery
+
 \begin{equation}\label{l0-minimization}
   \begin{split}
     \text{minimize} &\quad \norm{x}_0\\
@@ -406,9 +435,9 @@ To test our algorithms, we generated two datasets: One to assess reconstruction 
   \subfloat[][Small road network with weights]{\includegraphics[width=0.4\textwidth]{figures/small-graph.pdf}}
   \qquad
   \subfloat[][Flows for the small network]{\includegraphics[width=0.4\textwidth]{figures/small-flow.pdf}}
-  \caption{A traffic graph for $r=3$ and $c=5$. There are horizontal highways at the top and the bottom with weight $6$, which are vertically connected by more and less important roads (weights 2 and 1). On the right, the flows on these routes were computed by first choosing two possible routes for each origin-destination pair, then for every origin taking all chosen routes from there}
+  \caption{A traffic graph for $r=3$ and $c=5$. As shown in (a), there are horizontal highways with weight $6$ at the top and the bottom. These are vertically connected by roads with weights 1 or 2. In (b), the flows on these roads were computed by first choosing the $k$ shortest paths between each origin-destination pair. Then, for each origin $u$, we choose $s$ of the shortest paths starting at $u$ uniformly at random. }
 \end{figure}
-\paragraph{Traffic matrices.} The parameters for this model are the number of rows $r$ and the number $c$ of columns in the road grid and the number $k$ of routes per origin-destination pair and the sparsity $s$.
+\paragraph{Traffic matrices.} The parameters for this model are the number of rows $r$ and the number $c$ of columns in the road grid and the number $k$ of routes per origin-destination pair, the sparsity $s$ and the flow from each node $\phi$.
 \paragraph{Gaussian random matrices.} The parameters are: Sparsity $k$, number of blocks $b$, number of variables per block $\nu$ and number of measurements $m$.
 First, a vector $x^*\in \mathcal B_n^s$ with $n = (\nu, \dots, \nu)$ and
 \begin{equation*}
