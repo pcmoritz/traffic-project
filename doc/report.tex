@@ -408,7 +408,7 @@ To test our algorithms, we generated two datasets: One to assess reconstruction 
   \subfloat[][Flows for the small network]{\includegraphics[width=0.4\textwidth]{figures/small-flow.pdf}}
   \caption{A traffic graph for $r=3$ and $c=5$. There are horizontal highways at the top and the bottom with weight $6$, which are vertically connected by more and less important roads (weights 2 and 1). On the right, the flows on these routes were computed by first choosing two possible routes for each origin-destination pair, then for every origin taking all chosen routes from there}
 \end{figure}
-\paragraph{Traffic matrices.} The parameters for this model are the number of rows $r$ and the number $c$ of columns in the road grid and the number $k$ of routes per origin-destination pair. 
+\paragraph{Traffic matrices.} The parameters for this model are the number of rows $r$ and the number $c$ of columns in the road grid and the number $k$ of routes per origin-destination pair and the sparsity $s$.
 \paragraph{Gaussian random matrices.} The parameters are: Sparsity $k$, number of blocks $b$, number of variables per block $\nu$ and number of measurements $m$.
 First, a vector $x^*\in \mathcal B_n^s$ with $n = (\nu, \dots, \nu)$ and
 \begin{equation*}
