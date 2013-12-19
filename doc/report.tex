@@ -2,6 +2,7 @@
 \usepackage{nips, times}
 \usepackage{hyperref}
 \usepackage{url}
+\usepackage{subfig}
 
 \usepackage{graphicx}
 \usepackage{amsmath}
@@ -127,7 +128,7 @@ relax this intractable problem to
   \end{split}
 \end{equation}
 
-\section{Guarantees for sparse recovery}
+\section{Guarantees for sparse recovery}\label{sec:theory}
 To guarantee exact sparse recovery, the following procedure will be used: First, we make sure that the original vector~$x^*$ is actually the sparsest solution to~\eqref{l0-minimization}. Then, we prove that the solution of the relaxed problems~\eqref{l1-minimization} and~\eqref{l8-minimization} are unique and equal to $x^*$.
 \subsection{Sparse representation results}
 To show that the original vector is actually the unique sparsest one, we use the following theorem from \cite{Dahmen_CS}.
@@ -400,8 +401,14 @@ sampling proceeds as follows:
 \end{enumerate}
 
 \section{Numerical Results}
-To test our algorithms, we generated two datasets: One to test reconstruction performance on the traffic estimation problem and one to evaluate the theoretical guarantees we gave empirically.
-\paragraph{Traffic matrices.} 
+To test our algorithms, we generated two datasets: One to assess reconstruction performance on the traffic estimation problem and one to empirically evaluate the theoretical guarantees from section \ref{sec:theory}.
+\begin{figure}
+  \subfloat[][Small road network with weights]{\includegraphics[width=0.4\textwidth]{figures/small-graph.pdf}}
+  \qquad
+  \subfloat[][Flows for the small network]{\includegraphics[width=0.4\textwidth]{figures/small-flow.pdf}}
+  \caption{A traffic graph for $r=3$ and $c=5$. There are horizontal highways at the top and the bottom with weight $6$, which are vertically connected by more and less important roads (weights 2 and 1). On the right, the flows on these routes were computed by first choosing two possible routes for each origin-destination pair, then for every origin taking all chosen routes from there}
+\end{figure}
+\paragraph{Traffic matrices.} The parameters for this model are the number of rows $r$ and the number $c$ of columns in the road grid and the number $k$ of routes per origin-destination pair. 
 \paragraph{Gaussian random matrices.} The parameters are: Sparsity $k$, number of blocks $b$, number of variables per block $\nu$ and number of measurements $m$.
 First, a vector $x^*\in \mathcal B_n^s$ with $n = (\nu, \dots, \nu)$ and
 \begin{equation*}
