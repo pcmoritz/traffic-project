@@ -1,14 +1,14 @@
 function plotting_err_vs_sz(no_sizes, no_algos, algos_cell, size_xaxis, dimvalue_descrip, choice_algos, l, error_name, model_name, prefix, colorsmatrix,plot_sparsity)
 
-Value_vs_Size_Matrix = zeros(no_sizes,no_algos);
+% Third dimension is value and stddev
+Value_vs_Size_Matrix = zeros(no_sizes,no_algos,2);
 
 %% Create Mat errors vs. size
     
     % Use a better implementation than forloop!
     % Put all values in a matrix prepare for plotting
     for i = 1:length(algos_cell)
-        mat_cache = algos_cell{i};
-        Value_vs_Size_Matrix(:,i) = mat_cache(1:no_sizes,l+1);
+        Value_vs_Size_Matrix(:,i,:) = algos_cell{i}(1:no_sizes,l+1,:);
     end
     
     % Declare the file/title name for plot, dependent on matrix and error
@@ -24,7 +24,7 @@ Value_vs_Size_Matrix = zeros(no_sizes,no_algos);
     % algos
     % eval(['error_mat = models{k}.' sprintf(error_types{l})]);
     [sorted_size_xaxis, sorted_ind] = sort(size_xaxis);
-    plotfrommat(sorted_size_xaxis, Value_vs_Size_Matrix(sorted_ind,:), ...
+    plotfrommat(sorted_size_xaxis, Value_vs_Size_Matrix(sorted_ind,:,:), ...
         choice_algos, '', strcat(prefix, file_name), title_name, ...
         dimvalue_descrip, ylabel_str, colorsmatrix);
 end
