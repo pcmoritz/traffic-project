@@ -64,21 +64,21 @@ We evaluate several possible regularizers that can be used if the usual $\ell^1$
 \begin{equation}\label{l0-minimization}
   \begin{split}
     \text{minimize} &\quad \norm{x}_0\\
-    \text{subject to} &\quad Ax = b\quad\text{and}\quad 1^\T x = 1
+    \text{subject to} &\quad Ax = b,\quad x\geq 0\quad \text{and}\quad 1^\T x = 1
   \end{split}
 \end{equation}
 
 \begin{equation}\label{l1-minimization}
   \begin{split}
     \text{minimize} &\quad \norm{x}_1\\
-    \text{subject to} &\quad Ax = b\quad\text{and}\quad 1^\T x = 1
+    \text{subject to} &\quad Ax = b,\quad x\geq 0\quad\text{and}\quad 1^\T x = 1
   \end{split}
 \end{equation}
 
 \begin{equation}\label{l8-minimization}
   \begin{split}
     \text{minimize} &\quad \norm{x}_\infty\\
-    \text{subject to} &\quad Ax = b\quad\text{and}\quad 1^\T x = 1
+    \text{subject to} &\quad Ax = b,\quad x\geq 0\quad\text{and}\quad 1^\T x = 1
   \end{split}
 \end{equation}
 \section{Guarantees for sparse recovery}
@@ -192,20 +192,73 @@ Let $p^*$ denote the minimum value of $\norm{x}_0$ over $Ax = b$, we then consid
 %% \cite{foygel}
 
 \subsection{Recovery of sparse block probability measures}
-%% TODO Fanny: Theory and definitions go here
-We build on the guarantees given in \cite{inverse_problems} for the reconstruction of Gaussian measurements.
+
+It is well-known (\cite{inverse_problems}) that the $\ell^1$ relaxation in \eqref{l1-minimization} is an instance of the following more general problem 
+\begin{equation}
+\label{eq:MinAtomicNorm}
+\min \|x\|_{\A} \:\: \text{ s.t. } Ax = b,
+\end{equation}
+where $\A$ is a set of atoms in $\R^n$ and $\|\cdot \|_{\A}$ represents the atomic norm defined as follows.
+\begin{definition}[Atomic norm]
+$\|x\|_{\A} = \inf\{ t>0: x\in t \conv(\A)\}$ is called the atomic norm of $x$ induced by $\A$ in case $\A$ is symmetric about the origin.
+\end{definition}
+Our case of minimization over sparse vectors using the $\ell^1$ norm can be retrieved from this definition by choosing $\A = \{\pm e_i: i = 1,\dots, p\}$ where $e_i$ are the canonical basis vectors in $\R^n$.
+
+In order to examine recovery conditions the following definitions are useful:
+\begin{definition}[Tangent cone]
+The tangent cone at $x$ is defined as 
+\begin{equation}
+\label{eq:TangentCone}
+T_{\A}(x) = \cone \{\hat{x} - x: \|\hat{x}\|_{\A} \leq \|x\|_{\A}\}
+\end{equation}
+\end{definition}
+The tangent cone is the set of directions at $x$ for which the atomic norm decreases. Therefore, whenever the null space of $A$ and $T_{\A}(x^*)$ do not intersect, $x^*$ minimizes \eqref{eq:MinAtomicNorm}. To bound this probability, we introduce the following theorem.
+
 \begin{theorem}
+\label{thm:ExpectationBound}
+Let $\Omega$ be a closed subset of $\mathbb{S}^{n-1} = \{x: \|x\|_2 = 1\}$ and $A$ be a matrix with i.i.d. zero-mean Gaussian entries having variance one. Then
+\begin{equation}
+  \EE \left[ \min_{x\in \Omega} \|A x\|_2 \right] \geq \lambda_n - w(\Omega)
+\end{equation} 
+where $n/\sqrt{n+1} \leq \lambda_n\leq \sqrt{n}$ and $w(\Omega)$ is the \emph{Gaussian width}
+$w(\Omega) = \EE_{g} \left[ \sup_{z\in \Omega} \sprod{g, z} \right]$
+\end{theorem}
+
+The difference between problem~\eqref{eq:MinAtomicNorm} and \eqref{l1-minimization} is that we have an additional constraint of the form $1^\T x = 1$.
+With $\mathcal P = \{ x: 1^\T x = 1 \text{ and }0\leq x\leq 1\}$ we can thus write our problem as
+\begin{equation}
+\label{eq:MinAtomicNorm_ProbSimplex}
+\min \|x\|_{\A} \:\: \text{ s.t. } Ax = b \text{ and } x\in \mathcal P.
+\end{equation} 
+Using Theorem \ref{thm:ExpectationBound} and the definitions therein we can then extend Corollary 3.3 in \cite{inverse_problems} and get the following result.
+\begin{theorem}
+\label{thm:UniqueRecovery}
   Let $A\in \R^{m\times n}$ be a random matrix with independent
-  entries $A_{ij}\sim N(0, m^{-1})$ and let $\Omega = T_{\mathcal
-    A}(x^*)\cap \mathbb{S}^{n-1}$ denote the spherical part of the
-  tangent cone $T_{\mathcal A}(x^*)$. Suppose that we have
+  entries $A_{ij}\sim N(0, 1)$ and let $\Omega = \mathcal P \cap T_{\mathcal
+    A}(x^*)\cap \mathbb{S}^{n-1}$. Suppose that we have
   measurements $b = Ax^*$. Then $x^*$ is the unique optimum of
   \eqref{l1-minimization} with probability at least $1 - \exp(-\frac 1
   2 (\lambda_n - w(\Omega))^2$ if we have $m\geq w(\Omega)^2 + 1$
   constraints.
 \end{theorem}
+
+ The proof is unchanged compared with \cite{inverse_problems}: We bound $\P(\min_{x\in \Omega} \|A x\|_2 >0)$ by using the result in Theorem \ref{thm:ExpectationBound}. This does not change by adding the closed constraint set $\mathcal P$. Using these preparations we can now state the major guarantee:
+\begin{theorem}
+If $m\geq 4k\log n$ we can recover $x^*$ by solving \eqref{eq:MinAtomicNorm_ProbSimplex} with high probability.
+\end{theorem}
 \begin{proof}
-  This is Corollary 3.3 from \cite{inverse_problems}.
+\footnote{from personal communication with Mert Pilanci}
+Using Theorem \ref{thm:UniqueRecovery} we only need to calculate $w(\Omega)$. First define $S$ as the support of $x^*$. The tangent cone then consists of vectors $z = \hat{x} - x^*$ where $\hat{x}$ is a feasible solution. Then $z_{S^c} \geq 0$ and $\sum_{i=1}^n z_i = 0$, which implies $\|z_{S^c}\|_1 = \sum_{i\in S^c} z_i = -\sum_{i\in S} z_i \leq \norm{z_S}_1$. It follows that
+\begin{equation*}
+\|z\|_1 \leq \|z_{S^c}\|_1  +\|z_S\|_1 \leq 2 \|z_S\|_1 \leq 2\sqrt{k} \|z\|_2 = 2\sqrt{k},
+\end{equation*} 
+in the last step we used $\|z\|_2=1$ on $\Omega$. Thus the calculation of the Gaussian width boils down to bounding
+\begin{equation}
+w(\Omega) = \EE_g \left[ \sup_{z}\, \sprod{g, z} \:\:  \text{ s.t. } \|z\|_1 \leq 2\sqrt{k} \right] \leq \E_g \left[\sup_z \norm{g}_\infty \norm{z}_1 \text{ s.t. } \|z\|_1 \leq 2\sqrt{k}\right].
+\end{equation}
+Then we could use Theorem \ref{thm:UniqueRecovery} and obtain $m\geq  w(\Omega)^2 + 1$.\\
+
+Using Hoelder's inequality the remaining work is to bound $\EE_g \|g\|_{\infty}$. 
 \end{proof}
 
 \begin{theorem}
@@ -284,6 +337,6 @@ However, as $H(X)$ is differentiable, we can still use a first-order gradient de
 \FloatBarrier
 \vskip 0.2in
 \nocite{*}
-\bibliographystyle{plainnat}
+\bibliographystyle{plain}
 \bibliography{lit}
 \end{document}
