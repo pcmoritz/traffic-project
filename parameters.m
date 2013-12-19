@@ -28,7 +28,7 @@ tests = {'cvx_L2','cvx_unconstrained_L1','cvx_weighted_L1', ...
     %'cvx_hot_start_lp', 'cvx_block_descent_L_infty', ...
 % tests = {'cvx_elastic_net'};
 % tests = {'cvx_random_sample_min_cardinality'};
-tests = {'cvx_random_sample_L_infty_hot_start'};
+tests = {'cvx_rs_constant_L1L2plus_noupdate'};
 
 algo_names = containers.Map();
 algo_names('cvx_L2') = 'constrained L2';

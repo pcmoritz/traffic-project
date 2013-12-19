@@ -1,8 +1,8 @@
 function avg_test_mu = cross_validation(n,k)
-    no_constraints = 10;
-    no_blocks = 4;
-    no_vars_per_block = 12; 
-    sparsity = 0.15;
+    no_constraints = 180; % 150-230 (180)
+    no_blocks = 10;
+    no_vars_per_block = 100;
+    sparsity = 0.06;
     no_nonzeros = max(no_blocks, floor(no_blocks * no_vars_per_block * sparsity));
     matrix_sizes = [no_constraints no_blocks no_vars_per_block no_nonzeros];
                 
