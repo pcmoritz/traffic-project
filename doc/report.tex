@@ -1,3 +1,4 @@
+
 \documentclass{article} % For LaTeX2e
 \usepackage{nips, times}
 \usepackage{hyperref}
@@ -22,6 +23,7 @@
 
 \newcommand{\OO}{\mathcal{O}}
 \newcommand{\RR}{\mathcal{R}}
+\newcommand{\RN}{\R}
 
 \nipsfinalcopy
 
@@ -61,13 +63,15 @@ We evaluate several possible regularizers that can be used if the usual $\ell^1$
 \end{abstract}
 
 \section{Introduction}
-The problem of estimating traffic demands between areas or along routes within a city from traffic counts on links in a network is an important problem in transportation planning. Good traffic demand estimates improve a road network's efficiency, reliability, and safety by a more effective use of its infrastructure. This problem been studied extensively in the transportation literature. One of the main challenges of this problem is the shortage of data needed for management of transportation networks, 
+The problem of estimating traffic demands between areas or along routes within a city from traffic counts on links in a network is an important problem in transportation planning. Good traffic demand estimates improve a road network's efficiency, reliability, and safety by a more effective use of its infrastructure. This problem been studied extensively in the transportation literature and is also called the origin-destination (OD) matrix estimation problem. One of the main challenges of this problem is the shortage of data needed for management of transportation networks. 
 
 \begin{itemize}
 \item traffic as a motivating problem
 \item other applications
 \item 
 \end{itemize}
+
+A natural way of approaching this kind of problem is compressed sensing
 
 One of the main challenges of ICM projects is the shortage of data needed for management
 of the transportation network. While traffic speed data and travel time estimates are increasingly more available from commercial vendors, they do not provide information about traffic volumes needed for effective traffic control, demand management and performance evaluation. Traffic vol-
@@ -278,6 +282,9 @@ Though the RIP is easier to check for Gaussian estimations, this is still intrac
 
 \end{theorem}
 
+\section{Guarantees for sparse recovery}\label{sec:theory}
+To guarantee exact sparse recovery, the following procedure will be used: First, assuming that the original vector~$x^*$ is actually the sparsest solution to~\eqref{l0-minimization}. Then, we prove that the solution of the relaxed problems~\eqref{l1-minimization} and~\eqref{l8-minimization} are unique and equal to $x^*$.
+
 
 \subsection{Obtaining the sparse solution by Compressed Sensing}
 The convex relaxation of the original $\ell_0$-minimization problem
@@ -350,8 +357,6 @@ Setting $t = 2(1+\epsilon) \cdot s\cdot \log n
     \end{proof}
 
 \subsection{Recovery of sparse probability measures}
-
-
 
 Similar to the null space property one can come up with dual witness results which 
 \begin{theorem}
@@ -628,7 +633,6 @@ sampling proceeds as follows:
 \end{enumerate}
 
 \section{Numerical Results}
-
 To test our algorithms, we generated two datasets: One to assess reconstruction performance on the traffic estimation problem and one to empirically evaluate the theoretical guarantees from section \ref{sec:theory}.
 \begin{figure}
   \centering
@@ -641,13 +645,23 @@ To test our algorithms, we generated two datasets: One to assess reconstruction 
     \includegraphics[width=\textwidth]{figures/small-flow.pdf}
     \caption{Small road network with weights}
   \end{subfigure}
-  \caption{A traffic graph for $r=3$ and $c=5$. As shown in (a), there are horizontal highways with weight $6$ at the top and the bottom. These are vertically connected by roads with weights 1 or 2. In (b), the flows on these roads were computed by first choosing the $k$ shortest paths between each origin-destination pair. Then, for each origin $u$, we choose $s$ of the shortest paths starting at $u$ uniformly at random. These are endowed with a draw from Dirichlet with parameter $(1, \dots, 1)\in \R^s$. At the end, all the flows from routes that contribute to a given link are added up, scaled by $\phi$.}
+  \caption{A traffic graph for $r=3$ and $c=5$. As shown in (a), there are horizontal highways with weight $6$ at the top and the bottom. These are vertically connected by roads with weights 1 or 2. In (b), the flows on these roads were computed according to the method described in the text.}
+\label{fig:graph-example}
 \end{figure}
-\paragraph{Traffic matrices.} The parameters for this model class are the number of rows $r$, the number $c$ of columns in the road grid and the number $k$ of routes per origin-destination pair, the sparsity $s$ and the flow from each node $\phi$. Then, there are three types of models:
+\paragraph{Traffic matrices.} The parameters for this model class are the number of rows $r$, the number $c$ of columns in the road grid and the number $k$ of routes per origin-destination pair, the sparsity $s$ and the flow from each node $\phi$. Then, there are two types of traffic models:
 \begin{itemize}
-  \item \emph{The origin model:} Here, the blocks contain the flows
-  \item \emph{The origin-destination model:}
+  \item \emph{The origin model:} Here, the blocks $x_\gamma$ have
+    components $(x_{\gamma1}, \dots, x_{\gamma n_\gamma})$ where
+    $x_{\gamma i}$ specifies the fraction of people starting at origin
+    $\gamma\in\OO$ and taking route $i$ from there.
+  \item \emph{The origin-destination model:} In this case, the component $x_{\gamma\lambda i}$ of block $x_{\gamma\lambda}$ specifies what fraction of people going from $\gamma$ to $\lambda$ take route $i\in \RR^{\gamma\lambda}$.
 \end{itemize}
+We now describe how we generate samples for these two traffic models.
+First, we generate a grid like graph with $r$ rows and $c$ columns, with bidirectional edges (see Figure~\ref{fig:graph-example} (a)). The weights indicate the importance of the street.
+To generate the flows for the links in Figure~\ref{fig:graph-example} (b) we first chose the $k$ shortest paths between each origin-destination pair.
+Then, for each origin $u$, we choose $s$ of the shortest paths starting at $u$ uniformly at random.
+These are endowed with a draw from Dirichlet with parameter $(1, \dots, 1)\in \R^s$.
+At the end, all the flows from routes that contribute to a given link are added up, scaled by $\phi$.
 
 \paragraph{Gaussian random matrices.} The parameters are: Sparsity $k$, number of blocks $b$, number of variables per block $\nu$ and number of measurements $m$.
 First, a vector $x^*\in \mathcal B_n^s$ with $n = (\nu, \dots, \nu)$ and
@@ -658,14 +672,52 @@ is generated by choosing $x_\gamma \sim \operatorname{Dirichlet}(1,
 \dots, 1)$ on the support of $x_\gamma$ as determined by $\mathcal
 B_n^s$ for $\gamma = 1, \dots, b$. Then we choose a Gaussian random matrix $A\in \R^{m\times |n|}$ with unit variance.
 
-\section{The code}
-Our code is available at \url{https://github.com/pcmoritz/traffic-project}. It consists of the following modules:
 \begin{enumerate}
   \item The algorithms are implemented in
     \begin{itemize}
       \item \texttt{cvx\_L2}
       \end{itemize}
 \end{enumerate}
+
+\subsection{Random sampling}
+\paragraph{Prior}
+To maximize the probability $P$ of sampling the maximal support $i^*_\gamma$ (following from Thm ??), we wish to find the prior $x$ for which
+\begin{equation}
+P = \max_{\mu} \prod_{i^*_\gamma} x_i
+\end{equation}
+against regularization parameters $\mu$ on various objectives. We compute a prior for the random sampling by performing cross-validation on a combination of the $L_1$, $L_2$, and maximum entropy solutions.
+
+We examine decoupled problems as follows:
+\begin{enumerate}
+\item Combination of $L_1$ and $L_2$ solutions, also called elastic net:
+\begin{equation}
+\norm{x}_1 - \mu \norm{x}_2
+\end{equation}
+\item Combination of $L_1$ and entropy:
+\begin{equation}
+\norm{x}_1 - \mu a \cdot \log(x)
+\end{equation}
+\item Combination of $L_1$ and uniform weight:
+\begin{equation}
+\norm{x}_1 - \mu
+\end{equation}
+\end{enumerate}
+
+In these formulations, the $L_1$ term serves to recover a sparse solution, whereas the $L_2$ and entropy terms serve to spread out the solution. The trade-off between the sparse and spread, as measured by the regularization parameters, serves to capture the best prior for random sampling.
+
+Elastic net experiment: $L_2$
+
+\begin{figure}
+  \centering
+    \includegraphics[width=0.5\textwidth]{figures/regularization_elastic_net.pdf}
+  \caption{Shows that a small weight on the $L_2$ term of the elastic net gives the best random sampling prior.}
+  \label{regularization-elastic-net}
+\end{figure}
+Figure~\ref{regularization-elastic-net}, which shows that a small weight ($\approx 0$) on the $L_2$ term gives the best random sampling prior, which implies that elastic net is not a promising as our prior.
+
+\paragraph{Update function}
+
+\paragraph{Iterations}
 
 \section{References}
 

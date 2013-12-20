@@ -1,12 +1,13 @@
 %% cvx multiple-blocks L_infty with random sampling
-function max_a = cvx_random_sample_L_infty_hot_start(p)
+function [max_a,max_errs] = random_sample_alg(p, iterations, prior, update)
     Phi = p.Phi; f = p.f; n = p.n; L1 = p.L1; block_sizes = p.block_sizes;
     noise = p.noise; epsilon = p.epsilon; lambda = p.lambda;
     
     cum_nroutes = int64([0; cumsum(double(block_sizes))]);
     len_block_sizes = length(block_sizes);
     
-    num_iterations = 100; %10*log(double(len_block_sizes^block_sizes(1)));
+    num_iterations = iterations(p); %10*log(double(len_block_sizes^block_sizes(1)));
+    max_errs = zeros(num_iterations, 1);
     fprintf(1, 'Progress (of %d):  ', num_iterations);
     
     a = zeros(n, 1);
@@ -18,10 +19,7 @@ function max_a = cvx_random_sample_L_infty_hot_start(p)
 
     %% Sampling prior via unconstrained L1 and L2 solutions
     % Find a feasible solution
-    a_L1 = cvx_unconstrained_L1(p);
-    a_L2 = cvx_L2(p);
-    a_raw = cvx_raw(p);
-    a0 = a_L1 + .01*a_L2 + 0.1;
+    a0 = prior(p);
 
     %% Hot start
     max_a = -Inf;
@@ -47,7 +45,7 @@ function max_a = cvx_random_sample_L_infty_hot_start(p)
             to = cum_nroutes(j + 1);
             % ~ is max, i(j) is argmax
             % mnrnd(1, ...) returns a vector with one 1 and the rest 0.
-            [~, i(j)] = max(mnrnd(1, a0(from:to) / sum(a0(from:to))));
+            [~, i(j)] = max(mnrnd(1, ones(length(a0(from:to)),1)/length(a0(from:to)))); % uniform distribution 
         end
         i = int64(i) + int64(cum_nroutes(1:end-1));
         
@@ -74,8 +72,8 @@ function max_a = cvx_random_sample_L_infty_hot_start(p)
         prob.blx = sparse(n, 1); % lower bound for variables
         prob.bux = []; % no upper bound for variables
 
-        %param.MSK_IPAR_OPTIMIZER = 'MSK_OPTIMIZER_PRIMAL_SIMPLEX';
-         param.MSK_IPAR_OPTIMIZER = 'MSK_OPTIMIZER_INTPNT';
+        param.MSK_IPAR_OPTIMIZER = 'MSK_OPTIMIZER_PRIMAL_SIMPLEX';
+        % param.MSK_IPAR_OPTIMIZER = 'MSK_OPTIMIZER_INTPNT';
         [r, res] = mosekopt('maximize echo(0)', prob, param);
         sol   = res.sol;
         a = sol.bas.xx;
@@ -85,14 +83,13 @@ function max_a = cvx_random_sample_L_infty_hot_start(p)
         if val > max_val
             max_val = val;
             max_a = a;
+            a0 = update(a0,a);
+            max_err = norm(max_a-p.real_a,1);
         end
+        max_errs(k) = max_err;
     end
     fprintf(1, '\n');
-    %[ len_block_sizes block_sizes(1)]
-    %[p.num_nonzeros/p.n norm(p.real_a - a_L1,1) norm(p.real_a - a_raw,1) norm(p.real_a - a_L2,1) norm(p.real_a - a0,1) norm(p.real_a - max_a,1)]
+    [ len_block_sizes block_sizes(1)]
+    [p.num_nonzeros/p.n norm(p.real_a - max_a,1)]
 
-    %iterations = @(x) 300;
-    %prior = @(p) cvx_unconstrained_L1(p) + cvx_L2(p) + 0.1;
-    %update = @(a_old, a_new) a_old; 
-    %max_a = random_sample_alg(p, iterations, prior, update);
 end
