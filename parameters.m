@@ -12,7 +12,12 @@ if strcmp(user,'cathywu') == 1
 elseif strcmp(user,'richard') == 1
     python = 'python';
     base_directory = './data-local/';
-else
+elseif strcmp(user,'viveoistrach')==1
+    python = 'LD_LIBRARY_PATH= python';
+    % base_directory = '~/Dropbox/traffic/data/';
+    base_directory = '';
+    addpath '~/mosek/7/toolbox/r2009b';
+else    
     python = 'LD_LIBRARY_PATH= python';
     % base_directory = '~/Dropbox/traffic/data/';
     base_directory = '/media/bee9be82-8dd8-4b1b-8de5-d55366dbd000/drop-box/Dropbox/traffic/data/';
