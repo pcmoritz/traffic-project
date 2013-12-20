@@ -76,7 +76,7 @@ no_algos = length(choice_algos_ind);
 %disp(fprintf('\n Generated sparsity sizes:'));
 %disp(sparsity_sizes);
 %plot_sparsity = input('Type in a sparsity range e.g. [0.1 0.2]');
-plot_sparsity = [0.03 0.5];
+plot_sparsity = [0.02 0.1];
 
 % Let user choose no blocks and variables and constraints to plot
 if strcmp(plot_type,'random')
@@ -141,7 +141,7 @@ for i = 1:no_algos
     for j = 1:no_sizes
         % Get the chosen size vector
         mysize = choice_sizes(j,1:3);
-        sparsity_range = plot_sparsity;
+        sparsity_range = [.03 .5]; %plot_sparsity;
         
         % Average all results which have the algorithm and sparsity
         relevant_metrics = {};

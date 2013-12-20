@@ -15,7 +15,8 @@ elseif strcmp(user,'richard') == 1
 elseif strcmp(user,'viveoistrach')==1
     python = 'LD_LIBRARY_PATH= python';
     % base_directory = '~/Dropbox/traffic/data/';
-    base_directory = '~/convex-project/data2/';
+    base_directory = '~/Dropbox/traffic/data/';
+    % convex-project/data2/';
     addpath '~/mosek/7/toolbox/r2009b';
 else    
     python = 'LD_LIBRARY_PATH= python';
@@ -26,12 +27,13 @@ end
 
 raw_directory = [base_directory, 'raw/'];
 param_directory = [base_directory, 'params/'];
-output_directory = [base_directory, 'output/'];
-% output_directory = [base_directory, 'output-pcmoritz/'];
+%output_directory = [base_directory, 'output/'];
+output_directory = [base_directory, 'output-pcmoritz/'];
 metrics_directory = [base_directory, 'metrics/'];
 graphs_directory = [base_directory, 'graphs/'];
 
-tests = {'cvx_unconstrained_L1', 'cvx_L2', 'cvx_weighted_L1'}; %, 'cvx_entropy', 'cvx_oracle', 'cvx_raw'
+tests = {'cvx_unconstrained_L1', 'cvx_L2', 'cvx_weighted_L1',... 
+    'cvx_entropy', 'cvx_oracle', 'cvx_raw'};
     
     %'cvx_L2',...
 %    'cvx_random_sample_L_infty_hot_start'}; %,'cvx_random_sample_L_infty_hot_start_update','cvx_random_sample_L_infty_hot_start_uniform'};
@@ -56,6 +58,8 @@ algo_names('cvx_block_descent_L_infty') = 'block descent';
 algo_names('cvx_entropy') = 'entropy';
 algo_names('cvx_hot_start_lp') = 'simple block';
 algo_names('cvx_rs_constant_L1L2plus_noupdate') = 'random sampling L1+L2';
+algo_names('cvx_raw') = 'a feasible solution';
+algo_names('cvx_oracle') = 'oracle';
 
 % Library with names for the different parameters/settings/algorithms
 max_sparsity = .5;
@@ -114,9 +118,12 @@ matrix_sizes('traffic') = [];
 sparsity_values = [0.02, 0.04, 0.06, 0.08, 0.10, 0.14];
 sparsity_sizes = [sparsity_values', sparsity_values' + 0.05];
 
+% for no_blocks = 5
+%     for no_vars_per_block = 20:10:40
+%         for no_constraints = 30:10:50; %[1:5] * ceil(no_vars_per_block/6)
 for no_blocks = 5
-    for no_vars_per_block = 10:10:40
-        for no_constraints = 5:5:15; %[1:5] * ceil(no_vars_per_block/6)
+    for no_vars_per_block = 4:6:40
+        for no_constraints = [1:5] * ceil(no_vars_per_block/6)
             for sparsity = sparsity_values
                 % Spars stands for the number of nonzero routes you choose
                 % at each origin
