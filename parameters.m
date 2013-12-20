@@ -1,5 +1,5 @@
 % The parameters for the file system structure, etc.
-mode = 'REAL'; % DEBUG, REAL, SMALL
+mode = 'SMALL'; % DEBUG, REAL, SMALL
 repeat = 1;
 
 user = getenv('USER');
@@ -29,8 +29,8 @@ tests = {'cvx_unconstrained_L1', 'cvx_L2', 'cvx_weighted_L1'}; %'cvx_L2',...
     %'cvx_hot_start_lp', 'cvx_block_descent_L_infty', ...
 % tests = {'cvx_elastic_net'};
 % tests = {'cvx_random_sample_min_cardinality'};
-% tests = {'cvx_rs_constant_L1L2plus_noupdate'};
-tests = {'cvx_rs_constant_L1uniform_noupdate_test'};
+tests = {'cvx_rs_constant_L1L2plus_noupdate'};
+% tests = {'cvx_rs_constant_L1uniform_noupdate_test'};
 
 algo_names = containers.Map();
 algo_names('cvx_L2') = 'constrained L2';
