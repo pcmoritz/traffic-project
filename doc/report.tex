@@ -197,7 +197,7 @@ relax this intractable problem to
 
 
 
-\section{Guarantees for sparse recovery}
+\section{Guarantees for sparse recovery}\label{sec:theory}
 To guarantee exact sparse recovery, the following procedure will be used: First, assuming that the original vector~$x^*$ is actually the sparsest solution to~\eqref{l0-minimization}. Then, we prove that the solution of the relaxed problems~\eqref{l1-minimization} and~\eqref{l8-minimization} are unique and equal to $x^*$.
 
 
@@ -456,13 +456,23 @@ To test our algorithms, we generated two datasets: One to assess reconstruction 
   \subfloat[][Small road network with weights]{\includegraphics[width=0.4\textwidth]{figures/small-graph.pdf}}
   \qquad
   \subfloat[][Flows for the small network]{\includegraphics[width=0.4\textwidth]{figures/small-flow.pdf}}
-  \caption{A traffic graph for $r=3$ and $c=5$. As shown in (a), there are horizontal highways with weight $6$ at the top and the bottom. These are vertically connected by roads with weights 1 or 2. In (b), the flows on these roads were computed by first choosing the $k$ shortest paths between each origin-destination pair. Then, for each origin $u$, we choose $s$ of the shortest paths starting at $u$ uniformly at random. These are endowed with a draw from Dirichlet with parameter $(1, \dots, 1)\in \R^s$. At the end, all the flows from routes that contribute to a given link are added up, scaled by $\phi$.}
+  \caption{A traffic graph for $r=3$ and $c=5$. As shown in (a), there are horizontal highways with weight $6$ at the top and the bottom. These are vertically connected by roads with weights 1 or 2. In (b), the flows on these roads were computed according to the method described in the text.}
+\label{fig:graph-example}
 \end{figure}
-\paragraph{Traffic matrices.} The parameters for this model class are the number of rows $r$, the number $c$ of columns in the road grid and the number $k$ of routes per origin-destination pair, the sparsity $s$ and the flow from each node $\phi$. Then, there are three types of models:
+\paragraph{Traffic matrices.} The parameters for this model class are the number of rows $r$, the number $c$ of columns in the road grid and the number $k$ of routes per origin-destination pair, the sparsity $s$ and the flow from each node $\phi$. Then, there are two types of traffic models:
 \begin{itemize}
-  \item \emph{The origin model:} Here, the blocks contain the flows
-  \item \emph{The origin-destination model:}
+  \item \emph{The origin model:} Here, the blocks $x_\gamma$ have
+    components $(x_{\gamma1}, \dots, x_{\gamma n_\gamma})$ where
+    $x_{\gamma i}$ specifies the fraction of people starting at origin
+    $\gamma\in\OO$ and taking route $i$ from there.
+  \item \emph{The origin-destination model:} In this case, the component $x_{\gamma\lambda i}$ of block $x_{\gamma\lambda}$ specifies what fraction of people going from $\gamma$ to $\lambda$ take route $i\in \RR^{\gamma\lambda}$.
 \end{itemize}
+We now describe how we generate samples for these two traffic models.
+First, we generate a grid like graph with $r$ rows and $c$ columns, with bidirectional edges (see Figure~\ref{fig:graph-example} (a)). The weights indicate the importance of the street.
+To generate the flows for the links in Figure~\ref{fig:graph-example} (b) we first chose the $k$ shortest paths between each origin-destination pair.
+Then, for each origin $u$, we choose $s$ of the shortest paths starting at $u$ uniformly at random.
+These are endowed with a draw from Dirichlet with parameter $(1, \dots, 1)\in \R^s$.
+At the end, all the flows from routes that contribute to a given link are added up, scaled by $\phi$.
 
 \paragraph{Gaussian random matrices.} The parameters are: Sparsity $k$, number of blocks $b$, number of variables per block $\nu$ and number of measurements $m$.
 First, a vector $x^*\in \mathcal B_n^s$ with $n = (\nu, \dots, \nu)$ and
