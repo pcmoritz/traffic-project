@@ -39,8 +39,8 @@ axes_hdl = get(yy,'Parent'); %create axes handle
 
 % Set the range automatically somehow
 % Get the lowest value of all matrix
-range_min = min(min(matrix(:,:,1)));
-range_max = max(max(matrix(:,:,1)));
+range_min = min(min(matrix(:,:,1) - matrix(:,:,2)));
+range_max = max(max(matrix(:,:,1) + matrix(:,:,2)));
 domain_min = min(x_axis);
 domain_max = max(x_axis);
 
