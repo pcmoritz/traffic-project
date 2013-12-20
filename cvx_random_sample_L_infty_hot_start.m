@@ -21,7 +21,7 @@ function max_a = cvx_random_sample_L_infty_hot_start(p)
     a_L1 = cvx_unconstrained_L1(p);
     a_L2 = cvx_L2(p);
     a_raw = cvx_raw(p);
-    a0 = a_L1 + a_L2 + 0.1;
+    a0 = a_L1 + .01*a_L2 + 0.1;
 
     %% Hot start
     max_a = -Inf;
@@ -74,8 +74,8 @@ function max_a = cvx_random_sample_L_infty_hot_start(p)
         prob.blx = sparse(n, 1); % lower bound for variables
         prob.bux = []; % no upper bound for variables
 
-        param.MSK_IPAR_OPTIMIZER = 'MSK_OPTIMIZER_PRIMAL_SIMPLEX';
-        % param.MSK_IPAR_OPTIMIZER = 'MSK_OPTIMIZER_INTPNT';
+        %param.MSK_IPAR_OPTIMIZER = 'MSK_OPTIMIZER_PRIMAL_SIMPLEX';
+         param.MSK_IPAR_OPTIMIZER = 'MSK_OPTIMIZER_INTPNT';
         [r, res] = mosekopt('maximize echo(0)', prob, param);
         sol   = res.sol;
         a = sol.bas.xx;

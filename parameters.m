@@ -23,8 +23,9 @@ output_directory = [base_directory, 'output/'];
 metrics_directory = [base_directory, 'metrics/'];
 graphs_directory = [base_directory, 'graphs/'];
 
-tests = {'cvx_unconstrained_L1', 'cvx_L2', 'cvx_weighted_L1'}; %'cvx_L2',...
-    %'cvx_random_sample_L_infty_hot_start'}; %,'cvx_random_sample_L_infty_hot_start_update','cvx_random_sample_L_infty_hot_start_uniform'};
+tests = {'cvx_random_sample_L_infty_hot_start'};
+%{'cvx_unconstrained_L1', 'cvx_L2', 'cvx_weighted_L1'}
+     %,'cvx_random_sample_L_infty_hot_start_update','cvx_random_sample_L_infty_hot_start_uniform'};
     %'cvx_hot_start_lp', 'cvx_block_descent_L_infty', ...
 % tests = {'cvx_elastic_net'};
 % tests = {'cvx_random_sample_min_cardinality'};
