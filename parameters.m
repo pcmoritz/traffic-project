@@ -1,6 +1,6 @@
 % The parameters for the file system structure, etc.
 mode = 'REAL'; % DEBUG, REAL, SMALL, PHASE_TRANSITION
-repeat = 10;
+repeat = 1;
 cvx_solver mosek;
 
 user = getenv('USER');
@@ -15,7 +15,7 @@ elseif strcmp(user,'richard') == 1
 elseif strcmp(user,'viveoistrach')==1
     python = 'LD_LIBRARY_PATH= python';
     % base_directory = '~/Dropbox/traffic/data/';
-    base_directory = '';
+    base_directory = '~/convex-project/data2/';
     addpath '~/mosek/7/toolbox/r2009b';
 else    
     python = 'LD_LIBRARY_PATH= python';
@@ -26,7 +26,8 @@ end
 
 raw_directory = [base_directory, 'raw/'];
 param_directory = [base_directory, 'params/'];
-output_directory = [base_directory, 'output-pcmoritz/'];
+output_directory = [base_directory, 'output/'];
+% output_directory = [base_directory, 'output-pcmoritz/'];
 metrics_directory = [base_directory, 'metrics/'];
 graphs_directory = [base_directory, 'graphs/'];
 
@@ -115,7 +116,7 @@ sparsity_sizes = [sparsity_values', sparsity_values' + 0.05];
 
 for no_blocks = 5
     for no_vars_per_block = 10:10:40
-        for no_constraints = [1:5] * ceil(no_vars_per_block/6)
+        for no_constraints = 5:5:15; %[1:5] * ceil(no_vars_per_block/6)
             for sparsity = sparsity_values
                 % Spars stands for the number of nonzero routes you choose
                 % at each origin
