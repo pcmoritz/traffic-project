@@ -35,7 +35,7 @@
 Philipp Moritz\\
 University of California\\
 Berkeley, CA 94720, USA\\
-\texttt{pcm@eecs.berkeley.edu}\\
+\texttt{pcmoritz@eecs.berkeley.edu}\\
 \And
 Richard Shin\\
 University of California\\
@@ -435,7 +435,7 @@ To test our algorithms, we generated two datasets: One to assess reconstruction 
   \subfloat[][Small road network with weights]{\includegraphics[width=0.4\textwidth]{figures/small-graph.pdf}}
   \qquad
   \subfloat[][Flows for the small network]{\includegraphics[width=0.4\textwidth]{figures/small-flow.pdf}}
-  \caption{A traffic graph for $r=3$ and $c=5$. As shown in (a), there are horizontal highways with weight $6$ at the top and the bottom. These are vertically connected by roads with weights 1 or 2. In (b), the flows on these roads were computed by first choosing the $k$ shortest paths between each origin-destination pair. Then, for each origin $u$, we choose $s$ of the shortest paths starting at $u$ uniformly at random. }
+  \caption{A traffic graph for $r=3$ and $c=5$. As shown in (a), there are horizontal highways with weight $6$ at the top and the bottom. These are vertically connected by roads with weights 1 or 2. In (b), the flows on these roads were computed by first choosing the $k$ shortest paths between each origin-destination pair. Then, for each origin $u$, we choose $s$ of the shortest paths starting at $u$ uniformly at random. These are endowed with a draw from Dirichlet with parameter $(1, \dots, 1)\in \R^s$}
 \end{figure}
 \paragraph{Traffic matrices.} The parameters for this model are the number of rows $r$ and the number $c$ of columns in the road grid and the number $k$ of routes per origin-destination pair, the sparsity $s$ and the flow from each node $\phi$.
 \paragraph{Gaussian random matrices.} The parameters are: Sparsity $k$, number of blocks $b$, number of variables per block $\nu$ and number of measurements $m$.
