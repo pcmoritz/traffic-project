@@ -23,6 +23,7 @@
 
 \newcommand{\OO}{\mathcal{O}}
 \newcommand{\RR}{\mathcal{R}}
+\newcommand{\RN}{\R}
 
 \nipsfinalcopy
 
@@ -62,11 +63,24 @@ We evaluate several possible regularizers that can be used if the usual $\ell^1$
 \end{abstract}
 
 \section{Introduction}
-The problem of estimating traffic demands between areas or along routes within a city using traffic counts on links in a network is an important problem in transportation planning. While speed data and travel time estimates are increasingly more available from commercial vendors (e.g. HERE Traffic, Waze), they do not provide the crucial information about traffic volumes (flows). Good traffic demand estimates improve a road network's efficiency, reliability, and safety by providing for a more effective use of its infrastructure. One of the main challenges of this problem is the shortage of data needed for management of transportation networks. Traffic volumes are measured by static sensors (e.g. loop detectors mounted into the roads, road-side radar) and these sensor points are typically sparse. The problem of OD matrix estimation has been studied extensively in the transportation literature and is also called the origin-destination (OD) matrix estimation problem. 
+The problem of estimating traffic demands between areas or along routes within a city using traffic counts on links in a network is an important problem in transportation planning. While speed data and travel time estimates are increasingly more available from commercial vendors (e.g. HERE Traffic, Waze), they do not provide the crucial information about traffic volumes (flows). Good traffic demand estimates improve a road network's efficiency, reliability, and safety by providing for a more effective use of its infrastructure. One of the main challenges of this problem is the shortage of data needed for management of transportation networks. Traffic volumes are measured by static sensors (e.g. loop detectors mounted into the roads, road-side radar) and these sensor points are typically sparse. The problem of traffic demand estimation has been studied extensively in the transportation literature and is also called the origin-destination (OD) matrix estimation problem. 
 
-A natural way of approaching this kind of problem is compressed sensing, which is a signal processing technique for efficiently acquiring and reconstructing a signal from underdetermined linear systems. In recent years, compressed sensing has attracted considerable attention in areas of applied mathematics, computer science, and electrical engineering, with broad applications to imaging, data processing in wireless sensor networks \cite{luo2009compressive}, cloud computing \cite{kung2011cloudsense}, cognitive radios \cite{tian2007compressed}, spectrum sensing \cite{polo2009compressive}, and IC Trojan detection \cite{gwon2012statistical}.
+A natural way of approaching this kind of problem is compressed sensing, which is a signal processing technique for efficiently acquiring and reconstructing a sparse signal from underdetermined linear systems. In recent years, compressed sensing has attracted considerable attention in areas of applied mathematics, computer science, and electrical engineering, with broad applications to imaging, data processing in wireless sensor networks \cite{luo2009compressive}, cloud computing \cite{kung2011cloudsense}, cognitive radios \cite{tian2007compressed}, spectrum sensing \cite{polo2009compressive}, and IC Trojan detection \cite{gwon2012statistical}.
 
-What helps in this situation is the knowledge of origin-destination (O-D) matrix and the information about route assignment.
+In this paper, we formulate the traffic demand estimation problem as a nonnegative least squares problem with linear constraints and investigate the use of sparse flow measurements to recover the sparse route splits among routes starting from each origin\footnote{Based on a problem formulation by Alexander Kurzhanskiy (Berkeley, EECS) on the subject of "Calculating route splits from sparse link flow data"}. The sparsity assumption is intuitive for the traffic setting because it is natural for the flows out of a particular origin in a city to be concentrated in a handful other locations, rather than uniformly spread out over all other locations. For instance, a highway during the morning commute hours may have most of its flow concentrated on routes that flow towards key business centers of a nearby city. There may of course be a small amount of flow between all points, and we may model that small perturbation as additive noise in the usual compressed sensing methodology.
+
+Our problem differs from most reconstruction problems in the literature in two main ways:
+\begin{itemize}
+\item Because the portions of flow out of each origin sums to 1, our problem formulation has built-in $\ell^1$ constraints. Compressed sensing largely depends on $\ell^1$ techniques to promote sparsity. Some recent work has introduced a reciprocal infinity-norm as another type of regularization that promotes sparsity and has also explored its application to convex clustering \cite{mert}. We use this work as a starting point.
+\item The notion of multiple origins adds a block structure to the problem (multiple $\ell^1$ constraints). The previously mentioned work essentially addresses the single-block,
+and we do not know of any existing compressed sensing techniques that address a block structure with $\ell^1$ constraints on each block. However, some previous work develops compressed sensing techniques for block structures without $\ell^1$ constraints.
+\end{itemize}
+
+Block-sparsity arises naturally in applications of multi-band signals and measurements of gene expression levels. Block-sparsity with $\ell^1$ constraints arise naturally in network propagation reconstruction applications, for example transportation, computer networks, and disease networks
+
+blah
+
+
 
 
 \begin{itemize}
@@ -201,22 +215,55 @@ In \cite{mert} it was observed that for probability measures $x$ we have $1 = \n
 Let $p^*$ denote the minimum value of $\norm{x}_0$ over $Ax = b$, we then consider the relaxation
 \begin{equation}\label{l8-recovery}
   \begin{array}{rcllllr}
-  p^* \geq& p_\infty^* &= \min\limits_{x\geq 0}\, \norm{x}_\infty^{-1}&\text{such that $Ax = b$, $1^\T x = 1$}\quad \text{and}\\[5pt]
-  &1/p_\infty^* &= \max\limits_{i=1,\dots,n} \max\limits_{x\geq 0}\,x_i&\text{such that $Ax = b$, $1^\T x = 1$.}
+  p^* \geq& p_\infty^* &= \min\limits_x\, \norm{x}_\infty^{-1}&\text{such that $Ax = b$, $1^\T x = 1$}\quad \text{and}\\[5pt]
+  &1/p_\infty^* &= \max\limits_{i=1,\dots,n} \max\limits_{x}\,x_i&\text{such that $Ax = b$, $1^\T x = 1$.}
   \end{array}
-\end{equation}
-For the linear program, strong duality holds (because $x^*$ is feasible) and the dual is given by
-\begin{equation}\label{l8-recovery-dual}
-  (p_\infty^*)^{-1} = \max_{i=1,\dots,n} \left(\min_{w,\lambda} w^\T b + \lambda : A^\T w + \lambda 1 \geq e_i\right).
 \end{equation}
 
 Instead of taking the maximum over $1\leq i\leq n$ in the linear program formulation of \eqref{l8-recovery}, we can take the solution with the lowest cardinality, thus solving
 \begin{align}
-\hat{x}_i &= \arg\max_{1^\T x =1, x\geq 0} x_i : Ax  = b \label{min-cardinality}\\
-\hat{x}_{\min} &= \arg\min_{i=1, \dots, n} \|\hat{x}_i\|_0. \nonumber
+\hat{x}_i &= \argmax_{1^Tx =1, x\geq 0} x_i : Ax  = b \label{min-cardinality}\\
+\hat{x}_{\min} &= \argmin_{i=1, \dots, n} \|\hat{x}_i\|_0 \nonumber
 \end{align}
-This has also been proposed in \cite{mert}. We then have the following primal sufficient condition for recovery using this method.
+which has also been proposed in \cite{mert}.
 
+<<<<<<< HEAD
+\begin{lemma} \label{thm:linftyunique}
+If $x^*$ is the unique $k$-sparse solution to \eqref{l0-minimization} and
+\begin{equation}\label{assumption-lp}
+\min_{1^Tx = 1, y\geq 0, 1^\T y =1} x_i : A_S x = A_{S^c} y \qquad>0,
+\end{equation}
+for an index $i\in S$, the vector $x^*$ can be recovered as the unique solution of the linear program
+\begin{equation}\label{i-lp}
+  \max_{1^\T x = 1, x\geq 0} x_i : Ax = b.
+\end{equation}
+
+\end{lemma}
+\begin{proof} \cite{mert}
+First we show that the existence of a pair $(\lambda, w)$ with
+\begin{align}
+A^\T_{S}w + \lambda 1 &= e_i \label{First_eq}\\
+A^\T_{S^c}w + \lambda 1 &>0 \label{Second_eq}
+\end{align}
+implies that the solution $\hat x$ of \eqref{i-lp} coincides with  $x^*$. The complementary slackness condition for \eqref{l8-recovery-dual} is $x^\T(A^\T w + \lambda 1 - e_i) = 0$ and subtracting $(A_Sx_S)^\T w + \lambda x_S^\T 1 = x_S^\T e_i$ we get $(A_{S^c} x_{S^c})^\T w + \lambda x_{S^c}^\T = 0$ and with \eqref{Second_eq} we conclude $x_{S^c}= 0$. Because $x^*$ is the minimum cardinality solution (and so is $\hat x$), we then conclude that $\hat x = x^*$ by uniqueness.
+
+It remains to show that the assumptions in the theorem imply \eqref{First_eq} and \eqref{Second_eq}. The dual of \eqref{assumption-lp} is
+\begin{align*}
+0<d^* &= \max_{u,v,\lambda} u -v +\min_{x, y\geq 0} (e_i^\T - \lambda^\T A_S - u1^\T) x + (\lambda^\T A_{S^c} + v1^T) y\\
+&=\max_{u,v,\lambda} u-v \quad\text{such that}\quad e_i - A_S^T \lambda - u1 = 0 \text{ and } A_{S^c}^T \lambda + v1\geq 0.
+\end{align*}
+Here we used strong duality, which holds because $A_S x^* = b$
+
+. This is because we know that the original $x^*$ satisfies the condition $\Phi_S x = f$. 
+Given the condition holds, then for some $u>v$ we will have a feasible dual problem which means that there is a $u$ such that 
+\begin{align*}
+ \Phi_S^T \lambda +u1 &= e_i\\
+\Phi_{S^c}^T \lambda + u1 &> 0 
+\end{align*}
+This is because $1$ is positive so that if you plug in $v+\epsilon = u$ you will get strict inequality for all entries. 
+\end{proof}
+=======
+>>>>>>> 7da0296bac018cb18f295b1f965374b10da48930
 
 \subsection{Block $\ell^\infty$ regularization}
 
@@ -253,7 +300,7 @@ suggests that using ... would be a better idea to solve the problem
 \begin{equation}\label{block-l8-recovery}
   \begin{array}{rcllllr}
   p^* \geq& p_\infty^* &= \min\limits_x\, \sum_{\gamma = 1}^b\norm{x_{\gamma}}_\infty^{-1}&\text{such that $Ax = b$, $x\in \mathcal B_n^k$}\quad \text{and}\\[5pt]
-  &1/p_\infty^* &= \max\limits_{\substack{i_{\gamma} = 1, \dots, n_{\gamma}\\\forall \gamma = 1,\dots, b}} \max\limits_{x}\, \sum_{\gamma=1}^b x_{i_\gamma}&\text{such that $Ax = b$ and $x\in \mathcal B_n^k$.}
+  &1/p_\infty^* &= \max\limits_{\overset{i_{\gamma} = 1, \dots, n_{\gamma}}{\forall \gamma = 1,\dots, b}} \max\limits_{x}\, \sum_{\gamma=1}^b x_{i_\gamma}&\text{such that $Ax = b$ and $x\in \mathcal B_n^k$.}
   \end{array}
 \end{equation} 
 
@@ -399,7 +446,6 @@ Similar to the null space property one can come up with dual witness results whi
 \label{Maxmax_Oneblock}
 Assume that $\alpha^*$ is the unique $k$-sparse solution and $i^* = \argmax_i \alpha^*_i$ with support $S$. If(f?)
 \begin{align*}
-\label{Maxrecovery_condition_Farkas}
 \max_{u,\lambda} \qquad &- u^T e_i \:\: \leq 0\\
 \text{s.t.} \qquad& \begin{pmatrix} A_i\\ B_i \end{pmatrix} u = \begin{pmatrix} \lambda \\ 0\end{pmatrix}\\
 A_i^T = &-\begin{pmatrix} e_i - e_{1} & \dots & e_i - e_{i-1} & e_i - e_{i+1} & \dots & e_i - e_j & I\\
@@ -432,13 +478,11 @@ e_i^T h &> 0\\
 \end{align*}
 We can now use Lemma \ref{Farkas_Corollary} which then gives the following feasibility condition (for all $i$ there must exist  $(y,z)$ which fulfill)
 \begin{align*}
-\label{Maxrecovery_condition_Feasibility}
 y_i &\geq 0\\
 A_i^Ty + B_i^T z &= e_i
 \end{align*}
 Regard this as a convex optimization problem with minimization over $0$. If it is feasible then the objective value will remain 0. Now consider the dual problem which yields
 \begin{align*}
-\label{Maxrecovery_condition_Dual}
 \max_{u,\lambda} \qquad &- u^T e_i\:\: \leq 0\\
 \text{s.t.} \qquad& \begin{pmatrix} A_i\\ B_i \end{pmatrix} u = \begin{pmatrix} \lambda \\ 0\end{pmatrix}
 \end{align*}

@@ -25,6 +25,10 @@ else
     addpath '~/mosek/7/toolbox/r2009b';
 end
 
+if strcmp(mode, 'PHASE_TRANSITION') == 1
+   base_directory = [base_directory, 'phase-transition/'];
+end
+
 raw_directory = [base_directory, 'raw/'];
 param_directory = [base_directory, 'params/'];
 %output_directory = [base_directory, 'output/'];
@@ -43,9 +47,16 @@ tests = {'cvx_unconstrained_L1', 'cvx_L2', 'cvx_weighted_L1',...
 % tests = {'cvx_random_sample_min_cardinality'};
 % tests = {'cvx_rs_constant_L1L2plus_noupdate'};
 % tests = {'cvx_rs_constant_L1uniform_noupdate_test'};
+% TESTS for selecting best mus for various update functions
+tests = {'cvx_rs_constant_L1uniform_new_mus', ...
+    'cvx_rs_constant_L1uniform_backoff25_mus', ...
+    'cvx_rs_constant_L1uniform_backoff75_mus',...
+    'cvx_rs_constant_L1uniform_old_mus'};
+
+tests = {'cvx_block_descent_L_infty'}
 
 if strcmp(mode, 'PHASE_TRANSITION') == 1
-    tests = {'cvx_unconstrained_L1'};
+    % tests = {'cvx_unconstrained_L1'};
     tests = {'cvx_random_sample_L_infty_hot_start_update'}
 end
 
@@ -141,6 +152,13 @@ if strcmp(mode,'SMALL') == 1
     % matrix_sizes('random') = [155 10 100 max(10, floor(10 * 100 * 0.06))];
     matrix_sizes('random') = [175 10 100 max(10, floor(10 * 100 * 0.06))];
     repeat = 250;
+end
+
+if strcmp(mode, 'PHASE_TRANSITION') == 1
+    p = matrix_sizes('random');
+    % matrix_sizes('random') = [155 10 100 max(10, floor(10 * 100 * 0.06))];
+    matrix_sizes('random') = [175 10 100 max(10, floor(10 * 100 * 0.06))];
+    repeat = 200;
 end
 
 % Run subset of modes we care about to reduce computation time

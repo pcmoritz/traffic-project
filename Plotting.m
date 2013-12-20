@@ -319,9 +319,8 @@ for l = 1:no_errortypes
     end
 end
 
-
 %% Create Mat runtime vs. size
-%plotting_rt_vs_sz(no_sizes, no_algos, algos_cell, size_xaxis_rt, dimvalue_descrip_rt, choice_algos, char(model_name), prefix, colorsmatrix);
+plotting_rt_vs_sz(no_sizes, no_algos, algos_cell, size_xaxis_rt, dimvalue_descrip_rt, choice_algos, char(model_name), prefix, colorsmatrix);
 %{
 %% Create Mat runtime vs. sparsity
 

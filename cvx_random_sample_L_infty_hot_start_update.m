@@ -6,7 +6,7 @@ function max_a = cvx_random_sample_L_infty_hot_start_update(p)
     cum_nroutes = int64([0; cumsum(double(block_sizes))]);
     len_block_sizes = length(block_sizes);
     
-    num_iterations = 300; %10*log(double(len_block_sizes^block_sizes(1)));
+    num_iterations = 50; %10*log(double(len_block_sizes^block_sizes(1)));
     fprintf(1, 'Progress (of %d):  ', num_iterations);
     
     a = zeros(n, 1);
