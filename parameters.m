@@ -46,7 +46,7 @@ algo_names('cvx_random_sample_L_infty_hot_start') = 'random sampling';
 algo_names('cvx_block_descent_L_infty') = 'block descent';
 algo_names('cvx_entropy') = 'entropy';
 algo_names('cvx_hot_start_lp') = 'simple block';
-
+algo_names('cvx_rs_constant_L1L2plus_noupdate') = 'random sampling L1+L2';
 
 % Library with names for the different parameters/settings/algorithms
 max_sparsity = .5;
