@@ -23,7 +23,7 @@ mat_size = size(matrix);
 n_plots = mat_size(2);
 %rows = ceil(n_plots/3);
 fig = figure('name',title_name,'numbertitle','off');
-yy = plot(x_axis, matrix(:,1), 'linewidth', 1, 'Color', [colorsmatrix(1,1) colorsmatrix(1,2) colorsmatrix(1,3)]); %create plot handle
+yy = errorbar(x_axis, matrix(:,1,1), matrix(:,1,2), 'linewidth', 1, 'Color', [colorsmatrix(1,1) colorsmatrix(1,2) colorsmatrix(1,3)]); %create plot handle
 grid on;
 
 xlabel(xlabel_str,'fontsize',16);
