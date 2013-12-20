@@ -23,6 +23,7 @@
 
 \newcommand{\OO}{\mathcal{O}}
 \newcommand{\RR}{\mathcal{R}}
+\newcommand{\RN}{\R}
 
 \nipsfinalcopy
 
@@ -207,7 +208,7 @@ Similar to the null space property one can come up with dual witness results whi
 \label{Maxmax_Oneblock}
 Assume that $\alpha^*$ is the unique $k$-sparse solution and $i^* = \argmax_i \alpha^*_i$ with support $S$. If(f?)
 \begin{align*}
-\label{Maxrecovery_condition_Farkas}
+% \label{Maxrecovery_condition_Farkas}
 \max_{u,\lambda} \qquad &- u^T e_i \:\: \leq 0\\
 \text{s.t.} \qquad& \begin{pmatrix} A_i\\ B_i \end{pmatrix} u = \begin{pmatrix} \lambda \\ 0\end{pmatrix}\\
 A_i^T = &-\begin{pmatrix} e_i - e_{1} & \dots & e_i - e_{i-1} & e_i - e_{i+1} & \dots & e_i - e_j & I\\
@@ -240,13 +241,13 @@ e_i^T h &> 0\\
 \end{align*}
 We can now use Lemma \ref{Farkas_Corollary} which then gives the following feasibility condition (for all $i$ there must exist  $(y,z)$ which fulfill)
 \begin{align*}
-\label{Maxrecovery_condition_Feasibility}
+% \label{Maxrecovery_condition_Feasibility}
 y_i &\geq 0\\
 A_i^Ty + B_i^T z &= e_i
 \end{align*}
 Regard this as a convex optimization problem with minimization over $0$. If it is feasible then the objective value will remain 0. Now consider the dual problem which yields
 \begin{align*}
-\label{Maxrecovery_condition_Dual}
+% \label{Maxrecovery_condition_Dual}
 \max_{u,\lambda} \qquad &- u^T e_i\:\: \leq 0\\
 \text{s.t.} \qquad& \begin{pmatrix} A_i\\ B_i \end{pmatrix} u = \begin{pmatrix} \lambda \\ 0\end{pmatrix}
 \end{align*}
