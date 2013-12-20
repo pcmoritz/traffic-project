@@ -44,6 +44,21 @@ range_max = max(max(matrix(:,:,1) + matrix(:,:,2)));
 domain_min = min(x_axis);
 domain_max = max(x_axis);
 
+% Add some margins to the domain and the range so that 
+% the extreme points of the graph don't touch the borders
+range_margin = (range_max - range_min) * .05;
+domain_margin = (domain_max - domain_min) * .05;
+if range_margin == 0
+    range_margin = 1;
+end
+if domain_margin == 0
+    domain_margin = 1;
+end
+range_max = range_max + range_margin;
+range_min = range_min - range_margin;
+domain_max = domain_max + domain_margin;
+domain_min = domain_min - domain_margin;
+
 set(axes_hdl,'xlim',[domain_min domain_max],'ylim',[range_min range_max],'fontsize',16);
 hold on;
 if n_plots > 1

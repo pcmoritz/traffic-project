@@ -40,12 +40,13 @@ parameters;
 
 if(generate_problems_p)
     %delete(fullfile(param_directory, '*.mat'));
-    
+    disp('Generating problems:')
     generate_problem('traffic', matrix_sizes('traffic'));
     generate_problem('random', matrix_sizes('random'),20);
 end
 
 if(generate_output_p)
+    disp('Generating outputs:')
     % load already generated outputs
     existing_output_files = dir(fullfile(output_directory, '*.mat'));
     existing_output = cell(0);
@@ -72,6 +73,7 @@ if(generate_output_p)
 end
 
 if(generate_metrics_p)
+    disp('Generating metrics:')
     numsamples = 1;
     delete(fullfile(metrics_directory, '*.mat'));
 
@@ -87,6 +89,7 @@ if(generate_metrics_p)
 end
 
 if(generate_plots_p)
+    disp('Generating plots:')
     all_metrics = {};
     files = dir(fullfile(metrics_directory, '*.mat'));
     for file = files'
