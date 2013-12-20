@@ -302,9 +302,9 @@ This has also been proposed in \cite{mert}. We then have the following primal su
 
 \begin{lemma} \label{thm:linftyunique}
 If $x^*$ is the unique $k$-sparse solution to \eqref{l0-minimization} and
-\begin{equation*}
+\begin{equation}\label{assumption-lp}
 \min_{1^Tx = 1, y\geq 0, 1^\T y =1} x_i : A_S x = A_{S^c} y \qquad>0,
-\end{equation*}
+\end{equation}
 for an index $i\in S$, the vector $x^*$ can be recovered as the unique solution of the linear program
 \begin{equation}\label{i-lp}
   \max_{1^\T x = 1, x\geq 0} x_i : Ax = b.
@@ -317,14 +317,16 @@ First we show that the existence of a pair $(\lambda, w)$ with
 A^\T_{S}w + \lambda 1 &= e_i \label{First_eq}\\
 A^\T_{S^c}w + \lambda 1 &>0 \label{Second_eq}
 \end{align}
-implies that the support of the solution $\hat x$ of \eqref{i-lp} coincides with the support of $x^*$. The complementary slackness condition for \eqref{l8-recovery-dual} is $x^\T(A^\T w + \lambda 1 - e_i) = 0$ and subtracting $(A_Sx_S)^\T w + \lambda x_S^\T 1 = x_S^\T e_i$ we get $(A_{S^c} x_{S^c})^\T w + \lambda x_{S^c}^\T = 0$ and with \eqref{Second_eq} we conclude $x_{S^c}= 0$. Because $x^*$ is the minimum cardinality solution (and so is $\hat x$), we then conclude that $\hat x = x^*$.
+implies that the solution $\hat x$ of \eqref{i-lp} coincides with  $x^*$. The complementary slackness condition for \eqref{l8-recovery-dual} is $x^\T(A^\T w + \lambda 1 - e_i) = 0$ and subtracting $(A_Sx_S)^\T w + \lambda x_S^\T 1 = x_S^\T e_i$ we get $(A_{S^c} x_{S^c})^\T w + \lambda x_{S^c}^\T = 0$ and with \eqref{Second_eq} we conclude $x_{S^c}= 0$. Because $x^*$ is the minimum cardinality solution (and so is $\hat x$), we then conclude that $\hat x = x^*$ by uniqueness.
 
-Now it remains to show how to arrive from these two conditions to the sufficiency of the assumption in the theorem. Now the dual of the condition in the theorem reads
+It remains to show that the assumptions in the theorem imply \eqref{First_eq} and \eqref{Second_eq}. The dual of \eqref{assumption-lp} is
 \begin{align*}
-&d^* = \max_{u,v} u -v +\min_{y\geq 0} (e_i^T - \lambda^T\Phi_S - u1^T) x + (\lambda^T \Phi_{S^c} + v1^T) y\: >0\\
-\implies &\max_{u,v} u-v \:  \text{ s.t. } e_i - \Phi_S^T \lambda - u1 = 0 \wedge \Phi_{S^c}^T \lambda + v1\geq 0 \:\: >0
+0<d^* &= \max_{u,v,\lambda} u -v +\min_{x, y\geq 0} (e_i^\T - \lambda^\T A_S - u1^\T) x + (\lambda^\T A_{S^c} + v1^T) y\\
+&=\max_{u,v,\lambda} u-v \quad\text{such that}\quad e_i - A_S^T \lambda - u1 = 0 \text{ and } A_{S^c}^T \lambda + v1\geq 0.
 \end{align*}
-Here we use that strong duality holds since we assume the problem is feasible. This is because we know that the original $x^*$ satisfies the condition $\Phi_S x = f$. 
+Here we used strong duality, which holds because $A_S x^* = b$
+
+. This is because we know that the original $x^*$ satisfies the condition $\Phi_S x = f$. 
 Given the condition holds, then for some $u>v$ we will have a feasible dual problem which means that there is a $u$ such that 
 \begin{align*}
  \Phi_S^T \lambda +u1 &= e_i\\

@@ -21,7 +21,7 @@ function a = cvx_block_descent_L_infty(p)
         a >= 0
     cvx_end
     
-    total_iterations = 20;
+    total_iterations = 50;
 
     for j = [1:total_iterations]
     fprintf('sweep %d/%d , iteration (of %d) ', j, total_iterations, length(blocks));

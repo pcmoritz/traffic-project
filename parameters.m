@@ -35,6 +35,8 @@ tests = {'cvx_unconstrained_L1', 'cvx_L2', 'cvx_weighted_L1', 'cvx_entropy', 'cv
 % tests = {'cvx_rs_constant_L1L2plus_noupdate'};
 % tests = {'cvx_rs_constant_L1uniform_noupdate_test'};
 
+tests = {'cvx_block_descent_L_infty'}
+
 if strcmp(mode, 'PHASE_TRANSITION') == 1
     tests = {'cvx_unconstrained_L1'};
     tests = {'cvx_random_sample_L_infty_hot_start_update'}
