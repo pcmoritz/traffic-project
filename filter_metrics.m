@@ -29,4 +29,5 @@ function filtered_metrics = filter_metrics(type,metrics,mysize,algo,blocks_matte
         display('Not implemented.')
         %filtered_metrics = [];
     end
+    assert(length(filtered_metrics) > 0);
 end

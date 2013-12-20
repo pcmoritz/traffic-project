@@ -1,6 +1,6 @@
 % The parameters for the file system structure, etc.
 mode = 'REAL'; % DEBUG, REAL, SMALL, PHASE_TRANSITION
-repeat = 19;
+repeat = 1;
 cvx_solver mosek;
 
 user = getenv('USER');
@@ -12,33 +12,49 @@ if strcmp(user,'cathywu') == 1
 elseif strcmp(user,'richard') == 1
     python = 'python';
     base_directory = './data-local/';
-else
+elseif strcmp(user,'viveoistrach')==1
+    python = 'LD_LIBRARY_PATH= python';
+    % base_directory = '~/Dropbox/traffic/data/';
+    base_directory = '~/convex-project/data2/';
+    addpath '~/mosek/7/toolbox/r2009b';
+else    
     python = 'LD_LIBRARY_PATH= python';
     % base_directory = '~/Dropbox/traffic/data/';
     base_directory = '/media/bee9be82-8dd8-4b1b-8de5-d55366dbd000/drop-box/Dropbox/traffic/data/';
     addpath '~/mosek/7/toolbox/r2009b';
 end
 
+if strcmp(mode, 'PHASE_TRANSITION') == 1
+   base_directory = [base_directory, 'phase-transition/'];
+end
+
 raw_directory = [base_directory, 'raw/'];
 param_directory = [base_directory, 'params/'];
-output_directory = [base_directory, 'output-pcmoritz/'];
+output_directory = [base_directory, 'output/'];
+% output_directory = [base_directory, 'output-pcmoritz/'];
 metrics_directory = [base_directory, 'metrics/'];
 graphs_directory = [base_directory, 'graphs/'];
 
-tests = {'cvx_unconstrained_L1', 'cvx_L2', 'cvx_weighted_L1', 'cvx_entropy', 'cvx_oracle', 'cvx_raw'
+tests = {'cvx_unconstrained_L1', 'cvx_L2', 'cvx_weighted_L1'}; %, 'cvx_entropy', 'cvx_oracle', 'cvx_raw'
     
-    }; %'cvx_L2',...
+    %'cvx_L2',...
 %    'cvx_random_sample_L_infty_hot_start'}; %,'cvx_random_sample_L_infty_hot_start_update','cvx_random_sample_L_infty_hot_start_uniform'};
+
     %'cvx_hot_start_lp', 'cvx_block_descent_L_infty', ...
 % tests = {'cvx_elastic_net'};
 % tests = {'cvx_random_sample_min_cardinality'};
 % tests = {'cvx_rs_constant_L1L2plus_noupdate'};
 % tests = {'cvx_rs_constant_L1uniform_noupdate_test'};
+% TESTS for selecting best mus for various update functions
+tests = {'cvx_rs_constant_L1uniform_new_mus', ...
+    'cvx_rs_constant_L1uniform_backoff25_mus', ...
+    'cvx_rs_constant_L1uniform_backoff75_mus',...
+    'cvx_rs_constant_L1uniform_old_mus'};
 
 tests = {'cvx_block_descent_L_infty'}
 
 if strcmp(mode, 'PHASE_TRANSITION') == 1
-    tests = {'cvx_unconstrained_L1'};
+    % tests = {'cvx_unconstrained_L1'};
     tests = {'cvx_random_sample_L_infty_hot_start_update'}
 end
 
@@ -110,8 +126,8 @@ sparsity_values = [0.02, 0.04, 0.06, 0.08, 0.10, 0.14];
 sparsity_sizes = [sparsity_values', sparsity_values' + 0.05];
 
 for no_blocks = 5
-    for no_vars_per_block = 4:6:40
-        for no_constraints = [1:5] * ceil(no_vars_per_block/6)
+    for no_vars_per_block = 10:10:40
+        for no_constraints = 5:5:15; %[1:5] * ceil(no_vars_per_block/6)
             for sparsity = sparsity_values
                 % Spars stands for the number of nonzero routes you choose
                 % at each origin
@@ -129,6 +145,13 @@ if strcmp(mode,'SMALL') == 1
     % matrix_sizes('random') = [155 10 100 max(10, floor(10 * 100 * 0.06))];
     matrix_sizes('random') = [175 10 100 max(10, floor(10 * 100 * 0.06))];
     repeat = 250;
+end
+
+if strcmp(mode, 'PHASE_TRANSITION') == 1
+    p = matrix_sizes('random');
+    % matrix_sizes('random') = [155 10 100 max(10, floor(10 * 100 * 0.06))];
+    matrix_sizes('random') = [175 10 100 max(10, floor(10 * 100 * 0.06))];
+    repeat = 200;
 end
 
 % Run subset of modes we care about to reduce computation time

@@ -76,7 +76,7 @@ no_algos = length(choice_algos_ind);
 %disp(fprintf('\n Generated sparsity sizes:'));
 %disp(sparsity_sizes);
 %plot_sparsity = input('Type in a sparsity range e.g. [0.1 0.2]');
-plot_sparsity = [0.03 0.07];
+plot_sparsity = [0.03 0.5];
 
 % Let user choose no blocks and variables and constraints to plot
 if strcmp(plot_type,'random')
@@ -255,7 +255,7 @@ size_mat = [choice_sizes Phi_sizes];
 % matrix_sizes and gives us the x-axis for plotting
 
 % For now for example ratio of rows vs. columns of Phi
-if strcmp(plot_type,'random')==1
+if strcmp(plot_type,'random') == 1
     size_xaxis = size_mat(:,4)./size_mat(:,5); %(mean(plot_sparsity)*log(1/mean(plot_sparsity)));
 else
     size_xaxis = size_mat(:,4)./size_mat(:,5);
@@ -319,9 +319,8 @@ for l = 1:no_errortypes
     end
 end
 
-
 %% Create Mat runtime vs. size
-%plotting_rt_vs_sz(no_sizes, no_algos, algos_cell, size_xaxis_rt, dimvalue_descrip_rt, choice_algos, char(model_name), prefix, colorsmatrix);
+plotting_rt_vs_sz(no_sizes, no_algos, algos_cell, size_xaxis_rt, dimvalue_descrip_rt, choice_algos, char(model_name), prefix, colorsmatrix);
 %{
 %% Create Mat runtime vs. sparsity
 
