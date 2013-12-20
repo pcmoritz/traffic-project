@@ -1,4 +1,4 @@
-function plotting_err_vs_sz(no_sizes, no_algos, algos_cell, size_xaxis, dimvalue_descrip, choice_algos, l, error_name, model_name, prefix, colorsmatrix,plot_sparsity)
+function plotting_err_vs_sz(no_sizes, no_algos, algos_cell, size_xaxis, dimvalue_descrip, choice_algos, l, error_name, model_name, prefix, colorsmatrix,file_name)
 
 % Third dimension is value and stddev
 Value_vs_Size_Matrix = zeros(no_sizes,no_algos,2);
@@ -14,8 +14,7 @@ Value_vs_Size_Matrix = zeros(no_sizes,no_algos,2);
     % Declare the file/title name for plot, dependent on matrix and error
     title_name = sprintf('%s vs. Size on Model %s', ...
         error_name, model_name);
-    file_name = sprintf('%s_vs_Size_S%.2f',  ...
-        error_name, mean(plot_sparsity));
+    
     %file_name = sprintf('%s_vs_Size_Model%s',  ...
     %    error_name, model_name);
     ylabel_str = error_name; %sprinf('%s of the reconstructed signal', choice_errortypes{l});

@@ -1,5 +1,5 @@
 %% cvx multiple-blocks L_infty with random sampling
-function max_a = random_sample_alg(p, iterations, prior, update)
+function [max_a,max_errs] = random_sample_alg(p, iterations, prior, update)
     Phi = p.Phi; f = p.f; n = p.n; L1 = p.L1; block_sizes = p.block_sizes;
     noise = p.noise; epsilon = p.epsilon; lambda = p.lambda;
     
@@ -7,6 +7,7 @@ function max_a = random_sample_alg(p, iterations, prior, update)
     len_block_sizes = length(block_sizes);
     
     num_iterations = iterations(p); %10*log(double(len_block_sizes^block_sizes(1)));
+    max_errs = zeros(num_iterations, 1);
     fprintf(1, 'Progress (of %d):  ', num_iterations);
     
     a = zeros(n, 1);
@@ -18,9 +19,6 @@ function max_a = random_sample_alg(p, iterations, prior, update)
 
     %% Sampling prior via unconstrained L1 and L2 solutions
     % Find a feasible solution
-    a_L1 = cvx_unconstrained_L1(p);
-    a_L2 = cvx_L2(p);
-    a_raw = cvx_raw(p);
     a0 = prior(p);
 
     %% Hot start
@@ -86,10 +84,12 @@ function max_a = random_sample_alg(p, iterations, prior, update)
             max_val = val;
             max_a = a;
             a0 = update(a0,a);
+            max_err = norm(max_a-p.real_a,1);
         end
+        max_errs(k) = max_err;
     end
     fprintf(1, '\n');
     [ len_block_sizes block_sizes(1)]
-    [p.num_nonzeros/p.n norm(p.real_a - a_L1,1) norm(p.real_a - a_raw,1) norm(p.real_a - a_L2,1) norm(p.real_a - a0,1) norm(p.real_a - max_a,1)]
+    [p.num_nonzeros/p.n norm(p.real_a - max_a,1)]
 
 end

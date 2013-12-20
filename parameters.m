@@ -1,5 +1,5 @@
 % The parameters for the file system structure, etc.
-mode = 'SMALL'; % DEBUG, REAL, SMALL
+mode = 'REAL'; % DEBUG, REAL, SMALL
 repeat = 1;
 
 user = getenv('USER');
@@ -24,8 +24,8 @@ output_directory = [base_directory, 'output/'];
 metrics_directory = [base_directory, 'metrics/'];
 graphs_directory = [base_directory, 'graphs/'];
 
-tests = {'cvx_L2','cvx_unconstrained_L1','cvx_weighted_L1', ...
-    'cvx_random_sample_L_infty_hot_start'}; %,'cvx_random_sample_L_infty_hot_start_update','cvx_random_sample_L_infty_hot_start_uniform'};
+tests = {'cvx_unconstrained_L1', 'cvx_L2', 'cvx_weighted_L1'}; %'cvx_L2',...
+    %'cvx_random_sample_L_infty_hot_start'}; %,'cvx_random_sample_L_infty_hot_start_update','cvx_random_sample_L_infty_hot_start_uniform'};
     %'cvx_hot_start_lp', 'cvx_block_descent_L_infty', ...
 % tests = {'cvx_elastic_net'};
 % tests = {'cvx_random_sample_min_cardinality'};
@@ -47,10 +47,12 @@ max_sparsity = .5;
 
 %error_types_names = {'errors_L1', 'errors_L2','errors_support', 'diffs_sparsity'};
 error_types_names = {'L1 error', 'L2 error', 'support error'};
-type_names = {'traffic', 'random'};
+type_names = {'traffic_O', 'traffic_OD', 'traffic_augmented', 'random'};
 
 model_types_names = containers.Map();
-model_types_names('traffic') = {'small_graph'};
+model_types_names('traffic_O') = {'small_graph'};
+model_types_names('traffic_OD') = {'small_graph_OD'};
+model_types_names('traffic_augmented') = {'small_graph_augmented'};
 model_types_names('random') = {'gaussian'};
 
 % algos_names = {'cvx_L2','cvx_raw','cvx_unconstrained_L1','cvx_weighted_L1', 'cvx_hot_start_lp','cvx_single_block_L_infty'...
@@ -80,13 +82,13 @@ matrix_sizes('traffic') = [];
 
 % For now, we are not considering the traffic matrix
 
-% matrix_sizes('traffic') = [2 2 2 2; 2 2 2 3;];
+ %matrix_sizes('traffic') = [2 2 2 2; 2 2 2 3; 3 2 3 2; 3 2 3 3];
     
 % each row is one size triple + sparsity measure
-%matrix_sizes = [2 2 2 2; 2 2 2 3; 2 2 2 4; 3 3 2 2; 3 3 2 3; ...
+% matrix_sizes = [2 2 2 2; 2 2 2 3; 2 2 2 4; 3 3 2 2; 3 3 2 3; ...
 %    3 3 3 4; 4 4 2 2; 4 4 3 3; 4 4 3 4; 5 5 2 2; 5 5 2 3; 5 5 2 4; 5 5 3 2; 5 5 3 3; 5 5 3 4]; 
 
-sparsity_values = linspace(0.1, 0.2, 4);
+sparsity_values = linspace(0.05, 0.2, 6);
 sparsity_sizes = [sparsity_values', sparsity_values' + 0.05];
 
 % num_constraints = vec(1);
@@ -94,12 +96,12 @@ sparsity_sizes = [sparsity_values', sparsity_values' + 0.05];
 % num_vars_per_block = vec(3);
 % num_nonzeros = vec(4);
 
-%% Random matrix
-matrix_sizes('random') = [];
+% %% Random matrix
+ matrix_sizes('random') = [];
 
-for no_constraints=50:10:70
+for no_constraints=50:10:90
     for no_blocks = 10
-        for no_vars_per_block = 20:5:30
+        for no_vars_per_block = 50
             for sparsity = sparsity_values
                 % Spars stands for the number of nonzero routes you choose
                 % at each origin
