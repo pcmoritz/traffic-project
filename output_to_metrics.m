@@ -10,6 +10,7 @@ function m = output_to_metrics(o)
     error_L1 = norm(real_a - a,1) / norm(real_a, 1);
     error_L2 = norm(real_a - a,2) / norm(real_a, 2);
     error_support = sum((abs(real_a) > 1e-6) ~= (abs(a) > 1e-6)) / length(a);
+    error_max_support = get_max_support_error(p,a);
     real_sparsity = sum(abs(real_a)>1e-6)/length(a);
     test_sparsity = sum(abs(a)>1e-6)/length(a);
     if noise
@@ -26,4 +27,5 @@ function m = output_to_metrics(o)
     m.error_L1 = error_L1; m.error_L2 = error_L2; 
     m.error_support = error_support; m.real_sparsity = real_sparsity;
     m.test_sparsity = test_sparsity;
+    m.error_max_support = error_max_support;
 end

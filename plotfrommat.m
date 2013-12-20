@@ -39,8 +39,8 @@ axes_hdl = get(yy,'Parent'); %create axes handle
 
 % Set the range automatically somehow
 % Get the lowest value of all matrix
-range_min = min(min(matrix));
-range_max = max(max(matrix));
+range_min = min(min(matrix(:,:,1)));
+range_max = max(max(matrix(:,:,1)));
 domain_min = min(x_axis);
 domain_max = max(x_axis);
 
@@ -49,7 +49,7 @@ hold on;
 if n_plots > 1
     for n=2:n_plots
         linestr = sprintf('%s%s',pltype_str_arr(mod(n,no_pltypes)+1,1),pltype_str_arr(mod(n,no_pltypes)+1,2));
-        plot(x_axis, matrix(:,n), 'linewidth', 2, 'Color', [colorsmatrix(mod(n,17)+1,1) colorsmatrix(mod(n,17)+1,2) colorsmatrix(mod(n,17)+1,3)], 'linestyle', linestr); %create plot handle
+        errorbar(x_axis, matrix(:,n,1), matrix(:,n,2), 'linewidth', 2, 'Color', [colorsmatrix(mod(n,17)+1,1) colorsmatrix(mod(n,17)+1,2) colorsmatrix(mod(n,17)+1,3)], 'linestyle', linestr); %create plot handle
         grid on;
     end
 end

@@ -15,6 +15,20 @@ classdef TestOutput < handle
        a % alpha vector
        tester % username of user running test (for renormalization of runtime)
    end
-   methods
+
+   methods (Access = public)
+   function same=equals(obj, o)
+       same = (obj.test_parameters.equals(o.test_parameters)) && ...
+           (strcmp(obj.algorithm, o.algorithm));
+   end
+   function o=isAmong(obj, os)
+       for o = os
+           if obj.equals(o{1})
+               o = o{1};
+               return
+           end
+       end
+       o=false;
+   end
    end
 end

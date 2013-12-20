@@ -130,9 +130,9 @@ disp('SPARSITIES'); disp(choice_sparsities);
 algos_cell = cell(no_algos, 1);
 Phi_sizes = zeros(no_sizes, 2);
 % Initialize intermediate matrices
-results_sizesblock = zeros(no_sizes,4);%no_errortypes+1);
-results_sparsityblock = zeros(no_sparsities,4);% no_errortypes+1);
-results_constraintsblock = zeros(no_constraints,4);
+results_sizesblock = zeros(no_sizes, 4, 2);%no_errortypes+1);
+results_sparsityblock = zeros(no_sparsities, 4, 2);% no_errortypes+1);
+results_constraintsblock = zeros(no_constraints, 4, 2);
 
 for i = 1:no_algos
     % Get the chosen algorithm string
@@ -157,9 +157,11 @@ for i = 1:no_algos
         
         % Average all results which have the algorithm and the size
         filtered_metrics = filter_metrics(model_name, relevant_metrics, mysize, algo, 0);
-        averaged_m = average_metrics(filtered_metrics);
-        results_sizesblock(j,:) = [averaged_m.test_output.runtime, ...
-            averaged_m.error_L1, averaged_m.error_L2, averaged_m.error_support];
+        [averaged_m, stddev_m] = average_metrics(filtered_metrics);
+        results_sizesblock(j,:,:) = [averaged_m.test_output.runtime, ...
+            averaged_m.error_L1, averaged_m.error_L2, averaged_m.error_support; ...
+            stddev_m.test_output.runtime, ...
+            stddev_m.error_L1, stddev_m.error_L2, stddev_m.error_support]';
         
         if i == 1
             Phi_sizes(j,:) = size(averaged_m.test_output.test_parameters.Phi);
@@ -185,11 +187,14 @@ for i = 1:no_algos
                 end
             end
             
-            % Average all results which have
-            filtered_metrics_const = filter_metrics(model_name, relevant_metrics, mysize, algo, 1);
-            averaged_m = average_metrics(filtered_metrics_const);
-            results_constraintsblock(k,:) = [averaged_m.test_output.runtime, ...
-                averaged_m.error_L1, averaged_m.error_L2, averaged_m.error_support];
+            % Average all results which have 
+        filtered_metrics_const = filter_metrics(model_name, relevant_metrics, mysize, algo, 1);
+        [averaged_m, stddev_m] = average_metrics(filtered_metrics_const);
+        results_constraintsblock(k,:,:) = [averaged_m.test_output.runtime, ...
+            averaged_m.error_L1, averaged_m.error_L2, averaged_m.error_support; ...
+            stddev_m.test_output.runtime, ...
+            stddev_m.error_L1, stddev_m.error_L2, stddev_m.error_support]';
+
         end
     end
     for j = 1:no_sparsities
@@ -218,11 +223,13 @@ for i = 1:no_algos
         filtered_metrics = filter_metrics(model_name, relevant_metrics, mysize, algo, 1);
         
         % Get a test object which is an averaged version
-        averaged_m = average_metrics(filtered_metrics);
-        results_sparsityblock(j,:) = [averaged_m.test_output.runtime, ...
+        [averaged_m, stddev_m] = average_metrics(filtered_metrics);
+        results_sparsityblock(j,:,:) = [averaged_m.test_output.runtime, ...
             averaged_m.error_L1, averaged_m.error_L2, ...
-            averaged_m.error_support];
-        
+            averaged_m.error_support; ...
+            stddev_m.test_output.runtime, ...
+            stddev_m.error_L1, stddev_m.error_L2, stddev_m.error_support]';
+
         if j == 1 && strcmp(plot_type, 'traffic')
             plot_noconstraints_traffic = size(averaged_m.test_output.test_parameters.Phi,1);
         end
@@ -291,7 +298,7 @@ for l = 1:no_errortypes
         error_name, mean(plot_sparsity), char(model_name));
     end
     plotting_err_vs_sz(no_sizes, no_algos, algos_cell, size_xaxis, dimvalue_descrip, choice_algos, l, error_name, char(model_name), prefix, colorsmatrix, file_name);
-    
+
     %% Create Mat errors vs. sparsity
     if strcmp(plot_type, 'random')
         file_name = sprintf('%s_vs_Sparsity_B%d_V%d_C%d_%s',  ...

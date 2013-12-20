@@ -138,7 +138,7 @@ def export_matrices(prefix, num_rows, num_cols, num_routes_per_od_pair, num_nonz
           num_rows=num_rows, num_routes_per_od_pair=num_routes_per_od_pair)
   # (O,D),R,alpha
   (flow_portions,flow_portions_OD,flow_OD) = flows.annotate_with_flows(graph, 
-          routes)
+          routes, 1.0, num_nonzero_routes_per_o)
   
   # static matrix considering origin flows
   phi, alpha, mu, f, num_routes = generate_static_matrix(graph, routes,

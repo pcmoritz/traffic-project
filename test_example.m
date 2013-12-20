@@ -42,17 +42,25 @@ if(generate_problems_p)
     %delete(fullfile(param_directory, '*.mat'));
     
     generate_problem('traffic', matrix_sizes('traffic'));
-    generate_problem('random', matrix_sizes('random'));
+    generate_problem('random', matrix_sizes('random'),2);
 end
 
 if(generate_output_p)
+    % load already generated outputs
+    existing_output_files = dir(fullfile(output_directory, '*.mat'));
+    existing_output = cell(0);
+    for file = existing_output_files'
+        data = load(fullfile(output_directory, file.name));
+        existing_output(end+1) = {data.o};
+    end
+
     % load the problems from the directory
     files = dir(fullfile(param_directory, '*.mat'));
     numsamples = 1;
 
     for file = files'
         data = load(fullfile(param_directory, file.name));
-        output_list = generate_output(data.p, tests);
+        output_list = generate_output(data.p, tests, existing_output);
         % display(output_list);
         for o = output_list
             filename = sprintf('TestOutput-%s-%s-%d', user, ...
