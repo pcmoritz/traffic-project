@@ -119,7 +119,7 @@ if strcmp(mode,'SMALL') == 1
     p = matrix_sizes('random');
     % matrix_sizes('random') = [155 10 100 max(10, floor(10 * 100 * 0.06))];
     matrix_sizes('random') = [175 10 100 max(10, floor(10 * 100 * 0.06))];
-    repeat = 10;
+    repeat = 250;
 end
 
 % Run subset of modes we care about to reduce computation time

@@ -63,7 +63,12 @@ We evaluate several possible regularizers that can be used if the usual $\ell^1$
 \end{abstract}
 
 \section{Introduction}
-The problem of estimating traffic demands between areas or along routes within a city from traffic counts on links in a network is an important problem in transportation planning. Good traffic demand estimates improve a road network's efficiency, reliability, and safety by a more effective use of its infrastructure. This problem been studied extensively in the transportation literature and is also called the origin-destination (OD) matrix estimation problem. One of the main challenges of this problem is the shortage of data needed for management of transportation networks. 
+The problem of estimating traffic demands between areas or along routes within a city using traffic counts on links in a network is an important problem in transportation planning. While speed data and travel time estimates are increasingly more available from commercial vendors (e.g. HERE Traffic, Waze), they do not provide the crucial information about traffic volumes (flows). Good traffic demand estimates improve a road network's efficiency, reliability, and safety by providing for a more effective use of its infrastructure. One of the main challenges of this problem is the shortage of data needed for management of transportation networks. Traffic volumes are measured by static sensors (e.g. loop detectors mounted into the roads, road-side radar) and these sensor points are typically sparse. The problem of OD matrix estimation has been studied extensively in the transportation literature and is also called the origin-destination (OD) matrix estimation problem. 
+
+A natural way of approaching this kind of problem is compressed sensing, which is a signal processing technique for efficiently acquiring and reconstructing a signal from underdetermined linear systems. In recent years, compressed sensing has attracted considerable attention in areas of applied mathematics, computer science, and electrical engineering, with broad applications to imaging, data processing in wireless sensor networks \cite{luo2009compressive}, cloud computing \cite{kung2011cloudsense}, cognitive radios \cite{tian2007compressed}, spectrum sensing \cite{polo2009compressive}, and IC Trojan detection \cite{gwon2012statistical}.
+
+What helps in this situation is the knowledge of origin-destination (O-D) matrix and the information about route assignment.
+
 
 \begin{itemize}
 \item traffic as a motivating problem
@@ -71,17 +76,19 @@ The problem of estimating traffic demands between areas or along routes within a
 \item 
 \end{itemize}
 
-A natural way of approaching this kind of problem is compressed sensing
+\section{Related works}
+\subsection{Compressive sensing for traffic estimation}
+\cite{6319305} discusses the use of a compressive sensing formulation for traffic estimation, using fine-grain sampled GPS data from 4000 taxicabs. 
 
-One of the main challenges of ICM projects is the shortage of data needed for management
-of the transportation network. While traffic speed data and travel time estimates are increasingly more available from commercial vendors, they do not provide information about traffic volumes needed for effective traffic control, demand management and performance evaluation. Traffic vol-
-25 umes are measured by static sensors, such as loop detectors, mounted into the infrastructure, and those are sparse. What helps in this situation is the knowledge of origin-destination (O-D) matrix and the information about route assignment.
+
 
 
 \paragraph{Related work.}
 Applications aside from traffic, e.g.
 
 Existing techniques for traffic demand estimation.
+
+Compressive sensing approaches to traffic problems
 
 Compressed sensing
 
@@ -693,9 +700,11 @@ Elastic net experiment: $L_2$
 \end{figure}
 Figure~\ref{regularization-elastic-net}, which shows that a small weight ($\approx 0$) on the $L_2$ term gives the best random sampling prior, which implies that elastic net is not a promising as our prior.
 
-\paragraph{Update function}
-
 \paragraph{Iterations}
+
+
+
+\paragraph{Update function}
 
 \section{References}
 
