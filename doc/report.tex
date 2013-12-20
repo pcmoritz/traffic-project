@@ -116,11 +116,12 @@ $l^*(\alpha, \hat \alpha) = \sum_{i}|1_{(\hat{\alpha}_i > 0)} - 1_{(\alpha_i > 0
 \begin{equation}\label{l0-minimization}
   \begin{split}
     \text{minimize} &\quad \norm{x}_0\\
-    \text{subject to} &\quad Ax = b,\quad x\geq 0\quad \text{and}\quad 1^\T x = 1
+    \text{subject to} &\quad Ax = b,\quad x\geq 0\quad \text{and}\quad 1^\T x_{\gamma} = 1\quad \forall \gamma=1,\dots, b
   \end{split}
 \end{equation}
 
-\subsection{Relaxations}
+\subsection{One block relaxations}
+We first consider the one-block case $\gamma = 1$. 
 This problem can be solved if the original signal is the unique sparse solution. The following theorem gives conditions when this is the case. To show that the original vector is actually the unique sparsest one, we use the following theorem from \cite{Dahmen_CS}.
 \begin{theorem}
 \label{thm:l0unique}
@@ -134,30 +135,71 @@ $m\geq 2k$, the problem $Ax = b$ can be recovered if and only if
 \end{theorem}
 For deterministic matrices this is hard to check.
 
-However this program is not solvable in polynomial time because it is combinatorically hard problem.Therefore in the past decade there has been a lot of work done linked to Compressed Sensing in order to come up with convex relaxation of the $\ell^0$ norm which is basically the  and to find conditions for which solving the approximation/relaxation work.s
-
- For random matrices with Gaussian entries this holds with high probability. Similar conditions which (Restricted) Nullspace property/restricted eigenvalue property and restriced isometry property. For deterministic matrices these are not checkable in polynomial time, see \cite{DonohoCheckable}.  are easier to check is the mutual coherence, see e.g. \cite{Fuchs}.
-
-Cardinality minimization is known to be a combinatorically hard problem. 
+However this program is not solvable in polynomial time because it is combinatorically hard problem.Therefore in the past decade there has been a lot of work done linked to Compressed Sensing in order to come up with convex relaxations of the $\ell^0$ norm minimization which the $\ell^1$ norm minimization and to find conditions for which solving the approximation/relaxation work.
 \begin{equation}\label{l1-minimization}
   \begin{split}
     \text{minimize} &\quad \norm{x}_1\\
+    \text{subject to} &\quad Ax = b,\quad x\geq 0
+  \end{split}
+\end{equation}
+In the matrix
+
+Such conditions are for example the necessary and sufficient (Restricted) Nullspace property/restricted eigenvalue property and the sufficient restriced isometry property. For deterministic matrices these are not checkable in polynomial time, see \cite{DonohoCheckable}. But for random matrices with Gaussian entries this holds with high probability. For deterministic measurement matrices as in the case of our traffic matrices, there are other conditions like mutual coherence, see e.g. \cite{Fuchs}, which are much easier to check.
+
+\begin{theorem}[Incoherence]
+\end{theorem}
+
+However our matrices are not incoherent. Also, note that in our case of a positive vector which sums to one, i.e. the $\ell^1$ constraint is already known. Unless the $k$-sparse probability measure $x^*$ is the unique solution of \eqref{l1-minimization}, we thus have to come up with a different regularization scheme to achieve strong recovery results. In the literature, this problem has been discussed as recovering probability measures. 
+
+In \cite{mert} it was observed that for probability measures $x$ we have $1 = \norm{x}_1 \leq \norm{x}_0\cdot \norm{x}_\infty$ and thus $\norm{x}_{\infty}^{-1}$ is a lower bound on the size of the support of $x$. This suggests trying to use the inverse $\ell^\infty$ norm as a proxy for sparsity.
+\begin{equation}\label{l8-minimization}
+  \begin{split}
+    \text{minimize} &\quad \frac{1}{\norm{x}_\infty}\\
     \text{subject to} &\quad Ax = b,\quad x\geq 0\quad\text{and}\quad 1^\T x = 1
   \end{split}
 \end{equation}
 
-\begin{equation}\label{l8-minimization}
+Let $p^*$ denote the minimum value of $\norm{x}_0$ over $Ax = b$, we then consider the relaxation
+\begin{equation}\label{l8-recovery}
+  \begin{array}{rcllllr}
+  p^* \geq& p_\infty^* &= \min\limits_x\, \norm{x}_\infty^{-1}&\text{such that $Ax = b$, $1^\T x = 1$}\quad \text{and}\\[5pt]
+  &1/p_\infty^* &= \max\limits_{i=1,\dots,n} \max\limits_{x}\,x_i&\text{such that $Ax = b$, $1^\T x = 1$.}
+  \end{array}
+\end{equation}
+
+\paragraph{Minimal cardinality selection.} Instead of taking the maximum over $1\leq i\leq n$ in the linear program formulation of \eqref{l8-recovery}
+
+\subsection{Block probability recovery}
+\subsection{Block $\ell^\infty$ regularization}
+Instead of a single probability measure $x\in \R^n$, in the traffic
+flow problem we are given blockwise probability measures $x = (x_1,
+\dots, x_b)^\T$ where $1^\T x_\gamma = 1$ for all blocks $\gamma\in
+\{1, \dots, b\}$. Define
+\begin{equation*}
+  \mathcal B_n^k = \{x = (x_1, \dots, x_b)^\T : x_\gamma \in \R_+^{n_\gamma}, \norm{x_\gamma}_0 = k_\gamma, \norm{x_\gamma}_1 = 1\text{ for $1\leq \gamma\leq b$}\},
+\end{equation*}
+where $n = (n_1, \dots, n_b)$ are the respective sizes of the blocks
+and $k = (k_1, \dots, k_b)$ their sparsities. The minimum cardinality
+reconstruction can then be formulated as
+\begin{equation}
   \begin{split}
-    \text{minimize} &\quad \norm{x}_\infty\\
-    \text{subject to} &\quad Ax = b,\quad x\geq 0\quad\text{and}\quad 1^\T x = 1
+    &\text{minimize}\quad \norm{x}_0\\
+    &\text{subject to}\quad Ax = b\quad\text{and}\quad x\in \mathcal B_n^k.
+  \end{split}
+\end{equation}
+Similar to the $\ell^\infty$ relaxation in the one-block case, we can
+relax this intractable problem to
+\begin{equation}\label{block-relaxation}
+  \begin{split}
+    &\text{minimize}\quad \textstyle\sum_{\gamma=1}^b {\norm{x_\gamma}_\infty^{-1}}\\
+    &\text{subject to}\quad Ax = b\quad\text{and}\quad x\in \mathcal B_n^k.
   \end{split}
 \end{equation}
 
 
 
 \section{Guarantees for sparse recovery}
-To guarantee exact sparse recovery, the following procedure will be used: First, we make sure that the original vector~$x^*$ is actually the sparsest solution to~\eqref{l0-minimization}. Then, we prove that the solution of the relaxed problems~\eqref{l1-minimization} and~\eqref{l8-minimization} are unique and equal to $x^*$.
-\subsection{Sparse representation results}
+To guarantee exact sparse recovery, the following procedure will be used: First, assuming that the original vector~$x^*$ is actually the sparsest solution to~\eqref{l0-minimization}. Then, we prove that the solution of the relaxed problems~\eqref{l1-minimization} and~\eqref{l8-minimization} are unique and equal to $x^*$.
 
 
 \subsection{Obtaining the sparse solution by Compressed Sensing}
@@ -313,19 +355,6 @@ Then we could use Theorem \ref{thm:UniqueRecovery} and obtain $m\geq  w(\Omega)^
 After establishing the guarantees for the Lasso approach, the question now is whether we can improve them, i.e. need smaller amount of measurements while maintaining the same probability of recovery. This seems intuitively possible since we are given one additional sum to one constraints, i.e.an additional measurement. 
 
 \paragraph{Regularization with the $\ell^\infty$ norm.} If the vector $x^*$ to be recovered is a sparse probability measure, the technique described in the previous section is not applicable, because $\norm{x}_1 = 1$ for probability measures.
-Unless the $k$-sparse probability measure $x^*$ is the unique solution of \eqref{l1-minimization}, we thus have to come up with a different regularization scheme to achieve strong recovery results.
-In \cite{mert} it was observed that for probability measures $x$ we have $1 = \norm{x}_1 \leq \norm{x}_0\cdot \norm{x}_\infty$ and thus $\norm{x}_{\infty}^{-1}$ is a lower bound on the size of the support of $x$.
-This suggests trying to use the inverse $\ell^\infty$ norm as a proxy for sparsity.
-
-Let $p^*$ denote the minimum value of $\norm{x}_0$ over $Ax = b$, we then consider the relaxation
-\begin{equation}\label{l8-recovery}
-  \begin{array}{rcllllr}
-  p^* \geq& p_\infty^* &= \min\limits_x\, \norm{x}_\infty^{-1}&\text{such that $Ax = b$, $1^\T x = 1$}\quad \text{and}\\[5pt]
-  &1/p_\infty^* &= \max\limits_{i=1,\dots,n} \max\limits_{x}\,x_i&\text{such that $Ax = b$, $1^\T x = 1$.}
-  \end{array}
-\end{equation}
-
-\paragraph{Minimal cardinality selection.} Instead of taking the maximum over $1\leq i\leq n$ in the linear program formulation of \eqref{l8-recovery}
 
 %% Vandermonde matrix: if min card(x) unique, then recovery, not for L1
 
@@ -337,31 +366,7 @@ Let $p^*$ denote the minimum value of $\norm{x}_0$ over $Ax = b$, we then consid
 
 \subsection{Recovery of sparse block probability measures}
 
-\subsection{Block $\ell^\infty$ regularization}
-Instead of a single probability measure $x\in \R^n$, in the traffic
-flow problem we are given blockwise probability measures $x = (x_1,
-\dots, x_b)^\T$ where $1^\T x_\gamma = 1$ for all blocks $\gamma\in
-\{1, \dots, b\}$. Define
-\begin{equation*}
-  \mathcal B_n^k = \{x = (x_1, \dots, x_b)^\T : x_\gamma \in \R_+^{n_\gamma}, \norm{x_\gamma}_0 = k_\gamma, \norm{x_\gamma}_1 = 1\text{ for $1\leq \gamma\leq b$}\},
-\end{equation*}
-where $n = (n_1, \dots, n_b)$ are the respective sizes of the blocks
-and $k = (k_1, \dots, k_b)$ their sparsities. The minimum cardinality
-reconstruction can then be formulated as
-\begin{equation}
-  \begin{split}
-    &\text{minimize}\quad \norm{x}_0\\
-    &\text{subject to}\quad Ax = b\quad\text{and}\quad x\in \mathcal B_n^k.
-  \end{split}
-\end{equation}
-Similar to the $\ell^\infty$ relaxation in the one-block case, we can
-relax this intractable problem to
-\begin{equation}\label{block-relaxation}
-  \begin{split}
-    &\text{minimize}\quad \textstyle\sum_{\gamma=1}^b {\norm{x_\gamma}_\infty^{-1}}\\
-    &\text{subject to}\quad Ax = b\quad\text{and}\quad x\in \mathcal B_n^k.
-  \end{split}
-\end{equation}
+
 
 ??? Transition needed ???
 
