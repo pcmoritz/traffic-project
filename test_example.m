@@ -42,7 +42,7 @@ if(generate_problems_p)
     %delete(fullfile(param_directory, '*.mat'));
 
     generate_problem('traffic', matrix_sizes('traffic'));
-    generate_problem('random', matrix_sizes('random'),2);
+    generate_problem('random', matrix_sizes('random'),repeat);
 end
 
 if(generate_output_p)
