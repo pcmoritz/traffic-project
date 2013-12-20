@@ -10,13 +10,6 @@ function [max_a,max_errs] = random_sample_alg(p, iterations, prior, update)
     max_errs = zeros(num_iterations, 1);
     fprintf(1, 'Progress (of %d):  ', num_iterations);
     
-    a = zeros(n, 1);
-    for j=1:length(block_sizes)
-        from = cum_nroutes(j) + 1;
-        to = cum_nroutes(j + 1);
-        a(from:to) = ones(to - from + 1, 1) / double(to - from + 1);
-    end
-
     %% Sampling prior via unconstrained L1 and L2 solutions
     % Find a feasible solution
     a0 = prior(p);
@@ -45,7 +38,7 @@ function [max_a,max_errs] = random_sample_alg(p, iterations, prior, update)
             to = cum_nroutes(j + 1);
             % ~ is max, i(j) is argmax
             % mnrnd(1, ...) returns a vector with one 1 and the rest 0.
-            [~, i(j)] = max(mnrnd(1, ones(length(a0(from:to)),1)/length(a0(from:to)))); % uniform distribution 
+            [~, i(j)] = max(mnrnd(1, a0(from:to) / sum(a0(from:to))));
         end
         i = int64(i) + int64(cum_nroutes(1:end-1));
         
@@ -72,8 +65,8 @@ function [max_a,max_errs] = random_sample_alg(p, iterations, prior, update)
         prob.blx = sparse(n, 1); % lower bound for variables
         prob.bux = []; % no upper bound for variables
 
-        param.MSK_IPAR_OPTIMIZER = 'MSK_OPTIMIZER_PRIMAL_SIMPLEX';
-        % param.MSK_IPAR_OPTIMIZER = 'MSK_OPTIMIZER_INTPNT';
+        % param.MSK_IPAR_OPTIMIZER = 'MSK_OPTIMIZER_PRIMAL_SIMPLEX';
+        param.MSK_IPAR_OPTIMIZER = 'MSK_OPTIMIZER_INTPNT';
         [r, res] = mosekopt('maximize echo(0)', prob, param);
         sol   = res.sol;
         a = sol.bas.xx;
@@ -89,7 +82,7 @@ function [max_a,max_errs] = random_sample_alg(p, iterations, prior, update)
         max_errs(k) = max_err;
     end
     fprintf(1, '\n');
-    [ len_block_sizes block_sizes(1)]
-    [p.num_nonzeros/p.n norm(p.real_a - max_a,1)]
+    % [ len_block_sizes block_sizes(1) size(Phi,1)-size(L1,1)]
+    % [p.num_nonzeros/p.n norm(p.real_a - max_a,1)]
 
 end
