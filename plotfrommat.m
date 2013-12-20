@@ -5,42 +5,6 @@ close all
 
 parameters;
 
-% legend_str = strrep(legend_str,char(95),' ');
-% legend_str = strrep(legend_str,'cvx','');
-
-% Get the right legend
-for i = 1:length(legend_str)
-    legend_str{i} = algo_names(legend_str{i});
-end
-
-% Don't need title and legend label
-title_name = ''; %strrep(title_name,char(95),' ');
-
-pltype_str_arr = ['- ';'--';'-.';': '];  
-no_pltypes = length(pltype_str_arr);
-%initialising
-mat_size = size(matrix);
-n_plots = mat_size(2);
-%rows = ceil(n_plots/3);
-fig = figure('name',title_name,'numbertitle','off');
-if draw_errorbars    
-    yy = errorbar(x_axis, matrix(:,1,1), matrix(:,1,2), 'linewidth', 1, 'Color', [colorsmatrix(1,1) colorsmatrix(1,2) colorsmatrix(1,3)]); %create plot handle
-else
-    yy = plot(x_axis, matrix(:,1,1), 'linewidth', 1, 'Color', [colorsmatrix(1,1) colorsmatrix(1,2) colorsmatrix(1,3)]); %create plot handle
-end
-grid on;
-
-xlabel(xlabel_str,'fontsize',16);
-ylabel(ylabel_str,'fontsize',16);
-% Change title font
-title(title_name);
-title_hdl = get(gca,'title');
-set(title_hdl, 'FontSize', 16);
-
-% % %Set axes limits
-axes_hdl = get(yy,'Parent'); %create axes handle
-%set(axes,'FontSize',16);
-
 % Set the range automatically somehow
 % Get the lowest value of all matrix
 if draw_errorbars
@@ -68,13 +32,57 @@ range_min = range_min - range_margin;
 domain_max = domain_max + domain_margin;
 domain_min = domain_min - domain_margin;
 
+% legend_str = strrep(legend_str,char(95),' ');
+% legend_str = strrep(legend_str,'cvx','');
+
+% Get the right legend
+for i = 1:length(legend_str)
+    legend_str{i} = algo_names(legend_str{i});
+end
+
+% Don't need title and legend label
+title_name = ''; %strrep(title_name,char(95),' ');
+
+pltype_str_arr = ['- ';'--';'-.';': '];  
+no_pltypes = length(pltype_str_arr);
+%initialising
+mat_size = size(matrix);
+n_plots = mat_size(2);
+%rows = ceil(n_plots/3);
+fig = figure('name',title_name,'numbertitle','off');
+
+% Perturb points if error bars are on
+if draw_errorbars
+    pb = (domain_max - domain_min) * 0.01;
+    % pbs(i) is how much you should subtract from x_axis for the ith plot
+    pbs = pb * ((1:n_plots) - n_plots/2 - 0.5);
+end
+
+if draw_errorbars
+    yy = errorbar(x_axis - pbs(1), matrix(:,1,1), matrix(:,1,2), 'linewidth', 1, 'Color', [colorsmatrix(1,1) colorsmatrix(1,2) colorsmatrix(1,3)]); %create plot handle
+else
+    yy = plot(x_axis, matrix(:,1,1), 'linewidth', 1, 'Color', [colorsmatrix(1,1) colorsmatrix(1,2) colorsmatrix(1,3)]); %create plot handle
+end
+grid on;
+
+xlabel(xlabel_str,'fontsize',16);
+ylabel(ylabel_str,'fontsize',16);
+% Change title font
+title(title_name);
+title_hdl = get(gca,'title');
+set(title_hdl, 'FontSize', 16);
+
+% % %Set axes limits
+axes_hdl = get(yy,'Parent'); %create axes handle
+%set(axes,'FontSize',16);
+
 set(axes_hdl,'xlim',[domain_min domain_max],'ylim',[range_min range_max],'fontsize',16);
 hold on;
 if n_plots > 1
     for n=2:n_plots
         linestr = sprintf('%s%s',pltype_str_arr(mod(n,no_pltypes)+1,1),pltype_str_arr(mod(n,no_pltypes)+1,2));
         if draw_errorbars
-            errorbar(x_axis, matrix(:,n,1), matrix(:,n,2), 'linewidth', 2, 'Color', [colorsmatrix(mod(n,17)+1,1) colorsmatrix(mod(n,17)+1,2) colorsmatrix(mod(n,17)+1,3)], 'linestyle', linestr); %create plot handle
+            errorbar(x_axis - pbs(n), matrix(:,n,1), matrix(:,n,2), 'linewidth', 2, 'Color', [colorsmatrix(mod(n,17)+1,1) colorsmatrix(mod(n,17)+1,2) colorsmatrix(mod(n,17)+1,3)], 'linestyle', linestr); %create plot handle
         else
             plot(x_axis, matrix(:,n,1), 'linewidth', 2, 'Color', [colorsmatrix(mod(n,17)+1,1) colorsmatrix(mod(n,17)+1,2) colorsmatrix(mod(n,17)+1,3)], 'linestyle', linestr); %create plot handle
         end
@@ -89,4 +97,3 @@ set(legend_hdl,'string',legend_label);
 saveas(fig,strcat(file_name, '.fig'));
 print(fig, '-dpdf', strcat(file_name, '.pdf'))
 end
-
