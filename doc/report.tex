@@ -264,7 +264,7 @@ Regard this as a convex optimization problem with minimization over $0$. If it i
 Note that this is a linear program and thus fairly easy to check. 
 \end{proof}
 
-\subsection{Minimal cardinality selection.} 
+\subsection{Minimal cardinality selection} 
 Instead of taking the maximum over $1\leq i\leq n$ in the linear program formulation of \eqref{l8-recovery}, we can take the solution with the lowest cardinality, thus solving
 \begin{align}
 \hat{x}_i &= \arg\max_{1^\T x =1, x\geq 0} x_i : Ax  = b \label{min-cardinality}\\
@@ -275,9 +275,9 @@ This has also been proposed in \cite{mert}. We then have the following primal su
 \begin{lemma} \label{thm:linftyunique}
 If $x^*$ is the unique $k$-sparse solution to \eqref{l0-minimization} and
 \begin{equation*}
-\min_{1^Tx = 1, y\geq 0, 1^Ty =1} x_i : A_S x = A_{S^c} y \qquad>0,
+\min_{1^Tx = 1, y\geq 0, 1^\T y =1} x_i : A_S x = A_{S^c} y \qquad>0,
 \end{equation*}
-the vector $x^*$ can be recovered as the unique solution of the linear program
+for an index $i\in S$, the vector $x^*$ can be recovered as the unique solution of the linear program
 \begin{equation}\label{i-lp}
   \max_{1^\T x = 1, x\geq 0} x_i : Ax = b.
 \end{equation}
@@ -289,13 +289,7 @@ First we show that the existence of a pair $(\lambda, w)$ with
 A^\T_{S}w + \lambda 1 &= e_i \label{First_eq}\\
 A^\T_{S^c}w + \lambda 1 &>0 \label{Second_eq}
 \end{align}
-implies that the support of the solution of \eqref{i-lp} coincides with the support of the original $x^*$. The dual Lagrangian of \eqref{min-cardinality} is
-\begin{align*}
-%&\min_{w,\lambda} w^\T b + \lambda +  \max_{x\geq 0}\,(e_i- A^\T w - \lambda 1)^\T x = \\
-&\min_{w,\lambda} w^\T b + \lambda + \max_{x\geq 0} (e_i- A_S^\T w - \lambda 1)^\T x_S + (-A_{S^c}^\T w - \lambda 1)^\T x_{S^c}
-\end{align*}
-If \eqref{Second_eq}, $x_{S^c}=0$ and if \eqref{First_eq}, $x_S>0$ by complementary slackness, we thus have support recovery.
-%. If \eqref{First_eq} holds, then $x_S$ can have arbitrary values - together the two conditions thus guarantee support recovery. 
+implies that the support of the solution $\hat x$ of \eqref{i-lp} coincides with the support of $x^*$. The complementary slackness condition for \eqref{l8-recovery-dual} is $x^\T(A^\T w + \lambda 1 - e_i) = 0$ and subtracting $(A_Sx_S)^\T w + \lambda x_S^\T 1 = x_S^\T e_i$ we get $(A_{S^c} x_{S^c})^\T w + \lambda x_{S^c}^\T = 0$ and with \eqref{Second_eq} we conclude $x_{S^c}= 0$. Because $x^*$ is the minimum cardinality solution (and so is $\hat x$), we then conclude that $\hat x = x^*$.
 
 Now it remains to show how to arrive from these two conditions to the sufficiency of the assumption in the theorem. Now the dual of the condition in the theorem reads
 \begin{align*}
