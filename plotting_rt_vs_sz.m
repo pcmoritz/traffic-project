@@ -19,5 +19,5 @@ ylabel_str = 'Runtime (in sec)'; %sprinf('%s of the reconstructed signal', choic
 [sorted_size_xaxis_rt, sorted_ind] = sort(size_xaxis_rt);
 plotfrommat(sorted_size_xaxis_rt, Value_vs_Size_Matrix(sorted_ind,:,:), choice_algos, ...
     '', strcat(prefix, file_name), title_name, dimvalue_descrip_rt, ...
-    ylabel_str, colorsmatrix);
+    ylabel_str, colorsmatrix, 0); % without error bars
 end
