@@ -170,13 +170,6 @@ As these equalities only consist of linear operations, we can write this as a li
 \end{itemize}
 
 
-\paragraph{Losses.} (do we need to define these?)
-\begin{tabular}{cl}
-$l(\alpha, \hat\alpha) = \norm{\hat\alpha - \alpha}_2$ & Loss/error of the estimated split vectors $\alpha$ in $\ell^2$ norm \\
-$l'(\alpha, \hat\alpha) = \norm{\hat\alpha - \alpha}_1$ & Loss/error of the estimated split vectors $\alpha$ in $\ell^1$ norm \\
-$l^*(\alpha, \hat \alpha) = \sum_{i}|1_{(\hat{\alpha}_i > 0)} - 1_{(\alpha_i > 0)}|.$ & Loss/error of the estimated split vectors $\alpha$ with respect to support recovery
-\end{tabular}
-
 \begin{equation}\label{l0-minimization}
   \begin{split}
     \text{minimize} &\quad \norm{x}_0\\
@@ -675,6 +668,14 @@ To test our algorithms, we generated two datasets: One to assess reconstruction 
   \caption{A traffic graph for $r=3$ and $c=5$. As shown in (a), there are horizontal highways with weight $6$ at the top and the bottom. These are vertically connected by roads with weights 1 or 2. In (b), the flows on these roads were computed according to the method described in the text.}
 \label{fig:graph-example}
 \end{figure}
+
+\paragraph{Losses.} (do we need to define these?)
+\begin{tabular}{cl}
+$l(\alpha, \hat\alpha) = \norm{\hat\alpha - \alpha}_2$ & Loss/error of the estimated split vectors $\alpha$ in $\ell^2$ norm \\
+$l'(\alpha, \hat\alpha) = \norm{\hat\alpha - \alpha}_1$ & Loss/error of the estimated split vectors $\alpha$ in $\ell^1$ norm \\
+$l^*(\alpha, \hat \alpha) = \sum_{i}|1_{(\hat{\alpha}_i > 0)} - 1_{(\alpha_i > 0)}|.$ & Loss/error of the estimated split vectors $\alpha$ with respect to support recovery
+\end{tabular}
+
 \paragraph{Traffic matrices.} The parameters for this model class are the number of rows $r$, the number $c$ of columns in the road grid and the number $k$ of routes per origin-destination pair, the sparsity $s$ and the flow from each node $\phi$. Then, there are two types of traffic models:
 \begin{itemize}
   \item \emph{The origin model:} Here, the blocks $x_\gamma$ have
