@@ -1,6 +1,7 @@
 % The parameters for the file system structure, etc.
 mode = 'SMALL'; % DEBUG, REAL, SMALL
 repeat = 1;
+cvx_solver mosek;
 
 user = getenv('USER');
 addpath 'lbfgsb-matlab/src';

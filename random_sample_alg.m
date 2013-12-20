@@ -72,8 +72,8 @@ function [max_a,max_errs] = random_sample_alg(p, iterations, prior, update)
         prob.blx = sparse(n, 1); % lower bound for variables
         prob.bux = []; % no upper bound for variables
 
-        param.MSK_IPAR_OPTIMIZER = 'MSK_OPTIMIZER_PRIMAL_SIMPLEX';
-        % param.MSK_IPAR_OPTIMIZER = 'MSK_OPTIMIZER_INTPNT';
+        % param.MSK_IPAR_OPTIMIZER = 'MSK_OPTIMIZER_PRIMAL_SIMPLEX';
+        param.MSK_IPAR_OPTIMIZER = 'MSK_OPTIMIZER_INTPNT';
         [r, res] = mosekopt('maximize echo(0)', prob, param);
         sol   = res.sol;
         a = sol.bas.xx;
