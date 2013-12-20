@@ -23,7 +23,6 @@
 
 \newcommand{\OO}{\mathcal{O}}
 \newcommand{\RR}{\mathcal{R}}
-\newcommand{\RN}{\R}
 
 \nipsfinalcopy
 
@@ -97,7 +96,8 @@ Cite a lot of stuff
 \section{Problem formulation and relaxations}
 \begin{figure}[t]
   \centering
-  \begin{subfigure}[h]{0.7\textwidth}
+  \begin{subfigure}[h]{0.8\textwidth}
+    \label{road-network-graph}
     \includegraphics[width=\textwidth]{figures/road-network-graph.pdf}
     \caption{A small example of a traffic network. Circles with letters inside
       are nodes. Straight arrows between them represent roads between the
@@ -105,15 +105,34 @@ Cite a lot of stuff
       destination node, and a set of connecting roads between them). The numbers
       on the arrows show the amount of flow through it.}
   \end{subfigure}
-  \begin{subfigure}[h]{0.7\textwidth}
+  \begin{subfigure}[h]{0.8\textwidth}
+    \label{road-network-matrix}
     \includegraphics[width=\textwidth]{figures/road-network-matrix.pdf}
     \caption{An excerpt of the compressed sensing problem resulting from the
       above graph. The italicized numbers are unknown, assumed to be sparse,
       and to be inferred.}
   \end{subfigure}
   \caption{Illustration of traffic model and corresponding compressed sensing problem.}
+  \label{traffic-model-illustration}
 \end{figure}
+In this section, we explain how the problem of estimating the popularity of routes in the road network can be expressed within the compressed sensing framework.
 
+\subsection{Setting}
+We abstract the road network as consisting of a set of \emph{origins} connected by bidirectional roads.
+From each origin, people may travel to other origins by following connected roads until they reach their destination.
+Each unique tuple consisting of an origin, a destination, and a set of roads between them is a \emph{route}. 
+We model each route as having static amount of \emph{flow} on it, which represents the number of vehicles which travel on this route.
+While this model ignores the effects of travel time and variance in demand over the day, it is simple and we hope that it can be reasonably accurate.
+We assume that most routes have zero flow---given the large numbers of origins and destinations, and the variety of possible ways to travel between each pair of them, intuitively we would expect most of them to be unused.
+By summing the amount of flow on all routes which contain a particular road, we also obtain flows for all of the roads (one per direction per road).
+The sum of incoming flow at each node equals the sum of its outgoing flows.
+
+Our goal is to infer the amount of flow on each of the routes, given that we know the total amount of flow originating from each node and the flow on (a subset of) the roads in the network.
+In real life, we can measure the amount of traffic flowing on each road with low-cost sensors.
+We can also estimate the amount of flow from each origin using sources like cell tower logs.
+In the next subsection, we show how to represent this problem as a compressed sensing problem with a linear equality constraint.
+
+\subsection{Mathematical modeling}
 \begin{table}[htbp]
 \caption{Notation for the traffic estimation problem}
 \label{tab-notation}
@@ -126,23 +145,38 @@ $\OO$ & Set of origins. Its size $|\OO|$ is the number of zones. \\
 $\RR$ & Set of all routes $r\in \RR$\\
 $\RR^\gamma \subset\RR$ & Subset of routes starting at origin $\gamma\in\OO$ \\
 $\RR^{\gamma \lambda} \subset\RR$ & Subset of routes from $\gamma\in\OO$ to $\lambda\in \OO$ \\
+$\tilde{\mathcal{L}}$ & Set of all roads for which we have flow measurements. \\
 $b^\gamma$ & Flow (vehicle count) measured at origin $\gamma\in\OO$ \\
+$f_l$ & Flow (vehicle count) measured at road $l \in \tilde{\mathcal{L}}$ \\
 $n_\gamma$ & Number of routes from origin $\gamma\in \OO$\\
 $x_\gamma \in[0, 1]^{n_\gamma}$ & $x_{\gamma r}$ is the portion of flow $b^\gamma$ directed to route $r \in \RR^\gamma$ \\
 $A_{\gamma}$ & Corresponding blocks of $n_{\gamma}$ columns of $A$\\
 \bottomrule
 \end{tabular}
 \end{table}
+The main constraint is that the flow on a road must equal the sum of the flows on the routes which include that road.
+Using the notation from Table~\ref{tab-notation}, we can express this mathematically as \[
+  f_l = \sum_{\gamma \in \OO}\sum_{r \in \RR^\gamma}\sum_{l \in r} b^\gamma \cdot x_{\gamma r} \qquad \forall l \in \tilde{\mathcal{L}}.
+\]
+As these equalities only consist of linear operations, we can write this as a linear equation $Ax = b$ in the following way:
+\begin{itemize}
+  \item $A \in \R^{|\tilde{\mathcal{L}}| \times |\RR|}$ encodes the mapping from roads to routes. \\
+    $A_{lr} = \begin{cases} b^\gamma & \text{if }l \in r \\ 0 & \text{otherwise} \end{cases}$
+    where $\gamma$ is defined such that $r \in \RR^\gamma$.
+  \item $x \in \R^{|\RR|}$ are the flows on each route. \\
+    Since the $x_\gamma$ are defined to be fractions of the flow from $\gamma$, we need $\sum x_\gamma = 1$.
+  \item $b \in \R^{|\tilde{\mathcal{L}}|}$ are the flows on each road.
+    Each row corresponds to the same road as in $A$.
+\end{itemize}
+
 
 \paragraph{Losses.} (do we need to define these?)
-
 \begin{tabular}{cl}
 $l(\alpha, \hat\alpha) = \norm{\hat\alpha - \alpha}_2$ & Loss/error of the estimated split vectors $\alpha$ in $\ell^2$ norm \\
 $l'(\alpha, \hat\alpha) = \norm{\hat\alpha - \alpha}_1$ & Loss/error of the estimated split vectors $\alpha$ in $\ell^1$ norm \\
 $l^*(\alpha, \hat \alpha) = \sum_{i}|1_{(\hat{\alpha}_i > 0)} - 1_{(\alpha_i > 0)}|.$ & Loss/error of the estimated split vectors $\alpha$ with respect to support recovery
 \end{tabular}
 
-\subsection{Mathematical modeling}
 \begin{equation}\label{l0-minimization}
   \begin{split}
     \text{minimize} &\quad \norm{x}_0\\
@@ -228,17 +262,18 @@ A_i^T = &-\begin{pmatrix} e_i - e_{1} & \dots & e_i - e_{i-1} & e_i - e_{i+1} & 
 \end{align*}
 holds for all $i = 1\dots n$ (this should be easy for Gaussians cause of symmetry again) OR we say for $i = i^*$ (weaker but $\alpha$-dependent), then $\alpha^*$ is the unique solution to the problem \eqref{Mert_LP}.
 \end{theorem}
+
 For the proof we are going to use a simple corollary of Farkas lemma:
 \begin{lemma}
-\label{Farkas_Corollary}
-One of the two systems has a solution with $B \in \RN^{l\times n}, A\in \RN^{m\times n}$:
-\begin{align*}
-\text{System 1}: & Ax \leq 0, Bx = 0, c^Tx >0\:\: x\in \RN^n\\
-\text{System 2}: & A^T y + B^T z = c, y\geq 0\:\: y\in \RN^m, z\in \RN^l
-\end{align*}
+  \label{Farkas_Corollary}
+  One of the two systems has a solution with $B \in \R^{l\times n}, A\in \R^{m\times n}$:
+  \begin{align*}
+    \text{System 1}: & Ax \leq 0, Bx = 0, c^Tx >0\:\: x\in \R^n\\
+    \text{System 2}: & A^T y + B^T z = c, y\geq 0\:\: y\in \R^m, z\in \R^l
+  \end{align*}
 \end{lemma}
 \begin{proof}
-In the system 2, rewrite $B^T z = B^T (z_1 - z_2)$ with $z_1,z_2 \geq 0$, then use Farkas' lemma. 
+  In the system 2, rewrite $B^T z = B^T (z_1 - z_2)$ with $z_1,z_2 \geq 0$, then use Farkas' lemma. 
 \end{proof}
 
 \begin{proof}[of Theorem]
