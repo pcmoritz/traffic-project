@@ -1,5 +1,5 @@
 % The parameters for the file system structure, etc.
-mode = 'SMALL'; % DEBUG, REAL, SMALL
+mode = 'SMALL'; % DEBUG, REAL, SMALL, PHASE_TRANSITION
 repeat = 1;
 cvx_solver mosek;
 
@@ -32,6 +32,11 @@ tests = {'cvx_unconstrained_L1', 'cvx_L2', 'cvx_weighted_L1'}; %'cvx_L2',...
 % tests = {'cvx_random_sample_min_cardinality'};
 tests = {'cvx_rs_constant_L1L2plus_noupdate'};
 % tests = {'cvx_rs_constant_L1uniform_noupdate_test'};
+
+if strcmp(mode, 'PHASE_TRANSITION') == 1
+    tests = {'cvx_unconstrained_L1'};
+    tests = {'cvx_random_sample_L_infty_hot_start_update'}
+end
 
 algo_names = containers.Map();
 algo_names('cvx_L2') = 'constrained L2';

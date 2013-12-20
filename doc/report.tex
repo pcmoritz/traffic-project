@@ -96,7 +96,7 @@ Cite a lot of stuff
 \section{Problem formulation and relaxations}
 \begin{figure}[t]
   \centering
-  \begin{subfigure}[h]{0.8\textwidth}
+  \begin{subfigure}[h]{0.7\textwidth}
     \includegraphics[width=\textwidth]{figures/road-network-graph.pdf}
     \caption{A small example of a traffic network. Circles with letters inside
       are nodes. Straight arrows between them represent roads between the
@@ -104,7 +104,7 @@ Cite a lot of stuff
       destination node, and a set of connecting roads between them). The numbers
       on the arrows show the amount of flow through it.}
   \end{subfigure}
-  \begin{subfigure}[h]{0.8\textwidth}
+  \begin{subfigure}[h]{0.7\textwidth}
     \includegraphics[width=\textwidth]{figures/road-network-matrix.pdf}
     \caption{An excerpt of the compressed sensing problem resulting from the
       above graph. The italicized numbers are unknown, assumed to be sparse,
@@ -204,23 +204,26 @@ In \cite{mert} it was observed that for probability measures $x$ we have $1 = \n
 Let $p^*$ denote the minimum value of $\norm{x}_0$ over $Ax = b$, we then consider the relaxation
 \begin{equation}\label{l8-recovery}
   \begin{array}{rcllllr}
-  p^* \geq& p_\infty^* &= \min\limits_x\, \norm{x}_\infty^{-1}&\text{such that $Ax = b$, $1^\T x = 1$}\quad \text{and}\\[5pt]
-  &1/p_\infty^* &= \max\limits_{i=1,\dots,n} \max\limits_{x}\,x_i&\text{such that $Ax = b$, $1^\T x = 1$.}
+  p^* \geq& p_\infty^* &= \min\limits_{x\geq 0}\, \norm{x}_\infty^{-1}&\text{such that $Ax = b$, $1^\T x = 1$}\quad \text{and}\\[5pt]
+  &1/p_\infty^* &= \max\limits_{i=1,\dots,n} \max\limits_{x\geq 0}\,x_i&\text{such that $Ax = b$, $1^\T x = 1$.}
   \end{array}
+\end{equation}
+For the linear program, strong duality holds (because $x^*$ is feasible) and the dual is given by
+\begin{equation}\label{l8-recovery-dual}
+  (p_\infty^*)^{-1} = \max_{i=1,\dots,n} \left(\min_{w,\lambda} w^\T b + \lambda : A^\T w + \lambda 1 \geq e_i\right).
 \end{equation}
 
 Similar to the null space property one can come up with dual witness results which 
 \begin{theorem}
 \label{Maxmax_Oneblock}
-Assume that $\alpha^*$ is the unique $k$-sparse solution and $i^* = \argmax_i \alpha^*_i$ with support $S$. If(f?)
+Assume that $x^*$ is the unique $k$-sparse solution of \eqref{l0-minimization}, $S$ is the support of $x^*$ and $i^* = \arg\max_i x^*_i$. If
 \begin{align*}
 % \label{Maxrecovery_condition_Farkas}
-\max_{u,\lambda} \qquad &- u^T e_i \:\: \leq 0\\
-\text{s.t.} \qquad& \begin{pmatrix} A_i\\ B_i \end{pmatrix} u = \begin{pmatrix} \lambda \\ 0\end{pmatrix}\\
+\min_{u,\lambda: Au = 0, 1^\T u = 0} \qquad & u_i \:\: \geq 0\\
+\text{s.t.} \qquad& A_i u = \lambda\\
 A_i^T = &-\begin{pmatrix} e_i - e_{1} & \dots & e_i - e_{i-1} & e_i - e_{i+1} & \dots & e_i - e_j & I\\
 0 & 0 & 0&0&0&0& I
-\end{pmatrix}\\
-B_i^T = &\begin{pmatrix} \Phi^T & 1\end{pmatrix} 
+\end{pmatrix}
 \end{align*}
 holds for all $i = 1\dots n$ (this should be easy for Gaussians cause of symmetry again) OR we say for $i = i^*$ (weaker but $\alpha$-dependent), then $\alpha^*$ is the unique solution to the problem \eqref{Mert_LP}.
 \end{theorem}
@@ -263,31 +266,35 @@ Note that this is a linear program and thus fairly easy to check.
 \subsection{Minimal cardinality selection.} 
 Instead of taking the maximum over $1\leq i\leq n$ in the linear program formulation of \eqref{l8-recovery}, we can take the solution with the lowest cardinality, thus solving
 \begin{align}
-\hat{x}_i &= \argmax_{1^Tx =1, x\geq 0} x_i : Ax  = b \label{min-cardinality}\\
-\hat{x}_{\min} &= \argmin_{i=1, \dots, n} \|\hat{x}_i\|_0 \nonumber
+\hat{x}_i &= \arg\max_{1^\T x =1, x\geq 0} x_i : Ax  = b \label{min-cardinality}\\
+\hat{x}_{\min} &= \arg\min_{i=1, \dots, n} \|\hat{x}_i\|_0. \nonumber
 \end{align}
-which has also been proposed in \cite{mert}.
+This has also been proposed in \cite{mert}. We then have the following primal sufficient condition for recovery using this method.
 
 \begin{lemma} \label{thm:linftyunique}
-Given that $x^*$ is the unique k-sparse solution and
+If $x^*$ is the unique $k$-sparse solution to \eqref{l0-minimization} and
 \begin{equation*}
-\min_{1^Tx = 1, y\geq 0, 1^Ty =1} x_i \qquad \text{s.t. } A_S x = A_{S^C} y \qquad>0
+\min_{1^Tx = 1, y\geq 0, 1^Ty =1} x_i : A_S x = A_{S^c} y \qquad>0,
 \end{equation*}
-for one $i \in S$ (in the support of $x$), where $S^C$ is the set of indeces for the columns not in the support $S$, then the (inner $i$-th) convex linear program has a unique solution $x^*$
+the vector $x^*$ can be recovered as the unique solution of the linear program
+\begin{equation}\label{i-lp}
+  \max_{1^\T x = 1, x\geq 0} x_i : Ax = b.
+\end{equation}
+
 \end{lemma}
-\begin{proof}
-The proof follows \cite{mert}.
-First we show that whenever there exists a $(\lambda, w)$ such that
+\begin{proof} \cite{mert}
+First we show that the existence of a pair $(\lambda, w)$ with
 \begin{align}
-\Phi^T_{S}w + \lambda 1 &= e_i \label{First_eq}\\
-\Phi^T_{S^c}w + \lambda 1 &>0 \label{Second_eq}
+A^\T_{S}w + \lambda 1 &= e_i \label{First_eq}\\
+A^\T_{S^c}w + \lambda 1 &>0 \label{Second_eq}
 \end{align}
-then the support of the solution of the linear program coincides with the support of the original $x^*$. For this purpose we simply write down the dual Lagrangian of \eqref{Mert_LP} which reads
+implies that the support of the solution of \eqref{i-lp} coincides with the support of the original $x^*$. The dual Lagrangian of \eqref{min-cardinality} is
 \begin{align*}
-&\min_{w,\lambda} w^Tf + \lambda +  \max_{x\geq 0} (e_i- \Phi^Tw - \lambda 1)^T x\\
-= &\min_{w,\lambda} w^Tf + \lambda + \max_{x\geq 0} (e_i- \Phi_S^Tw - \lambda 1)^T x_S + (- \Phi_{S^c}^Tw - \lambda 1)^T x_{S^c}
+%&\min_{w,\lambda} w^\T b + \lambda +  \max_{x\geq 0}\,(e_i- A^\T w - \lambda 1)^\T x = \\
+&\min_{w,\lambda} w^\T b + \lambda + \max_{x\geq 0} (e_i- A_S^\T w - \lambda 1)^\T x_S + (-A_{S^c}^\T w - \lambda 1)^\T x_{S^c}
 \end{align*}
-From this formulation we can see that if \eqref{Second_eq} holds, then $x_{S^c}$ must be chosen as zero. If \eqref{First_eq} holds, then $x_S$ can have arbitrary values - together the two conditions thus guarantee support recovery. 
+If \eqref{Second_eq}, $x_{S^c}=0$ and if \eqref{First_eq}, $x_S>0$ by complementary slackness, we thus have support recovery.
+%. If \eqref{First_eq} holds, then $x_S$ can have arbitrary values - together the two conditions thus guarantee support recovery. 
 
 Now it remains to show how to arrive from these two conditions to the sufficiency of the assumption in the theorem. Now the dual of the condition in the theorem reads
 \begin{align*}
@@ -338,7 +345,7 @@ so that we can arrive at the following linear programming
 \begin{equation}\label{block-l8-recovery}
   \begin{array}{rcllllr}
   p^* \geq& p_\infty^* &= \min\limits_x\, \sum_{\gamma = 1}^b\norm{x_{\gamma}}_\infty^{-1}&\text{such that $Ax = b$, $x\in \mathcal B_n^k$}\quad \text{and}\\[5pt]
-  &1/p_\infty^* &= \max\limits_{\overset{i_{\gamma} = 1, \dots, n_{\gamma}}{\forall \gamma = 1,\dots, b}} \max\limits_{x}\, \sum_{\gamma=1}^b x_{i_\gamma}&\text{such that $Ax = b$ and $x\in \mathcal B_n^k$.}
+  &1/p_\infty^* &= \max\limits_{\substack{i_{\gamma} = 1, \dots, n_{\gamma}\\\forall \gamma = 1,\dots, b}} \max\limits_{x}\, \sum_{\gamma=1}^b x_{i_\gamma}&\text{such that $Ax = b$ and $x\in \mathcal B_n^k$.}
   \end{array}
 \end{equation} 
 
@@ -352,9 +359,9 @@ We can, analogous to \eqref{min-cardinality}, solve the following program
 \end{align}
 We can provide a simple extension to the above condition in Lemma \ref{thm:linftyunique}.
 \begin{lemma} \label{thm:linftyunique_block}
-Given that $x^*$ is the unique sparse solution and 
+If $x^*$ is the unique sparse solution and 
 \begin{equation*}
-\min_{\overset{1^Tx_{\gamma} = 1, y_{\gamma} \geq 0}{1^Ty_{\gamma} =1 \forall \gamma}} \sum_{\gamma =1}^b x_{i_{\gamma}} \qquad \text{s.t. } \Phi_S x = \Phi_{S^C} y \qquad>0
+\min_{\substack{1^Tx_{\gamma} = 1, y_{\gamma} \geq 0\\1^Ty_{\gamma} =1\, \forall \gamma}} \sum_{\gamma =1}^b x_{i_{\gamma}} \qquad \text{s.t. } \Phi_S x = \Phi_{S^C} y \qquad>0
 \end{equation*}
 for one tuple $i = (i_1, \dots, i_n)$ (in the support of $x$), where $S^c$ is the set of indeces for the columns not in the support $S$, then the (inner $i$-th) convex linear program in B-LRP has a unique solution $x^*$
 \end{lemma}
