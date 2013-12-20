@@ -3,3 +3,9 @@
 *.mat
 .DS_Store
 *.fig
+data-local/
+*.aux
+*.bbl
+*.log
+*.out
+*.blg
