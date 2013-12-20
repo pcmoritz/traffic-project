@@ -76,7 +76,7 @@ no_algos = length(choice_algos_ind);
 %disp(fprintf('\n Generated sparsity sizes:'));
 %disp(sparsity_sizes);
 %plot_sparsity = input('Type in a sparsity range e.g. [0.1 0.2]');
-plot_sparsity = [0.1 0.2];
+plot_sparsity = [0.03 0.07];
 
 % Let user choose no blocks and variables and constraints to plot
 if strcmp(plot_type,'random')
@@ -321,7 +321,7 @@ end
 
 
 %% Create Mat runtime vs. size
-plotting_rt_vs_sz(no_sizes, no_algos, algos_cell, size_xaxis_rt, dimvalue_descrip_rt, choice_algos, char(model_name), prefix, colorsmatrix);
+%plotting_rt_vs_sz(no_sizes, no_algos, algos_cell, size_xaxis_rt, dimvalue_descrip_rt, choice_algos, char(model_name), prefix, colorsmatrix);
 %{
 %% Create Mat runtime vs. sparsity
 
