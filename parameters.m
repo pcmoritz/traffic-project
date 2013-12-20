@@ -1,5 +1,6 @@
 % The parameters for the file system structure, etc.
-mode = 'REAL'; % DEBUG, REAL, SMALL
+mode = 'SMALL'; % DEBUG, REAL, SMALL
+repeat = 1;
 
 user = getenv('USER');
 addpath 'lbfgsb-matlab/src';
@@ -28,6 +29,8 @@ tests = {'cvx_unconstrained_L1', 'cvx_L2', 'cvx_weighted_L1'}; %'cvx_L2',...
     %'cvx_hot_start_lp', 'cvx_block_descent_L_infty', ...
 % tests = {'cvx_elastic_net'};
 % tests = {'cvx_random_sample_min_cardinality'};
+tests = {'cvx_rs_constant_L1L2plus_noupdate'};
+% tests = {'cvx_rs_constant_L1uniform_noupdate_test'};
 
 algo_names = containers.Map();
 algo_names('cvx_L2') = 'constrained L2';
@@ -113,7 +116,9 @@ end
 
 if strcmp(mode,'SMALL') == 1
     p = matrix_sizes('random');
-    matrix_sizes('random') = p(1:10,:);
+    % matrix_sizes('random') = [155 10 100 max(10, floor(10 * 100 * 0.06))];
+    matrix_sizes('random') = [175 10 100 max(10, floor(10 * 100 * 0.06))];
+    repeat = 10;
 end
 
 % Run subset of modes we care about to reduce computation time
