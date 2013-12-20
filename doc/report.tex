@@ -23,7 +23,6 @@
 
 \newcommand{\OO}{\mathcal{O}}
 \newcommand{\RR}{\mathcal{R}}
-\newcommand{\RN}{\R}
 
 \nipsfinalcopy
 
@@ -111,6 +110,7 @@ Cite a lot of stuff
 \begin{figure}[t]
   \centering
   \begin{subfigure}[h]{0.8\textwidth}
+    \label{road-network-graph}
     \includegraphics[width=\textwidth]{figures/road-network-graph.pdf}
     \caption{A small example of a traffic network. Circles with letters inside
       are nodes. Straight arrows between them represent roads between the
@@ -119,14 +119,33 @@ Cite a lot of stuff
       on the arrows show the amount of flow through it.}
   \end{subfigure}
   \begin{subfigure}[h]{0.8\textwidth}
+    \label{road-network-matrix}
     \includegraphics[width=\textwidth]{figures/road-network-matrix.pdf}
     \caption{An excerpt of the compressed sensing problem resulting from the
       above graph. The italicized numbers are unknown, assumed to be sparse,
       and to be inferred.}
   \end{subfigure}
   \caption{Illustration of traffic model and corresponding compressed sensing problem.}
+  \label{traffic-model-illustration}
 \end{figure}
+In this section, we explain how the problem of estimating the popularity of routes in the road network can be expressed within the compressed sensing framework.
 
+\subsection{Setting}
+We abstract the road network as consisting of a set of \emph{origins} connected by bidirectional roads.
+From each origin, people may travel to other origins by following connected roads until they reach their destination.
+Each unique tuple consisting of an origin, a destination, and a set of roads between them is a \emph{route}. 
+We model each route as having static amount of \emph{flow} on it, which represents the number of vehicles which travel on this route.
+While this model ignores the effects of travel time and variance in demand over the day, it is simple and we hope that it can be reasonably accurate.
+We assume that most routes have zero flow---given the large numbers of origins and destinations, and the variety of possible ways to travel between each pair of them, intuitively we would expect most of them to be unused.
+By summing the amount of flow on all routes which contain a particular road, we also obtain flows for all of the roads (one per direction per road).
+The sum of incoming flow at each node equals the sum of its outgoing flows.
+
+Our goal is to infer the amount of flow on each of the routes, given that we know the total amount of flow originating from each node and the flow on (a subset of) the roads in the network.
+In real life, we can measure the amount of traffic flowing on each road with low-cost sensors.
+We can also estimate the amount of flow from each origin using sources like cell tower logs.
+In the next subsection, we show how to represent this problem as a compressed sensing problem with a linear equality constraint.
+
+\subsection{Mathematical modeling}
 \begin{table}[htbp]
 \caption{Notation for the traffic estimation problem}
 \label{tab-notation}
@@ -139,81 +158,58 @@ $\OO$ & Set of origins. Its size $|\OO|$ is the number of zones. \\
 $\RR$ & Set of all routes $r\in \RR$\\
 $\RR^\gamma \subset\RR$ & Subset of routes starting at origin $\gamma\in\OO$ \\
 $\RR^{\gamma \lambda} \subset\RR$ & Subset of routes from $\gamma\in\OO$ to $\lambda\in \OO$ \\
+$\tilde{\mathcal{L}}$ & Set of all roads for which we have flow measurements. \\
 $b^\gamma$ & Flow (vehicle count) measured at origin $\gamma\in\OO$ \\
+$f_l$ & Flow (vehicle count) measured at road $l \in \tilde{\mathcal{L}}$ \\
 $n_\gamma$ & Number of routes from origin $\gamma\in \OO$\\
 $x_\gamma \in[0, 1]^{n_\gamma}$ & $x_{\gamma r}$ is the portion of flow $b^\gamma$ directed to route $r \in \RR^\gamma$ \\
 $A_{\gamma}$ & Corresponding blocks of $n_{\gamma}$ columns of $A$\\
 \bottomrule
 \end{tabular}
 \end{table}
+The main constraint is that the flow on a road must equal the sum of the flows on the routes which include that road.
+Using the notation from Table~\ref{tab-notation}, we can express this mathematically as \[
+  f_l = \sum_{\gamma \in \OO}\sum_{r \in \RR^\gamma}\sum_{l \in r} b^\gamma \cdot x_{\gamma r} \qquad \forall l \in \tilde{\mathcal{L}}.
+\]
+As these equalities only consist of linear operations, we can write this as a linear equation $Ax = b$ in the following way:
+\begin{itemize}
+  \item $A \in \R^{|\tilde{\mathcal{L}}| \times |\RR|}$ encodes the mapping from roads to routes. \\
+    $A_{lr} = \begin{cases} b^\gamma & \text{if }l \in r \\ 0 & \text{otherwise} \end{cases}$
+    where $\gamma$ is defined such that $r \in \RR^\gamma$.
+  \item $x \in \R^{|\RR|}$ are the flows on each route. \\
+    Since the $x_\gamma$ are defined to be fractions of the flow from $\gamma$, we need $\sum x_\gamma = 1$.
+  \item $b \in \R^{|\tilde{\mathcal{L}}|}$ are the flows on each road.
+    Each row corresponds to the same road as in $A$.
+\end{itemize}
 
-\paragraph{Losses.} (do we need to define these?)
 
-\begin{tabular}{cl}
-$l(\alpha, \hat\alpha) = \norm{\hat\alpha - \alpha}_2$ & Loss/error of the estimated split vectors $\alpha$ in $\ell^2$ norm \\
-$l'(\alpha, \hat\alpha) = \norm{\hat\alpha - \alpha}_1$ & Loss/error of the estimated split vectors $\alpha$ in $\ell^1$ norm \\
-$l^*(\alpha, \hat \alpha) = \sum_{i}|1_{(\hat{\alpha}_i > 0)} - 1_{(\alpha_i > 0)}|.$ & Loss/error of the estimated split vectors $\alpha$ with respect to support recovery
-\end{tabular}
-
-\subsection{Mathematical modeling}
 \begin{equation}\label{l0-minimization}
   \begin{split}
     \text{minimize} &\quad \norm{x}_0\\
     \text{subject to} &\quad Ax = b,\quad x\geq 0\quad \text{and}\quad 1^\T x_{\gamma} = 1\quad \forall \gamma=1,\dots, b
   \end{split}
 \end{equation}
+where we assume that $x$ is the unique $k$-sparse solution. Some conditions on the matrices in order for these to hold are presented in Section \ref{!!!}.
 
 \subsection{One block relaxations}
-We first consider the one-block case $\gamma = 1$. 
-This problem can be solved if the original signal is the unique sparse solution. The following theorem gives conditions when this is the case. To show that the original vector is actually the unique sparsest one, we use the following theorem from \cite{Dahmen_CS}.
-\begin{theorem}
-\label{thm:l0unique}
-Let $A \in \R^{m\times n}$ and $x\in\R^n$ be $s$-sparse. In the case
-$m\geq 2k$, the problem $Ax = b$ can be recovered if and only if
-\begin{compactenum}[(a)]
-\item the set $\Sigma_{2k}$ of $2k$-sparse vectors intersects with the null space of the matrix $A$ only at the singleton $\{0\}$ (see also section 2 of \cite{Dahmen_CS}).
-\item For any subset $S$ with $|S| = 2k$, the matrix $A_S$ has rank $2k$ and
-\item $A_S^\T A_S$ is invertible.
-\end{compactenum}
-\end{theorem}
-For deterministic matrices this is hard to check.
+\label{Relaxations}
 
-However this program is not solvable in polynomial time because it is combinatorically hard problem.Therefore in the past decade there has been a lot of work done linked to Compressed Sensing in order to come up with convex relaxations of the $\ell^0$ norm minimization which the $\ell^1$ norm minimization and to find conditions for which solving the approximation/relaxation work.
+However this program is not solvable in polynomial time because it is combinatorically hard problem.Therefore in the past decade there has been a lot of work done linked to Compressed Sensing in order to come up with convex relaxations of the $\ell^0$ norm minimization which the $\ell^1$ norm minimization and to find conditions for which solving the approximation/relaxation works.
 \begin{equation}\label{l1-minimization}
   \begin{split}
     \text{minimize} &\quad \norm{x}_1\\
     \text{subject to} &\quad Ax = b,\quad x\geq 0
   \end{split}
 \end{equation}
-In the matrix
 
-Such conditions are for example the necessary and sufficient (Restricted) Nullspace property/restricted eigenvalue property and the sufficient restriced isometry property. 
-\begin{theorem}[Null space property]
-If a matrix $A \in \R^{m\times n}$ satisfies the null space property, i.e. for all subsets $S \subset [n]$ with $|S| = k$ we have that
-\begin{equation*}
-\|h_S\|_1 < \|h_{S^c}\|_1 \text{ for all } h\in\null A \ \{0\},
-\end{equation*}
-then every $k$-sparse vector $x \in \R^n$ can be recovered by \eqref{l1-minimization}, which has a unique solution.
-\end{theorem}
-\begin{proof}
-See proof of Theorem 2.3. in \cite{Rauhut}.
-\end{proof}
+Such conditions are for example the necessary and sufficient (Restricted) Nullspace property/restricted eigenvalue property and the sufficient restricted isometry property (see Section \ref{!!!}).
+For deterministic matrices these are not checkable in polynomial time, see \cite{DonohoCheckable}. But for random matrices with Gaussian entries these hold with high probability. 
 
-For deterministic matrices these are not checkable in polynomial time, see \cite{DonohoCheckable}. But for random matrices with Gaussian entries this holds with high probability. For deterministic measurement matrices as in the case of our traffic matrices, there are other conditions like mutual coherence, see e.g. \cite{Fuchs}, which are much easier to check.
+??? Maybe put in: Outlook There have also been results for binary sparse matrices which are adjacent matrices of Expander Graphs (see for example \cite{Indyk_Unified}). ???
 
-\begin{theorem}[Incoherence]
-
-\end{theorem}
-
-However our matrices are not incoherent. Also, note that in our case of a positive vector which sums to one, i.e. the $\ell^1$ constraint is already known. Unless the $k$-sparse probability measure $x^*$ is the unique solution of \eqref{l1-minimization}, we thus have to come up with a different regularization scheme to achieve strong recovery results. In the literature, this problem has been discussed as recovering probability measures. 
+However our matrices are neither Gaussian nor incoherent. Also, note that in our case of a positive vector which sums to one, the $\ell^1$ constraint is already known. Unless the $k$-sparse probability measure $x^*$ is the unique solution of \eqref{l1-minimization}, we thus have to come up with a different regularization scheme to achieve strong recovery results. In the literature, this problem has been discussed as recovering probability measures. 
 
 In \cite{mert} it was observed that for probability measures $x$ we have $1 = \norm{x}_1 \leq \norm{x}_0\cdot \norm{x}_\infty$ and thus $\norm{x}_{\infty}^{-1}$ is a lower bound on the size of the support of $x$. This suggests trying to use the inverse $\ell^\infty$ norm as a proxy for sparsity.
-\begin{equation}\label{l8-minimization}
-  \begin{split}
-    \text{minimize} &\quad \frac{1}{\norm{x}_\infty}\\
-    \text{subject to} &\quad Ax = b,\quad x\geq 0\quad\text{and}\quad 1^\T x = 1
-  \end{split}
-\end{equation}
 
 Let $p^*$ denote the minimum value of $\norm{x}_0$ over $Ax = b$, we then consider the relaxation
 \begin{equation}\label{l8-recovery}
@@ -223,58 +219,6 @@ Let $p^*$ denote the minimum value of $\norm{x}_0$ over $Ax = b$, we then consid
   \end{array}
 \end{equation}
 
-Similar to the null space property one can come up with dual witness results which 
-\begin{theorem}
-\label{Maxmax_Oneblock}
-Assume that $\alpha^*$ is the unique $k$-sparse solution and $i^* = \argmax_i \alpha^*_i$ with support $S$. If(f?)
-\begin{align*}
-% \label{Maxrecovery_condition_Farkas}
-\max_{u,\lambda} \qquad &- u^T e_i \:\: \leq 0\\
-\text{s.t.} \qquad& \begin{pmatrix} A_i\\ B_i \end{pmatrix} u = \begin{pmatrix} \lambda \\ 0\end{pmatrix}\\
-A_i^T = &-\begin{pmatrix} e_i - e_{1} & \dots & e_i - e_{i-1} & e_i - e_{i+1} & \dots & e_i - e_j & I\\
-0 & 0 & 0&0&0&0& I
-\end{pmatrix}\\
-B_i^T = &\begin{pmatrix} \Phi^T & 1\end{pmatrix} 
-\end{align*}
-holds for all $i = 1\dots n$ (this should be easy for Gaussians cause of symmetry again) OR we say for $i = i^*$ (weaker but $\alpha$-dependent), then $\alpha^*$ is the unique solution to the problem \eqref{Mert_LP}.
-\end{theorem}
-For the proof we are going to use a simple corollary of Farkas lemma:
-\begin{lemma}
-\label{Farkas_Corollary}
-One of the two systems has a solution with $B \in \RN^{l\times n}, A\in \RN^{m\times n}$:
-\begin{align*}
-\text{System 1}: & Ax \leq 0, Bx = 0, c^Tx >0\:\: x\in \RN^n\\
-\text{System 2}: & A^T y + B^T z = c, y\geq 0\:\: y\in \RN^m, z\in \RN^l
-\end{align*}
-\end{lemma}
-\begin{proof}
-In the system 2, rewrite $B^T z = B^T (z_1 - z_2)$ with $z_1,z_2 \geq 0$, then use Farkas' lemma. 
-\end{proof}
-
-\begin{proof}[of Theorem]
-Whenever the system for none of the $i$ following systems has a solution $(\alpha,h)$, then we can recover all sparse probability measures $\alpha$ which is the solution to \eqref{Mert_LP} 
-\begin{align*}
-e_i^T\alpha &\geq e_j^T \alpha \:\: \forall j \in S\\
-\alpha + h &\geq 0\\
-e_i^T h &> 0\\
-\begin{pmatrix}\Phi\\ 1^T\end{pmatrix} h &= 0
-\end{align*}
-We can now use Lemma \ref{Farkas_Corollary} which then gives the following feasibility condition (for all $i$ there must exist  $(y,z)$ which fulfill)
-\begin{align*}
-% \label{Maxrecovery_condition_Feasibility}
-y_i &\geq 0\\
-A_i^Ty + B_i^T z &= e_i
-\end{align*}
-Regard this as a convex optimization problem with minimization over $0$. If it is feasible then the objective value will remain 0. Now consider the dual problem which yields
-\begin{align*}
-% \label{Maxrecovery_condition_Dual}
-\max_{u,\lambda} \qquad &- u^T e_i\:\: \leq 0\\
-\text{s.t.} \qquad& \begin{pmatrix} A_i\\ B_i \end{pmatrix} u = \begin{pmatrix} \lambda \\ 0\end{pmatrix}
-\end{align*}
-Note that this is a linear program and thus fairly easy to check. 
-\end{proof}
-
-\subsection{Minimal cardinality selection.} 
 Instead of taking the maximum over $1\leq i\leq n$ in the linear program formulation of \eqref{l8-recovery}, we can take the solution with the lowest cardinality, thus solving
 \begin{align}
 \hat{x}_i &= \argmax_{1^Tx =1, x\geq 0} x_i : Ax  = b \label{min-cardinality}\\
@@ -282,40 +226,6 @@ Instead of taking the maximum over $1\leq i\leq n$ in the linear program formula
 \end{align}
 which has also been proposed in \cite{mert}.
 
-\begin{lemma} \label{thm:linftyunique}
-Given that $x^*$ is the unique k-sparse solution and
-\begin{equation*}
-\min_{1^Tx = 1, y\geq 0, 1^Ty =1} x_i \qquad \text{s.t. } A_S x = A_{S^C} y \qquad>0
-\end{equation*}
-for one $i \in S$ (in the support of $x$), where $S^C$ is the set of indeces for the columns not in the support $S$, then the (inner $i$-th) convex linear program has a unique solution $x^*$
-\end{lemma}
-\begin{proof}
-The proof follows \cite{mert}.
-First we show that whenever there exists a $(\lambda, w)$ such that
-\begin{align}
-\Phi^T_{S}w + \lambda 1 &= e_i \label{First_eq}\\
-\Phi^T_{S^c}w + \lambda 1 &>0 \label{Second_eq}
-\end{align}
-then the support of the solution of the linear program coincides with the support of the original $x^*$. For this purpose we simply write down the dual Lagrangian of \eqref{Mert_LP} which reads
-\begin{align*}
-&\min_{w,\lambda} w^Tf + \lambda +  \max_{x\geq 0} (e_i- \Phi^Tw - \lambda 1)^T x\\
-= &\min_{w,\lambda} w^Tf + \lambda + \max_{x\geq 0} (e_i- \Phi_S^Tw - \lambda 1)^T x_S + (- \Phi_{S^c}^Tw - \lambda 1)^T x_{S^c}
-\end{align*}
-From this formulation we can see that if \eqref{Second_eq} holds, then $x_{S^c}$ must be chosen as zero. If \eqref{First_eq} holds, then $x_S$ can have arbitrary values - together the two conditions thus guarantee support recovery. 
-
-Now it remains to show how to arrive from these two conditions to the sufficiency of the assumption in the theorem. Now the dual of the condition in the theorem reads
-\begin{align*}
-&d^* = \max_{u,v} u -v +\min_{y\geq 0} (e_i^T - \lambda^T\Phi_S - u1^T) x + (\lambda^T \Phi_{S^c} + v1^T) y\: >0\\
-\implies &\max_{u,v} u-v \:  \text{ s.t. } e_i - \Phi_S^T \lambda - u1 = 0 \wedge \Phi_{S^c}^T \lambda + v1\geq 0 \:\: >0
-\end{align*}
-Here we use that strong duality holds since we assume the problem is feasible. This is because we know that the original $x^*$ satisfies the condition $\Phi_S x = f$. 
-Given the condition holds, then for some $u>v$ we will have a feasible dual problem which means that there is a $u$ such that 
-\begin{align*}
- \Phi_S^T \lambda +u1 &= e_i\\
-\Phi_{S^c}^T \lambda + u1 &> 0 
-\end{align*}
-This is because $1$ is positive so that if you plug in $v+\epsilon = u$ you will get strict inequality for all entries. 
-\end{proof}
 
 \subsection{Block $\ell^\infty$ regularization}
 
@@ -341,14 +251,14 @@ As before, we need a convex relaxation for this problem. We could ignore the blo
 \sum_{\gamma}\|x_{\gamma}\|_0 \geq \sum_{\gamma=1}^n\frac{1}{\|x_{\gamma}\|_{\infty}} \geq \frac{b}{\|x\|_{\infty}}
 \end{equation*}
 suggests that using ... would be a better idea to solve the problem
-\begin{equation}
-\label{block-relaxation}
-  \begin{split}
-    &\text{minimize}\quad \textstyle\sum_{\gamma=1}^b {\norm{x_\gamma}_\infty^{-1}}\\
-    &\text{subject to}\quad Ax = b\quad\text{and}\quad x\in \mathcal B_n^k.
-  \end{split}
-\end{equation}
-so that we can arrive at the following linear programming
+%% \begin{equation}
+%% \label{block-relaxation}
+%%   \begin{split}
+%%     &\text{minimize}\quad \textstyle\sum_{\gamma=1}^b {\norm{x_\gamma}_\infty^{-1}}\\
+%%     &\text{subject to}\quad Ax = b\quad\text{and}\quad x\in \mathcal B_n^k.
+%%   \end{split}
+%% \end{equation}
+%% so that we can arrive at the following linear programming
 \begin{equation}\label{block-l8-recovery}
   \begin{array}{rcllllr}
   p^* \geq& p_\infty^* &= \min\limits_x\, \sum_{\gamma = 1}^b\norm{x_{\gamma}}_\infty^{-1}&\text{such that $Ax = b$, $x\in \mathcal B_n^k$}\quad \text{and}\\[5pt]
@@ -356,27 +266,66 @@ so that we can arrive at the following linear programming
   \end{array}
 \end{equation} 
 
-The question is again when equality $p^* = p^*_{\infty}$ holds. 
-
-\paragraph{Block minimal cardinality selection}
-We can, analogous to \eqref{min-cardinality}, solve the following program
+%The question is again when equality $p^* = p^*_{\infty}$ holds. 
+Again,  analogous to \eqref{min-cardinality}, solve the following program
 \begin{align}
 \hat{x}_i &=  \argmax\limits_{x}\, \sum_{\gamma=1}^b x_{i_\gamma} \quad \text{ s.t. } Ax = b \text{ and } x\in \mathcal B_n^k \label{block-min-cardinality}\\
 \hat{x}_{\min} &= \argmin\limits_{i} \|\hat{x}_i\|_0. \nonumber
 \end{align}
-We can provide a simple extension to the above condition in Lemma \ref{thm:linftyunique}.
-\begin{lemma} \label{thm:linftyunique_block}
-Given that $x^*$ is the unique sparse solution and 
-\begin{equation*}
-\min_{\overset{1^Tx_{\gamma} = 1, y_{\gamma} \geq 0}{1^Ty_{\gamma} =1 \forall \gamma}} \sum_{\gamma =1}^b x_{i_{\gamma}} \qquad \text{s.t. } \Phi_S x = \Phi_{S^C} y \qquad>0
-\end{equation*}
-for one tuple $i = (i_1, \dots, i_n)$ (in the support of $x$), where $S^c$ is the set of indeces for the columns not in the support $S$, then the (inner $i$-th) convex linear program in B-LRP has a unique solution $x^*$
-\end{lemma}
-\begin{proof}
-The proof is along the same lines as in Lemma \ref{thm:linftyunique}.
-\end{proof}
 
 Like in Compressed Sensing, in general the above conditions are hard to check. Therefore we will give guarantees about Gaussian random matrices for solving the unconstrained $\ell^1$ and $\ell^\infty$ regularization for our probability recovery problem and shortly discuss the block case.
+
+\section{Guarantees for sparse recovery}
+To guarantee exact sparse recovery, the following procedure will be used: First, assuming that the original vector~$x^*$ is actually the sparsest solution to~\eqref{l0-minimization}. Then, we prove that the solution of the relaxed problems~\eqref{l1-minimization} and~\eqref{l8-minimization} are unique and equal to $x^*$.
+
+In section \ref{Relaxations} we presented two methods for the reconstruction of sparse probability measures:  Classical Lasso, regularization with the $\ell^\infty$ norm and minimal cardinality selection. Here we are going give deterministic conditions for perfect recovery and for random matrices give guarantees how many measurements are needed for given sparsity and signal dimension in order to reconstruct the original vector.
+
+\subsection{Unique sparse solution}
+
+This problem can be solved if the original signal is the unique sparse solution. The following theorem gives conditions when this is the case. 
+We first consider the one-block case $\gamma = 1$. 
+To show that the original vector is actually the unique sparsest one, we use the following theorem from \cite{Dahmen_CS}.
+\begin{theorem}
+\label{thm:l0unique}
+Let $A \in \R^{m\times n}$ and $x\in\R^n$ be $s$-sparse. In the case
+$m\geq 2k$, the problem $Ax = b$ can be recovered if and only if
+\begin{compactenum}[(a)]
+\item the set $\Sigma_{2k}$ of $2k$-sparse vectors intersects with the null space of the matrix $A$ only at the singleton $\{0\}$ (see also section 2 of \cite{Dahmen_CS}).
+\item For any subset $S$ with $|S| = 2k$, the matrix $A_S$ has rank $2k$ and
+\item $A_S^\T A_S$ is invertible.
+\end{compactenum}
+\end{theorem}
+For deterministic matrices this is hard to check.
+
+
+\begin{theorem}[Null Space Property]
+If a matrix $A \in \R^{m\times n}$ satisfies the null space property of order $k$, i.e. for all subsets $S \subset [n]$ with $|S| = k$ we have that
+\begin{equation*}
+\|h_S\|_1 < \|h_{S^c}\|_1 \text{ for all } h\in\null A \ \{0\},
+\end{equation*}
+then every $k$-sparse vector $x \in \R^n$ can be recovered by \eqref{l1-minimization}, which has a unique solution.
+\end{theorem}
+\begin{proof}
+See proof of Theorem 2.3. in \cite{Rauhut}.
+\end{proof}
+The null space property is the most immediate condition but however hard to check. A merely sufficient but more helpful result for bounding probabilities in the case of random matrices is the restricted isometry property.
+
+\begin{theorem}[Restricted Isometry Property (RIP)]
+If a matrix $A \in \R^{m\times n}$ fulfills the restricted isometry property with constant $\delta_s$, i.e. for all $k$-sparse $x\in \R^n$. 
+\begin{equation}\label{RIP}
+  (1-\delta_s)\|x\|_2^2 \leq \|Ax\|_2^2 \leq (1+\delta_S) \|x\|_2^2,
+\end{equation}
+then if $\delta_{2s} < \frac{1}{3}$ then the null space property of order $k$ is satisfied and thus every $k$-sparse vector can be recovered by using $\ell^1$ minimization.
+\end{theorem}
+\begin{proof}
+See proof of Theorem 2.6. in \cite{Rauhut}.
+\end{proof}
+
+Though the RIP is easier to check for Gaussian estimations, this is still intractable for deterministic measurement matrices, as in the case of our traffic matrices. There are other conditions like mutual coherence, see e.g. \cite{Fuchs}, which are much easier to check.
+
+\begin{theorem}[Incoherence]
+
+\end{theorem}
 
 \section{Guarantees for sparse recovery}\label{sec:theory}
 To guarantee exact sparse recovery, the following procedure will be used: First, assuming that the original vector~$x^*$ is actually the sparsest solution to~\eqref{l0-minimization}. Then, we prove that the solution of the relaxed problems~\eqref{l1-minimization} and~\eqref{l8-minimization} are unique and equal to $x^*$.
@@ -453,7 +402,93 @@ Setting $t = 2(1+\epsilon) \cdot s\cdot \log n
     \end{proof}
 
 \subsection{Recovery of sparse probability measures}
-We will present two methods for the reconstruction of sparse probability measures:  Classical Lasso, regularization with the $\ell^\infty$ norm and minimal cardinality selection.
+
+Similar to the null space property one can come up with dual witness results which 
+\begin{theorem}
+\label{Maxmax_Oneblock}
+Assume that $\alpha^*$ is the unique $k$-sparse solution and $i^* = \argmax_i \alpha^*_i$ with support $S$. If(f?)
+\begin{align*}
+\label{Maxrecovery_condition_Farkas}
+\max_{u,\lambda} \qquad &- u^T e_i \:\: \leq 0\\
+\text{s.t.} \qquad& \begin{pmatrix} A_i\\ B_i \end{pmatrix} u = \begin{pmatrix} \lambda \\ 0\end{pmatrix}\\
+A_i^T = &-\begin{pmatrix} e_i - e_{1} & \dots & e_i - e_{i-1} & e_i - e_{i+1} & \dots & e_i - e_j & I\\
+0 & 0 & 0&0&0&0& I
+\end{pmatrix}\\
+B_i^T = &\begin{pmatrix} \Phi^T & 1\end{pmatrix} 
+\end{align*}
+holds for all $i = 1\dots n$ (this should be easy for Gaussians cause of symmetry again) OR we say for $i = i^*$ (weaker but $\alpha$-dependent), then $\alpha^*$ is the unique solution to the problem \eqref{Mert_LP}.
+\end{theorem}
+For the proof we are going to use a simple corollary of Farkas lemma:
+\begin{lemma}
+\label{Farkas_Corollary}
+One of the two systems has a solution with $B \in \RN^{l\times n}, A\in \RN^{m\times n}$:
+\begin{align*}
+\text{System 1}: & Ax \leq 0, Bx = 0, c^Tx >0\:\: x\in \RN^n\\
+\text{System 2}: & A^T y + B^T z = c, y\geq 0\:\: y\in \RN^m, z\in \RN^l
+\end{align*}
+\end{lemma}
+\begin{proof}
+In the system 2, rewrite $B^T z = B^T (z_1 - z_2)$ with $z_1,z_2 \geq 0$, then use Farkas' lemma. 
+\end{proof}
+
+\begin{proof}[of Theorem]
+Whenever the system for none of the $i$ following systems has a solution $(\alpha,h)$, then we can recover all sparse probability measures $\alpha$ which is the solution to \eqref{Mert_LP} 
+\begin{align*}
+e_i^T\alpha &\geq e_j^T \alpha \:\: \forall j \in S\\
+\alpha + h &\geq 0\\
+e_i^T h &> 0\\
+\begin{pmatrix}\Phi\\ 1^T\end{pmatrix} h &= 0
+\end{align*}
+We can now use Lemma \ref{Farkas_Corollary} which then gives the following feasibility condition (for all $i$ there must exist  $(y,z)$ which fulfill)
+\begin{align*}
+\label{Maxrecovery_condition_Feasibility}
+y_i &\geq 0\\
+A_i^Ty + B_i^T z &= e_i
+\end{align*}
+Regard this as a convex optimization problem with minimization over $0$. If it is feasible then the objective value will remain 0. Now consider the dual problem which yields
+\begin{align*}
+\label{Maxrecovery_condition_Dual}
+\max_{u,\lambda} \qquad &- u^T e_i\:\: \leq 0\\
+\text{s.t.} \qquad& \begin{pmatrix} A_i\\ B_i \end{pmatrix} u = \begin{pmatrix} \lambda \\ 0\end{pmatrix}
+\end{align*}
+Note that this is a linear program and thus fairly easy to check. 
+\end{proof}
+
+\begin{lemma} \label{thm:linftyunique}
+Given that $x^*$ is the unique k-sparse solution and
+\begin{equation*}
+\min_{1^Tx = 1, y\geq 0, 1^Ty =1} x_i \qquad \text{s.t. } A_S x = A_{S^C} y \qquad>0
+\end{equation*}
+for one $i \in S$ (in the support of $x$), where $S^C$ is the set of indeces for the columns not in the support $S$, then the (inner $i$-th) convex linear program has a unique solution $x^*$
+\end{lemma}
+\begin{proof}
+The proof follows \cite{mert}.
+First we show that whenever there exists a $(\lambda, w)$ such that
+\begin{align}
+\Phi^T_{S}w + \lambda 1 &= e_i \label{First_eq}\\
+\Phi^T_{S^c}w + \lambda 1 &>0 \label{Second_eq}
+\end{align}
+then the support of the solution of the linear program coincides with the support of the original $x^*$. For this purpose we simply write down the dual Lagrangian of \eqref{Mert_LP} which reads
+\begin{align*}
+&\min_{w,\lambda} w^Tf + \lambda +  \max_{x\geq 0} (e_i- \Phi^Tw - \lambda 1)^T x\\
+= &\min_{w,\lambda} w^Tf + \lambda + \max_{x\geq 0} (e_i- \Phi_S^Tw - \lambda 1)^T x_S + (- \Phi_{S^c}^Tw - \lambda 1)^T x_{S^c}
+\end{align*}
+From this formulation we can see that if \eqref{Second_eq} holds, then $x_{S^c}$ must be chosen as zero. If \eqref{First_eq} holds, then $x_S$ can have arbitrary values - together the two conditions thus guarantee support recovery. 
+
+Now it remains to show how to arrive from these two conditions to the sufficiency of the assumption in the theorem. Now the dual of the condition in the theorem reads
+\begin{align*}
+&d^* = \max_{u,v} u -v +\min_{y\geq 0} (e_i^T - \lambda^T\Phi_S - u1^T) x + (\lambda^T \Phi_{S^c} + v1^T) y\: >0\\
+\implies &\max_{u,v} u-v \:  \text{ s.t. } e_i - \Phi_S^T \lambda - u1 = 0 \wedge \Phi_{S^c}^T \lambda + v1\geq 0 \:\: >0
+\end{align*}
+Here we use that strong duality holds since we assume the problem is feasible. This is because we know that the original $x^*$ satisfies the condition $\Phi_S x = f$. 
+Given the condition holds, then for some $u>v$ we will have a feasible dual problem which means that there is a $u$ such that 
+\begin{align*}
+ \Phi_S^T \lambda +u1 &= e_i\\
+\Phi_{S^c}^T \lambda + u1 &> 0 
+\end{align*}
+This is because $1$ is positive so that if you plug in $v+\epsilon = u$ you will get strict inequality for all entries. 
+\end{proof}
+
 
 Since we always consider the case when our probability measures are sparse, one natural approach would be to use the classical Lasso - if our probability measure is the unique $k$-sparse solution to $Ax  = b$, then we can abandon the $\ell^1$ constraints and use classical $\ell^1$ regularization. Guarantees for random measurement matrices with Gaussian entries are given in the following.
 
@@ -546,7 +581,19 @@ After establishing the guarantees for the Lasso approach, the question now is wh
 
 \subsection{Recovery of sparse block probability measures}
 
+Condition for maxmax.\\ 
 
+We can provide a simple extension to the above condition in Lemma \ref{thm:linftyunique}.
+\begin{lemma} \label{thm:linftyunique_block}
+Given that $x^*$ is the unique sparse solution and 
+\begin{equation*}
+\min_{\overset{1^Tx_{\gamma} = 1, y_{\gamma} \geq 0}{1^Ty_{\gamma} =1 \forall \gamma}} \sum_{\gamma =1}^b x_{i_{\gamma}} \qquad \text{s.t. } \A_S x = A_{S^C} y \qquad>0
+\end{equation*}
+for one tuple $i = (i_1, \dots, i_n)$ (in the support of $x$), where $S^c$ is the set of indeces for the columns not in the support $S$, then the (inner $i$-th) convex linear program in B-LRP has a unique solution $x^*$
+\end{lemma}
+\begin{proof}
+The proof is along the same lines as in Lemma \ref{thm:linftyunique}.
+\end{proof}
 
 ??? Transition needed ???
 
@@ -646,6 +693,14 @@ To test our algorithms, we generated two datasets: One to assess reconstruction 
   \caption{A traffic graph for $r=3$ and $c=5$. As shown in (a), there are horizontal highways with weight $6$ at the top and the bottom. These are vertically connected by roads with weights 1 or 2. In (b), the flows on these roads were computed according to the method described in the text.}
 \label{fig:graph-example}
 \end{figure}
+
+\paragraph{Losses.} (do we need to define these?)
+\begin{tabular}{cl}
+$l(\alpha, \hat\alpha) = \norm{\hat\alpha - \alpha}_2$ & Loss/error of the estimated split vectors $\alpha$ in $\ell^2$ norm \\
+$l'(\alpha, \hat\alpha) = \norm{\hat\alpha - \alpha}_1$ & Loss/error of the estimated split vectors $\alpha$ in $\ell^1$ norm \\
+$l^*(\alpha, \hat \alpha) = \sum_{i}|1_{(\hat{\alpha}_i > 0)} - 1_{(\alpha_i > 0)}|.$ & Loss/error of the estimated split vectors $\alpha$ with respect to support recovery
+\end{tabular}
+
 \paragraph{Traffic matrices.} The parameters for this model class are the number of rows $r$, the number $c$ of columns in the road grid and the number $k$ of routes per origin-destination pair, the sparsity $s$ and the flow from each node $\phi$. Then, there are two types of traffic models:
 \begin{itemize}
   \item \emph{The origin model:} Here, the blocks $x_\gamma$ have
